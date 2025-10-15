@@ -1,0 +1,29 @@
+timestamp: 24-08-30 11:24:07
+result of show command "show bgp summ" for router name cord-deham-91-0002.mgmt.lab: 
+Fri Aug 30 11:24:07.904 CEST
+BGP router identifier 172.31.8.13, local AS number 13184
+BGP generic scan interval 60 secs
+BGP table state: Active
+Table ID: 0xe0000000   RD version: 4878971
+BGP table nexthop route policy: RP_BGP_NH
+BGP main routing table version 4878971
+BGP scan interval 60 secs
+
+BGP is operating in STANDALONE mode.
+
+
+Process       RcvTblVer   bRIB/RIB   LabelVer  ImportVer  SendTblVer  StandbyVer
+Speaker         4878971    4878971    4878971    4878971     4878971     4878971
+
+Neighbor        Spk    AS MsgRcvd MsgSent   TblVer  InQ OutQ  Up/Down  St/PfxRcd
+172.31.8.10       0 13184       0       0        0    0    0 00:00:00 Idle (Admin)
+172.31.8.16       0 13184    3737   16841  4878971    0    0 01:11:28    1502119
+172.31.8.18       0 13184      81   16837  4878971    0    0 01:11:32          0
+172.31.8.44       0 13184    5385   11832  4878971    0    0 01:11:23    1504106
+172.31.8.71       0 13184       0       0        0    0    0 00:00:00 Idle (Admin)
+172.31.8.77       0 13184      77   17229  4878971    0    0 01:11:20          3
+172.31.8.102      0 13184    3218   16841  4878971    0    0 01:11:36    1501019
+172.31.8.108      0 13184       0       0        0    0    0 00:00:00 Idle (Admin)
+172.31.8.114      0 13184       0       0        0    0    0 00:00:00 Idle (Admin)
+
+RP/0/RP0/CPU0:cord-deham-91-0002#

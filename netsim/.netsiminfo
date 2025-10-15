@@ -1,0 +1,42 @@
+
+## device xr9kv0
+devices[0]=xr9kv0
+prefix[0]=xr9kv
+netconf_ssh_port[0]=12022
+netconf_tcp_port[0]=13022
+snmp_port[0]=11022
+cli_ssh_port[0]=10022
+ipc_port[0]=5010
+devicedirs[0]=xr9kv/xr9kv0
+packagedirs[0]=../../NCS-614/packages/neds/cisco-iosxr-cli-7.52
+abspackagedirs[0]=/Users/gudeng/NCS-614/packages/neds/cisco-iosxr-cli-7.52
+#######
+
+
+## device xr9kv1
+devices[1]=xr9kv1
+prefix[1]=xr9kv
+netconf_ssh_port[1]=12023
+netconf_tcp_port[1]=13023
+snmp_port[1]=11023
+cli_ssh_port[1]=10023
+ipc_port[1]=5011
+devicedirs[1]=xr9kv/xr9kv1
+packagedirs[1]=../../NCS-614/packages/neds/cisco-iosxr-cli-7.52
+abspackagedirs[1]=/Users/gudeng/NCS-614/packages/neds/cisco-iosxr-cli-7.52
+#######
+
+
+## device xr9kv2
+devices[2]=xr9kv2
+prefix[2]=xr9kv
+netconf_ssh_port[2]=12024
+netconf_tcp_port[2]=13024
+snmp_port[2]=11024
+cli_ssh_port[2]=10024
+ipc_port[2]=5012
+devicedirs[2]=xr9kv/xr9kv2
+packagedirs[2]=../../NCS-614/packages/neds/cisco-iosxr-cli-7.52
+abspackagedirs[2]=/Users/gudeng/NCS-614/packages/neds/cisco-iosxr-cli-7.52
+#######
+
