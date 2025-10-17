@@ -1,233 +1,170 @@
-# NSO Multi-Agent Standalone Application
+# NSO MCP Server for Cursor
 
-A production-ready standalone Python application that provides intelligent network automation using NSO (Network Services Orchestrator) and LlamaIndex ReActAgent.
+A Model Context Protocol (MCP) server that integrates Cisco NSO (Network Services Orchestrator) with Cursor IDE for network automation tasks.
 
-## 🚀 Features
+## 🚀 Quick Start
 
-- **NSO Integration**: Full NSO device management and automation
-- **AI-Powered**: LlamaIndex ReActAgent with FunctionTools for intelligent query processing
-- **Modern Web Interface**: Quart-based async web application
-- **Cisco Azure OpenAI**: Integrated with Cisco's Azure OpenAI service
-- **Production Ready**: Comprehensive logging, error handling, and monitoring
-- **Standalone**: No Jupyter notebook dependencies
+1. **Prerequisites**
+   - Cisco NSO installed and running
+   - Python 3.13+
+   - Cursor IDE
 
-## 📋 Prerequisites
+2. **Installation**
+   ```bash
+   # Clone or navigate to the project
+   cd /Users/gudeng/MCP_Server
+   
+   # Activate the MCP virtual environment
+   source mcp_venv/bin/activate
+   
+   # Install dependencies
+   pip install -r src/mcp_server/mcp_requirements.txt
+   ```
 
-### System Requirements
-- Python 3.11+
-- NSO (Network Services Orchestrator) installed and running
-- Network devices configured in NSO
+3. **Configuration**
+   - MCP configuration is automatically set up in `.cursor/mcp.json`
+   - NSO environment variables are configured in the wrapper script
 
-### NSO Setup
-1. Install NSO on your system
-2. Start NSO daemon: `ncs --start`
-3. Configure your network devices in NSO
-4. Ensure devices are connected and synced
+4. **Usage**
+   - Restart Cursor IDE
+   - Open Tools & MCP settings
+   - Verify "nso-network-automation" shows "14 tools available"
 
-## 🛠️ Installation
+## 📁 Project Structure
 
-### 1. Extract Package
+```
+MCP_Server/
+├── src/                          # Source code
+│   ├── mcp_server/              # MCP server implementation
+│   │   ├── nso_mcp_simple_fixed.py    # Main MCP server
+│   │   ├── start_nso_mcp.sh           # Wrapper script
+│   │   ├── mcp_requirements.txt       # Dependencies
+│   │   └── diagnose_mcp.py            # Diagnostic tool
+│   ├── flask_apps/              # Flask applications
+│   └── notebooks/               # Jupyter notebooks
+├── config/                      # Configuration files
+│   ├── cursor_mcp_config.json  # Cursor MCP config
+│   └── mcp_config.json         # Alternative config
+├── scripts/                     # Utility scripts
+│   ├── deployment/             # Deployment scripts
+│   └── testing/                # Test scripts
+├── docs/                       # Documentation
+│   ├── setup/                  # Setup guides
+│   ├── deployment/             # Deployment guides
+│   └── troubleshooting/        # Troubleshooting
+├── archive/                    # Archived files
+│   ├── old_versions/          # Previous implementations
+│   ├── backup_notebooks/      # Backup notebooks
+│   └── test_files/            # Old test files
+├── netsim/                     # NSO network simulation
+├── mcp_venv/                   # Python virtual environment
+└── .cursor/                    # Cursor configuration
+    └── mcp.json               # MCP server config
+```
+
+## 🛠️ Available Tools
+
+The MCP server exposes 14 NSO network automation tools:
+
+### Device Management
+- `show_all_devices` - List all available routers
+- `get_router_version` - Get router version information
+- `get_router_clock` - Get router current time
+
+### Network Monitoring
+- `show_router_interfaces` - Show interface status
+- `get_router_bgp_summary` - BGP summary
+- `get_router_isis_neighbors` - ISIS neighbors
+- `get_router_ospf_neigh` - OSPF neighbors
+- `lldp_nei` - LLDP neighbors
+
+### System Monitoring
+- `check_cpu` - CPU utilization
+- `check_memory` - Memory summary
+- `check_alarm` - Router alarms
+
+### Network Testing
+- `ping_router` - Ping from router
+- `traceroute_router` - Traceroute from router
+
+### Bulk Operations
+- `iterate` - Execute command on all devices
+
+## 🔧 Configuration
+
+### NSO Configuration
+- **NSO Directory**: `/Users/gudeng/NCS-614`
+- **Username**: `admin`
+- **Password**: `admin`
+- **Devices**: `xr9kv-1`, `xr9kv-2`, `xr9kv-3`
+
+### MCP Configuration
+The MCP server is configured in multiple locations for redundancy:
+- `.cursor/mcp.json` (primary)
+- `~/.cursor/mcp.json` (global backup)
+- `config/cursor_mcp_config.json` (project config)
+
+## 🧪 Testing
+
+Run the diagnostic tool to verify setup:
 ```bash
-unzip nso_multi_agent_package.zip
-cd nso_multi_agent_package
+cd /Users/gudeng/MCP_Server
+source mcp_venv/bin/activate
+python src/mcp_server/diagnose_mcp.py
 ```
 
-### 2. Install Dependencies
-```bash
-pip install -r requirements.txt
-```
+## 📚 Documentation
 
-### 3. Configure Environment
-Edit `nso_multi_agent_standalone.py` and update the configuration section:
+- [Setup Guide](docs/setup/README_MCP.md)
+- [Cursor Integration](docs/setup/CURSOR_INTEGRATION.md)
+- [Deployment Guide](docs/deployment/DEPLOYMENT_GUIDE.md)
+- [Troubleshooting](docs/troubleshooting/CURSOR_MCP_TROUBLESHOOTING.md)
 
-```python
-# NSO Configuration - ADAPT THESE PATHS FOR YOUR ENVIRONMENT
-NSO_DIR = "/opt/ncs/current"  # Change this to your NSO installation path
-NSO_USERNAME = "admin"
-NSO_PASSWORD = "admin"  # Change this to your NSO password
+## 🚀 Deployment
 
-# Azure OpenAI Configuration - ADAPT THESE FOR YOUR ENVIRONMENT
-CLIENT_ID = "your_client_id"
-CLIENT_SECRET = "your_client_secret"
-TOKEN_URL = "https://id.cisco.com/oauth2/default/v1/token"
-LLM_ENDPOINT = "https://chat-ai.cisco.com"
-APP_KEY = "your_app_key"
-```
+Deployment scripts are available in `scripts/deployment/`:
+- `deploy.sh` - Basic deployment
+- `deploy_production.sh` - Production deployment
+- `Dockerfile` - Container deployment
+- `deployment.yaml` - Kubernetes deployment
 
-## 🚀 Usage
+## 🔍 Troubleshooting
 
-### Basic Usage
-```bash
-python nso_multi_agent_standalone.py
-```
+1. **"No tools, prompts, or resources"**
+   - Check NSO is running
+   - Verify MCP configuration in `.cursor/mcp.json`
+   - Run diagnostic tool
 
-### Production Deployment
-```bash
-# Using Gunicorn with Uvicorn workers
-gunicorn nso_multi_agent_standalone:app -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:5606
+2. **Connection Issues**
+   - Verify NSO environment variables
+   - Check wrapper script permissions
+   - Review Cursor logs
 
-# Or using Uvicorn directly
-uvicorn nso_multi_agent_standalone:app --host 0.0.0.0 --port 5606 --workers 4
-```
+3. **Tool Execution Errors**
+   - Ensure NSO devices are accessible
+   - Check NSO user permissions
+   - Verify device names
 
-### Access the Application
-- **Web Interface**: http://localhost:5606
-- **Health Check**: http://localhost:5606/health
+## 📝 Changelog
 
-## 🤖 Available Commands
+See [CHANGELOG.md](CHANGELOG.md) for version history.
 
-The AI agent can process natural language queries and execute various network operations:
+## 🤝 Contributing
 
-### Device Discovery
-- "Show me all devices"
-- "What devices are in the lab?"
-- "List all routers"
-
-### Device Information
-- "Show version on xr9kv-1"
-- "What interfaces are on device xr9kv-2?"
-- "Show CPU usage on all devices"
-- "Check memory on xr9kv-3"
-
-### Network Operations
-- "Ping 192.168.1.1 from xr9kv-1"
-- "Traceroute to 8.8.8.8 from xr9kv-2"
-- "Show BGP summary on xr9kv-1"
-- "Show ISIS neighbors on all devices"
-
-### Troubleshooting
-- "Check alarms on xr9kv-1"
-- "Show logs on xr9kv-2"
-- "Show LLDP neighbors on all devices"
-
-## 📊 Monitoring and Logging
-
-### Log Files
-- **Application Log**: `nso_multi_agent.log`
-- **Console Output**: Real-time logging to stdout
-
-### Health Check Endpoint
-```bash
-curl http://localhost:5606/health
-```
-
-Response:
-```json
-{
-    "status": "healthy",
-    "service": "nso-multi-agent",
-    "version": "2.0",
-    "nso_connected": true
-}
-```
-
-## 🔒 Security Considerations
-
-1. **NSO Credentials**: Change default NSO username/password
-2. **Network Access**: Configure firewall rules for port 5606
-3. **API Keys**: Secure your Azure OpenAI credentials
-4. **HTTPS**: Consider using HTTPS in production (requires SSL certificates)
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-#### 1. NSO Connection Failed
-```
-❌ Failed to setup NSO connection
-```
-**Solution**: 
-- Verify NSO is running: `ncs --status`
-- Check NSO_DIR path is correct
-- Ensure NSO Python API is accessible
-
-#### 2. LLM Authentication Failed
-```
-❌ Failed to setup LLM
-```
-**Solution**:
-- Verify CLIENT_ID and CLIENT_SECRET are correct
-- Check network connectivity to Cisco OAuth endpoint
-- Ensure APP_KEY is valid
-
-#### 3. Device Commands Failing
-```
-syntax error: missing display group
-```
-**Solution**:
-- This is normal for netsim devices
-- Use simpler commands like "show version"
-- Check device connectivity in NSO
-
-#### 4. Port Already in Use
-```
-OSError: [Errno 48] Address already in use
-```
-**Solution**:
-- Change WEB_PORT in configuration
-- Kill existing process: `lsof -t -i :5606 | xargs kill -9`
-
-### Debug Mode
-Enable debug mode for detailed logging:
-```python
-DEBUG_MODE = True
-```
-
-## 📈 Performance Optimization
-
-### Production Settings
-```python
-# Increase worker processes
-WEB_WORKERS = 4
-
-# Optimize LLM settings
-MAX_TOKENS = 3000
-TEMPERATURE = 0.1
-MAX_ITERATIONS = 1000
-```
-
-### Monitoring
-- Monitor CPU and memory usage
-- Check NSO connection status
-- Monitor LLM API rate limits
-- Review application logs regularly
-
-## 🔄 Updates and Maintenance
-
-### Updating Dependencies
-```bash
-pip install --upgrade -r requirements.txt
-```
-
-### Restarting the Application
-```bash
-# Graceful restart
-pkill -f nso_multi_agent_standalone.py
-python nso_multi_agent_standalone.py
-```
-
-### Backup Configuration
-- Backup your configuration settings
-- Export NSO device configurations
-- Save custom function tools
-
-## 📞 Support
-
-For issues and questions:
-1. Check the troubleshooting section
-2. Review application logs
-3. Verify NSO and network connectivity
-4. Check LlamaIndex and Quart documentation
+1. Fork the repository
+2. Create a feature branch
+3. Make changes
+4. Test thoroughly
+5. Submit a pull request
 
 ## 📄 License
 
-This application is provided as-is for educational and development purposes.
+This project is licensed under the MIT License.
 
-## 🎯 Version History
+## 🆘 Support
 
-- **v2.0**: Quart-based async web application with nest_asyncio
-- **v1.0**: Initial Flask-based implementation
-
----
-
-**Happy Network Automation! 🚀**
+For issues and questions:
+1. Check the troubleshooting guide
+2. Run the diagnostic tool
+3. Review Cursor MCP documentation
+4. Check NSO logs and status
