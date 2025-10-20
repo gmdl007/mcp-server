@@ -1,18 +1,14 @@
 # Created by: admin
-# Date: 2025-10-03 21:48:27
+# Date: 2025-10-17 13:58:05
 # Via: cli
 # Type: delta
 # Label: 
 # Comment: 
-# No: 10000
-# TransactionId: 17
+# No: 10008
+# TransactionId: 1023
 # Hostname: GUDENG-M-H9KG
 
 interface {
     delete:
-    GigabitEthernet 0/0/0/0;
-    delete:
-    GigabitEthernet 0/0/0/1;
-    delete:
-    GigabitEthernet 0/0/0/2;
+    Loopback 0;
 }

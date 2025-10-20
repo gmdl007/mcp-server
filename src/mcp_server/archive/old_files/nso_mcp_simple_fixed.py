@@ -41,7 +41,7 @@ NSO_USERNAME = "admin"
 NSO_PASSWORD = "admin"
 
 # Logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 # =============================================================================
@@ -111,14 +111,19 @@ class NSOMCPTools:
     
     def show_all_devices(self) -> str:
         """Find out all available routers in the lab, return their names."""
-        if not self.connected:
-            return "❌ NSO not connected. Please check NSO status."
-        
-        if hasattr(self.root, 'devices') and hasattr(self.root.devices, 'device'):
-            router_names = [device.name for device in self.root.devices.device]
-            return ', '.join(router_names)
-        else:
-            return "No devices found."
+        try:
+            import ncs.maapi as maapi
+            import ncs.maagic as maagic
+            
+            with maapi.single_read_trans(NSO_USERNAME, 'python', groups=['ncsadmin']) as t:
+                root = maagic.get_root(t)
+                if hasattr(root, 'devices') and hasattr(root.devices, 'device'):
+                    router_names = [device.name for device in root.devices.device]
+                    return ', '.join(router_names)
+                else:
+                    return "No devices found."
+        except Exception as e:
+            return f"❌ Failed to get devices: {e}"
     
     def execute_command_on_router(self, router_name: str, command: str) -> str:
         """Execute a single command on a specific router using NSO."""
@@ -221,6 +226,44 @@ class NSOMCPTools:
         
         return '\n'.join(results)
 
+    def get_router_interfaces_config(self, router_name: str) -> str:
+        """Return configured interfaces (Loopback, GigabitEthernet, Ethernet) with IPv4 for a router."""
+        try:
+            import ncs.maapi as maapi
+            import ncs.maagic as maagic
+            
+            # Read-only transaction for config
+            with maapi.single_read_trans(NSO_USERNAME, 'python', groups=['ncsadmin']) as t:
+                root = maagic.get_root(t)
+                try:
+                    device = root.devices.device[router_name]
+                except KeyError:
+                    return f"❌ Device '{router_name}' not found in NSO."
+                cfg = device.config
+                lines = []
+                if hasattr(cfg, 'interface'):
+                    # Loopback interfaces
+                    if hasattr(cfg.interface, 'Loopback'):
+                        for lo in cfg.interface.Loopback:
+                            ip = getattr(getattr(lo, 'ipv4', None), 'address', None)
+                            ip_str = f" {getattr(ip, 'ip', '')}/{getattr(ip, 'mask', '')}" if ip else ''
+                            lines.append(f"Loopback{lo.id}{ip_str}")
+                    # GigabitEthernet interfaces
+                    if hasattr(cfg.interface, 'GigabitEthernet'):
+                        for gi in cfg.interface.GigabitEthernet:
+                            ip = getattr(getattr(gi, 'ipv4', None), 'address', None)
+                            ip_str = f" {getattr(ip, 'ip', '')}/{getattr(ip, 'mask', '')}" if ip else ''
+                            lines.append(f"GigabitEthernet{gi.id}{ip_str}")
+                    # Ethernet interfaces
+                    if hasattr(cfg.interface, 'Ethernet'):
+                        for eth in cfg.interface.Ethernet:
+                            ip = getattr(getattr(eth, 'ipv4', None), 'address', None)
+                            ip_str = f" {getattr(ip, 'ip', '')}/{getattr(ip, 'mask', '')}" if ip else ''
+                            lines.append(f"Ethernet{eth.id}{ip_str}")
+                return "\n".join(lines) if lines else "NO_CONFIGURED_INTERFACES"
+        except Exception as e:
+            return f"❌ Failed to read interface config for '{router_name}': {e}"
+
 # =============================================================================
 # MCP SERVER IMPLEMENTATION
 # =============================================================================
@@ -234,6 +277,7 @@ server = Server("nso-mcp-server")
 @server.list_tools()
 async def handle_list_tools() -> ListToolsResult:
     """List all available NSO tools."""
+    logger.debug("📋 handle_list_tools invoked")
     tools = [
         Tool(
             name="show_all_devices",
@@ -242,6 +286,17 @@ async def handle_list_tools() -> ListToolsResult:
                 "type": "object",
                 "properties": {},
                 "required": []
+            }
+        ),
+        Tool(
+            name="echo_text",
+            description="Echo back the provided text (debug/health).",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "text": {"type": "string", "description": "Text to echo"}
+                },
+                "required": ["text"]
             }
         ),
         Tool(
@@ -433,9 +488,24 @@ async def handle_list_tools() -> ListToolsResult:
                 },
                 "required": ["cmd"]
             }
+        ),
+        Tool(
+            name="get_router_interfaces_config",
+            description="Return configured interfaces (Loopback/GigabitEthernet/Ethernet) with IPv4 for a router.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "router_name": {
+                        "type": "string",
+                        "description": "Name of the router to query"
+                    }
+                },
+                "required": ["router_name"]
+            }
         )
     ]
     
+    logger.debug(f"📋 handle_list_tools returning {len(tools)} tools")
     return ListToolsResult(tools=tools)
 
 @server.call_tool()
@@ -443,13 +513,10 @@ async def handle_call_tool(name: str, arguments: Dict[str, Any]) -> CallToolResu
     """Handle tool calls."""
     global nso_tools
     
+    logger.debug(f"🔧 call_tool received name={name}, arguments={arguments}")
+
     if not nso_tools:
-        return CallToolResult(
-            content=[TextContent(
-                type="text",
-                text="❌ NSO tools not initialized. Please check NSO connection."
-            )]
-        )
+        return CallToolResult(content=[TextContent(type="text", text="❌ NSO tools not initialized. Please check NSO connection.")])
     
     try:
         # Route tool calls to appropriate NSO functions
@@ -481,23 +548,19 @@ async def handle_call_tool(name: str, arguments: Dict[str, Any]) -> CallToolResu
             result = nso_tools.check_alarm(arguments["router_name"])
         elif name == "iterate":
             result = nso_tools.iterate(arguments["cmd"])
+        elif name == "echo_text":
+            result = arguments.get("text", "")
+        elif name == "get_router_interfaces_config":
+            result = nso_tools.get_router_interfaces_config(arguments["router_name"])
         else:
             result = f"❌ Unknown tool: {name}"
         
-        return CallToolResult(
-            content=[TextContent(
-                type="text",
-                text=result
-            )]
-        )
+        logger.debug(f"✅ call_tool result (as text) for {name}: {result}")
+        return CallToolResult(content=[TextContent(type="text", text=str(result))])
         
     except Exception as e:
-        return CallToolResult(
-            content=[TextContent(
-                type="text",
-                text=f"❌ Error executing tool {name}: {str(e)}"
-            )]
-        )
+        logger.exception(f"❌ Exception while executing tool {name}")
+        return CallToolResult(content=[TextContent(type="text", text=f"❌ Error executing tool {name}: {str(e)}")])
 
 # =============================================================================
 # MAIN ENTRY POINT
