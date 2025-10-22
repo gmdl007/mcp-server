@@ -1,19 +1,21 @@
 # Created by: admin
-# Date: 2025-10-22 14:10:40
+# Date: 2025-10-22 14:22:49
 # Via: cli
 # Type: delta
 # Label: 
 # Comment: 
-# No: 10056
-# TransactionId: 1353
+# No: 10060
+# TransactionId: 1380
 # Hostname: GUDENG-M-H9KG
 
 interface {
-    Loopback 1000 {
+    GigabitEthernet 0/0/0/0 {
         ipv4 {
             address {
-                mask 255.255.255.255;
-                ip 10.2.100.2;
+                delete:
+                mask 255.255.255.0;
+                delete:
+                ip 192.0.2.2;
             }
          }
      }

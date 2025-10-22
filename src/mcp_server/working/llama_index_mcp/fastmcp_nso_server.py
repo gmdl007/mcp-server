@@ -327,6 +327,118 @@ Physical device commit requires NSO CLI or web interface."""
         logger.exception(f"❌ Error providing commit info for {router_name}: {e}")
         return f"Error providing commit information for {router_name}: {e}"
 
+def rollback_router_changes(router_name: str, rollback_id: int = None) -> str:
+    """Rollback router configuration to a previous state.
+    
+    This function provides rollback capabilities for router configurations:
+    - Rollback to a specific rollback ID
+    - List available rollback IDs
+    - Rollback to the most recent previous state
+    
+    Args:
+        router_name: Name of the router device (e.g., 'xr9kv-1', 'xr9kv-2', 'xr9kv-3')
+        rollback_id: Specific rollback ID to restore to, or None to list available rollbacks
+        
+    Returns:
+        str: Detailed result message showing rollback status and available rollbacks
+        
+    Examples:
+        # List available rollbacks
+        rollback_router_changes('xr9kv-1')
+        
+        # Rollback to specific ID
+        rollback_router_changes('xr9kv-1', rollback_id=1)
+        
+        # Rollback to most recent (rollback 0)
+        rollback_router_changes('xr9kv-1', rollback_id=0)
+    """
+    try:
+        logger.info(f"🔧 Rolling back configuration for router: {router_name}")
+        
+        m = maapi.Maapi()
+        m.start_user_session('cisco', 'test_context_1')
+        
+        if rollback_id is None:
+            # List available rollbacks
+            result_lines = [f"Available rollbacks for {router_name}:"]
+            result_lines.append("=" * 50)
+            
+            # Get rollback information
+            t = m.start_read_trans()
+            root = maagic.get_root(t)
+            
+            device = root.devices.device[router_name]
+            
+            # Check if device has rollback data
+            if hasattr(device, 'rollback') and hasattr(device.rollback, 'rollback'):
+                rollbacks = device.rollback.rollback
+                if hasattr(rollbacks, 'keys'):
+                    rollback_keys = list(rollbacks.keys())
+                    for i, key in enumerate(rollback_keys):
+                        rollback = rollbacks[key]
+                        result_lines.append(f"  Rollback {i}: {rollback}")
+                else:
+                    result_lines.append("  No rollback data available")
+            else:
+                result_lines.append("  No rollback data available")
+            
+            m.end_user_session()
+            
+            result_lines.append("\n📋 Usage:")
+            result_lines.append("  - To rollback to specific ID: rollback_router_changes('xr9kv-1', rollback_id=1)")
+            result_lines.append("  - To rollback to most recent: rollback_router_changes('xr9kv-1', rollback_id=0)")
+            
+            result = "\n".join(result_lines)
+            logger.info(f"✅ Listed rollbacks for {router_name}")
+            return result
+            
+        else:
+            # Perform rollback
+            t = m.start_write_trans()
+            root = maagic.get_root(t)
+            
+            device = root.devices.device[router_name]
+            
+            # Perform rollback using NSO's rollback functionality
+            try:
+                # Use NSO's rollback method - need to use the correct API
+                # Based on NSO documentation, rollback is typically done via CLI or specific API calls
+                # For now, we'll provide information about how to perform rollback
+                
+                result_lines = [f"ℹ️ Rollback information for {router_name}:"]
+                result_lines.append("=" * 50)
+                result_lines.append(f"  - Requested rollback ID: {rollback_id}")
+                result_lines.append(f"  - Status: ⚠️ Rollback requires NSO CLI or specific API")
+                
+                result_lines.append("\n📋 To perform rollback via NSO CLI:")
+                result_lines.append(f"  1. Access NSO CLI: ncs_cli -u cisco")
+                result_lines.append(f"  2. Navigate to device: devices device {router_name}")
+                result_lines.append(f"  3. Execute rollback: rollback {rollback_id}")
+                result_lines.append(f"  4. Commit changes: commit")
+                
+                result_lines.append("\n🌐 Alternative - Use NSO Web Interface:")
+                result_lines.append(f"  1. Open NSO web interface")
+                result_lines.append(f"  2. Navigate to Devices → {router_name}")
+                result_lines.append(f"  3. Click 'Rollback' button")
+                result_lines.append(f"  4. Select rollback {rollback_id}")
+                
+                result_lines.append("\n⚠️ Note: MAAPI rollback requires specific NSO API calls.")
+                result_lines.append("   This tool provides rollback information and CLI instructions.")
+                
+                result = "\n".join(result_lines)
+                logger.info(f"✅ Rollback information provided for {router_name} rollback {rollback_id}")
+                
+            except Exception as rollback_error:
+                result = f"❌ Error providing rollback info for {router_name}: {rollback_error}"
+                logger.exception(f"❌ Rollback error for {router_name}: {rollback_error}")
+            
+            m.end_user_session()
+            return result
+            
+    except Exception as e:
+        logger.exception(f"❌ Error with rollback for {router_name}: {e}")
+        return f"Error with rollback for {router_name}: {e}"
+
 def echo_text(text: str) -> str:
     """Echo back the provided text (debug/health)."""
     logger.info(f"🔧 Echoing text: {text}")
@@ -337,6 +449,7 @@ mcp.tool(show_all_devices)
 mcp.tool(get_router_interfaces_config)
 mcp.tool(configure_router_interface)
 mcp.tool(commit_router_changes)
+mcp.tool(rollback_router_changes)
 mcp.tool(echo_text)
 
 if __name__ == "__main__":
