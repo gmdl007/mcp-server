@@ -133,8 +133,41 @@ def get_router_interfaces_config(router_name: str) -> str:
         logger.exception(f"❌ Error getting interface tree for {router_name}: {e}")
         return f"Error getting interface tree for {router_name}: {e}"
 
-def configure_router_interface(router_name: str, interface_name: str, ip_address: str = None, description: str = None, shutdown: bool = None) -> str:
-    """Configure a router interface with IP address, description, and shutdown status."""
+def configure_router_interface(router_name: str, interface_name: str, ip_address: str = None, description: str = None, shutdown: bool = None, delete_ip: bool = False) -> str:
+    """Configure router interface settings including IP address management, description, and shutdown status.
+    
+    This function provides comprehensive interface configuration capabilities:
+    - Add/Set IPv4 addresses with CIDR notation support
+    - Delete existing IPv4 addresses from interfaces
+    - Set interface descriptions
+    - Configure interface shutdown/no-shutdown status
+    - Apply changes to NSO configuration database
+    
+    Args:
+        router_name: Name of the router device (e.g., 'xr9kv-1', 'xr9kv-2', 'xr9kv-3')
+        interface_name: Interface name in format 'Type/Number' (e.g., 'GigabitEthernet/0/0/0/0', 'Loopback/100')
+        ip_address: IPv4 address with CIDR mask (e.g., '192.168.1.1/24') or None to skip IP configuration
+        description: Interface description text or None to skip description changes
+        shutdown: True to shutdown interface, False to enable (no-shutdown), None to skip shutdown changes
+        delete_ip: True to delete existing IPv4 address from interface, False to skip IP deletion
+        
+    Returns:
+        str: Detailed result message showing what was configured and commit status
+        
+    Examples:
+        # Add IP address
+        configure_router_interface('xr9kv-1', 'GigabitEthernet/0/0/0/0', ip_address='192.168.1.1/24')
+        
+        # Delete IP address
+        configure_router_interface('xr9kv-1', 'GigabitEthernet/0/0/0/0', delete_ip=True)
+        
+        # Set description and shutdown
+        configure_router_interface('xr9kv-1', 'Loopback/100', description='Management loopback', shutdown=True)
+        
+        # Multiple changes at once
+        configure_router_interface('xr9kv-1', 'GigabitEthernet/0/0/0/1', 
+                                 ip_address='10.0.0.1/24', description='Uplink to core', shutdown=False)
+    """
     try:
         logger.info(f"🔧 Configuring interface {interface_name} on router {router_name}")
         
@@ -167,8 +200,15 @@ def configure_router_interface(router_name: str, interface_name: str, ip_address
             
             interface = if_objects[interface_key]
             
-            # Configure IP address if provided
-            if ip_address:
+            # Handle IP address configuration
+            if delete_ip:
+                # Delete existing IP address
+                if hasattr(interface, 'ipv4'):
+                    interface.ipv4.delete()
+                    logger.info(f"✅ Deleted IP address from {interface_name}")
+                else:
+                    logger.info(f"ℹ️ No IP address to delete on {interface_name}")
+            elif ip_address:
                 # Parse IP address and mask (e.g., "192.168.1.1/24")
                 if '/' in ip_address:
                     ip, mask = ip_address.split('/')
@@ -224,7 +264,9 @@ def configure_router_interface(router_name: str, interface_name: str, ip_address
             m.end_user_session()
             
             result_lines = [f"✅ Successfully configured interface {interface_name} on {router_name}:"]
-            if ip_address:
+            if delete_ip:
+                result_lines.append(f"  - IP Address: Deleted")
+            elif ip_address:
                 result_lines.append(f"  - IP Address: {ip_address}")
             if description:
                 result_lines.append(f"  - Description: {description}")
