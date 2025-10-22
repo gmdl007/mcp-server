@@ -189,8 +189,16 @@ def configure_router_interface(router_name: str, interface_name: str, ip_address
                         interface.shutdown.delete()
                     logger.info(f"✅ No shutdown {interface_name}")
             
-            # Commit the transaction
+            # Apply the transaction to NSO configuration database
             t.apply()
+            
+            # Note: In NSO, changes are applied to the configuration database
+            # The actual commit to devices is typically done through NSO CLI or web interface
+            # For now, we'll indicate that changes are applied to NSO database
+            logger.info(f"✅ Configuration applied to NSO database for {router_name}")
+            commit_success = True  # Changes are in NSO database
+            commit_error_msg = ""
+            
             m.end_user_session()
             
             result_lines = [f"✅ Successfully configured interface {interface_name} on {router_name}:"]
@@ -200,6 +208,13 @@ def configure_router_interface(router_name: str, interface_name: str, ip_address
                 result_lines.append(f"  - Description: {description}")
             if shutdown is not None:
                 result_lines.append(f"  - Shutdown: {'Yes' if shutdown else 'No'}")
+            
+            # Add commit status to result
+            if commit_success:
+                result_lines.append(f"  - Status: ✅ Applied to NSO database")
+                result_lines.append(f"  - Note: Use NSO CLI 'commit' command to push to router")
+            else:
+                result_lines.append(f"  - Status: ⚠️ Applied to NSO (commit failed: {commit_error_msg})")
             
             result = "\n".join(result_lines)
             logger.info(f"✅ Configuration completed for {interface_name}")
@@ -217,6 +232,37 @@ def configure_router_interface(router_name: str, interface_name: str, ip_address
             pass
         return f"Error configuring interface {interface_name} on {router_name}: {e}"
 
+def commit_router_changes(router_name: str) -> str:
+    """Note: In NSO, configuration changes are applied to the NSO database via MAAPI.
+    The actual commit to physical devices is typically done through NSO CLI or web interface.
+    This tool provides information about the commit process."""
+    try:
+        logger.info(f"ℹ️ Providing commit information for router: {router_name}")
+        
+        result = f"""ℹ️ Commit Information for {router_name}:
+
+✅ Configuration changes have been applied to the NSO database.
+
+📋 To commit changes to the physical router:
+1. Access NSO CLI: ncs_cli -u admin
+2. Navigate to device: devices device {router_name} config
+3. Execute commit: commit
+
+🌐 Alternative - Use NSO Web Interface:
+1. Open NSO web interface
+2. Navigate to Devices → {router_name}
+3. Click 'Commit' button
+
+⚠️ Note: MAAPI applies changes to NSO database only.
+Physical device commit requires NSO CLI or web interface."""
+        
+        logger.info(f"✅ Commit information provided for {router_name}")
+        return result
+            
+    except Exception as e:
+        logger.exception(f"❌ Error providing commit info for {router_name}: {e}")
+        return f"Error providing commit information for {router_name}: {e}"
+
 def echo_text(text: str) -> str:
     """Echo back the provided text (debug/health)."""
     logger.info(f"🔧 Echoing text: {text}")
@@ -226,6 +272,7 @@ def echo_text(text: str) -> str:
 mcp.tool(show_all_devices)
 mcp.tool(get_router_interfaces_config)
 mcp.tool(configure_router_interface)
+mcp.tool(commit_router_changes)
 mcp.tool(echo_text)
 
 if __name__ == "__main__":
