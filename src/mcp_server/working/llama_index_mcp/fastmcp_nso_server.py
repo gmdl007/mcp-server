@@ -53,7 +53,7 @@ def show_all_devices() -> str:
     try:
         logger.info("🔧 Getting all devices from NSO...")
         m = maapi.Maapi()
-        m.start_user_session('admin', 'test_context_1')
+        m.start_user_session('cisco', 'test_context_1')
         t = m.start_read_trans()
         root = maagic.get_root(t)
         devices = root.devices.device
@@ -70,18 +70,19 @@ def show_all_devices() -> str:
         return f"Error getting devices: {e}"
 
 def get_router_interfaces_config(router_name: str) -> str:
-    """Return configured interfaces (Loopback/GigabitEthernet/Ethernet) with IPv4 for a router."""
+    """Return complete interface configuration tree for a router."""
     try:
-        logger.info(f"🔧 Getting interfaces for router: {router_name}")
+        logger.info(f"🔧 Getting complete interface tree for router: {router_name}")
         m = maapi.Maapi()
-        m.start_user_session('admin', 'test_context_1')
+        m.start_user_session('cisco', 'test_context_1')
         t = m.start_read_trans()
         root = maagic.get_root(t)
         
         device = root.devices.device[router_name]
         interfaces = device.config.interface
         
-        result_lines = [f"Interfaces for {router_name}:"]
+        result_lines = [f"Complete Interface Configuration for {router_name}:"]
+        result_lines.append("=" * 50)
         
         # Get all interface types
         interface_types = ['GigabitEthernet', 'Loopback', 'MgmtEth', 'TenGigE', 'Bundle_Ether']
@@ -95,21 +96,42 @@ def get_router_interfaces_config(router_name: str) -> str:
                         interface_name = f"{if_type}/{str(interface_key[0])}"
                         interface = if_objects[interface_key]
                         
-                        if hasattr(interface, 'ip') and hasattr(interface.ip, 'address'):
-                            for addr in interface.ip.address:
-                                result_lines.append(f"  {interface_name}: {addr.ip}")
+                        result_lines.append(f"\n{interface_name}:")
+                        
+                        # Check for IPv4 address
+                        if hasattr(interface, 'ipv4') and hasattr(interface.ipv4, 'address'):
+                            if hasattr(interface.ipv4.address, 'ip') and hasattr(interface.ipv4.address, 'mask'):
+                                ip = interface.ipv4.address.ip
+                                mask = interface.ipv4.address.mask
+                                result_lines.append(f"  IPv4: {ip} {mask}")
+                            else:
+                                result_lines.append(f"  IPv4: Configured but no IP/mask found")
                         else:
-                            result_lines.append(f"  {interface_name}: No IP configured")
+                            result_lines.append(f"  IPv4: Not configured")
+                        
+                        # Check for description
+                        if hasattr(interface, 'description'):
+                            desc = interface.description
+                            result_lines.append(f"  Description: {desc}")
+                        
+                        # Check for shutdown status
+                        if hasattr(interface, 'shutdown'):
+                            if interface.shutdown.exists():
+                                result_lines.append(f"  Status: shutdown")
+                            else:
+                                result_lines.append(f"  Status: no shutdown")
+                        else:
+                            result_lines.append(f"  Status: no shutdown")
         
         m.end_user_session()
         
         result = "\n".join(result_lines)
-        logger.info(f"✅ Got interfaces for {router_name}")
+        logger.info(f"✅ Got complete interface tree for {router_name}")
         return result
         
     except Exception as e:
-        logger.exception(f"❌ Error getting interfaces for {router_name}: {e}")
-        return f"Error getting interfaces for {router_name}: {e}"
+        logger.exception(f"❌ Error getting interface tree for {router_name}: {e}")
+        return f"Error getting interface tree for {router_name}: {e}"
 
 def configure_router_interface(router_name: str, interface_name: str, ip_address: str = None, description: str = None, shutdown: bool = None) -> str:
     """Configure a router interface with IP address, description, and shutdown status."""
@@ -117,7 +139,7 @@ def configure_router_interface(router_name: str, interface_name: str, ip_address
         logger.info(f"🔧 Configuring interface {interface_name} on router {router_name}")
         
         m = maapi.Maapi()
-        m.start_user_session('admin', 'test_context_1')
+        m.start_user_session('cisco', 'test_context_1')
         
         # Start write transaction for configuration changes
         t = m.start_write_trans()
@@ -244,7 +266,7 @@ def commit_router_changes(router_name: str) -> str:
 ✅ Configuration changes have been applied to the NSO database.
 
 📋 To commit changes to the physical router:
-1. Access NSO CLI: ncs_cli -u admin
+1. Access NSO CLI: ncs_cli -u cisco
 2. Navigate to device: devices device {router_name} config
 3. Execute commit: commit
 

@@ -1,16 +1,20 @@
 # Created by: admin
-# Date: 2025-10-03 21:48:50
+# Date: 2025-10-22 12:32:25
 # Via: cli
 # Type: delta
 # Label: 
 # Comment: 
-# No: 10004
-# TransactionId: 41
+# No: 10020
+# TransactionId: 1110
 # Hostname: GUDENG-M-H9KG
 
 interface {
-    GigabitEthernet-subinterface {
-        delete:
-        GigabitEthernet 0/0/0/0.200;
-    }
+    GigabitEthernet 0/0/0/0 {
+        description "Primary LAN Interface";
+        ipv4 {
+            address {
+                ip 192.168.0.1;
+            }
+         }
+     }
  }

@@ -1,0 +1,5 @@
+d791aa3 🎉 MAJOR MILESTONE: Complete FastMCP NSO Integration with LlamaIndex
+93787c8 Add Quick Reference Guide for LlamaIndex-only approach
+c8beca9 Update README: LlamaIndex-only approach
+e411380 Implement LlamaIndex MCP Server with NSO Integration
+bd0df85 feat: Organize project structure and implement working NSO MCP server

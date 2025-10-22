@@ -1,14 +1,14 @@
 # Created by: admin
-# Date: 2025-10-17 14:15:02
+# Date: 2025-10-22 12:43:34
 # Via: cli
 # Type: delta
 # Label: 
 # Comment: 
-# No: 10014
-# TransactionId: 1071
+# No: 10032
+# TransactionId: 1197
 # Hostname: GUDENG-M-H9KG
 
 interface {
     delete:
-    Loopback 1000;
+    GigabitEthernet 0/0/0/4;
 }

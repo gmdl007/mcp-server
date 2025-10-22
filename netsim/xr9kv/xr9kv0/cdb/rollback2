@@ -1,16 +1,20 @@
 # Created by: admin
-# Date: 2025-10-03 21:48:47
+# Date: 2025-10-22 12:32:24
 # Via: cli
 # Type: delta
 # Label: 
 # Comment: 
-# No: 10004
-# TransactionId: 41
+# No: 10024
+# TransactionId: 1125
 # Hostname: GUDENG-M-H9KG
 
 interface {
-    GigabitEthernet-subinterface {
-        delete:
-        GigabitEthernet 0/0/0/0.200;
-    }
+    GigabitEthernet 0/0/0/0 {
+        description "test interface";
+        ipv4 {
+            address {
+                ip 10.1.1.1;
+            }
+         }
+     }
  }
