@@ -39,6 +39,7 @@ python src/mcp_server/working/llama_index_mcp/comprehensive_tools_test.py
 - `show_all_devices` - List all router names
 - `get_router_interfaces_config` - Get complete interface configuration tree
 - `configure_router_interface` - Configure interfaces (IP, description, shutdown)
+- `provision_ospf_base` - Provision OSPF base configuration
 - `commit_router_changes` - Commit configuration changes to physical devices
 - `rollback_router_changes` - Rollback configuration to previous state
 - `echo_text` - Debug/health check

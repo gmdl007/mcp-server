@@ -439,6 +439,101 @@ def rollback_router_changes(router_name: str, rollback_id: int = None) -> str:
         logger.exception(f"❌ Error with rollback for {router_name}: {e}")
         return f"Error with rollback for {router_name}: {e}"
 
+def provision_ospf_base(router_name: str, router_id: str, area: str = "0") -> str:
+    """Provision OSPF base configuration on a router.
+    
+    This function provisions OSPF base configuration using NSO's OSPF package:
+    - Configure OSPF router ID
+    - Configure OSPF area
+    - Apply changes to NSO database
+    
+    Args:
+        router_name: Name of the router device (e.g., 'xr9kv-1', 'xr9kv-2', 'xr9kv-3')
+        router_id: OSPF router ID in IPv4 format (e.g., '1.1.1.1', '2.2.2.2')
+        area: OSPF area ID (default: '0' for area 0)
+        
+    Returns:
+        str: Detailed result message showing OSPF configuration status
+        
+    Examples:
+        # Configure OSPF base for xr9kv-1
+        provision_ospf_base('xr9kv-1', '1.1.1.1', '0')
+        
+        # Configure OSPF base for xr9kv-2 with area 0
+        provision_ospf_base('xr9kv-2', '1.1.1.2')
+        
+        # Configure OSPF base for xr9kv-3 with custom area
+        provision_ospf_base('xr9kv-3', '1.1.1.3', '1')
+    """
+    try:
+        logger.info(f"🔧 Provisioning OSPF base configuration for router: {router_name}")
+        
+        m = maapi.Maapi()
+        m.start_user_session('cisco', 'test_context_1')
+        
+        t = m.start_write_trans()
+        root = maagic.get_root(t)
+        
+        # Validate router exists
+        if router_name not in root.devices.device:
+            m.end_user_session()
+            return f"Error: Router '{router_name}' not found in NSO devices"
+        
+        # Validate router_id format (basic IPv4 validation)
+        try:
+            parts = router_id.split('.')
+            if len(parts) != 4:
+                raise ValueError("Invalid format")
+            for part in parts:
+                if not 0 <= int(part) <= 255:
+                    raise ValueError("Invalid range")
+        except ValueError:
+            m.end_user_session()
+            return f"Error: Invalid router ID format '{router_id}'. Use IPv4 format (e.g., '1.1.1.1')"
+        
+        # Configure OSPF base
+        try:
+            # Access OSPF base configuration
+            ospf_base = root.ospf.base[router_name]
+            
+            # Set router ID
+            ospf_base.router_id = router_id
+            logger.info(f"✅ Set OSPF router ID: {router_id}")
+            
+            # Set area
+            ospf_base.area = area
+            logger.info(f"✅ Set OSPF area: {area}")
+            
+            # Apply changes
+            t.apply()
+            
+            logger.info(f"✅ OSPF base configuration applied to NSO database for {router_name}")
+            
+            m.end_user_session()
+            
+            result_lines = [f"✅ Successfully provisioned OSPF base configuration for {router_name}:"]
+            result_lines.append(f"  - Router ID: {router_id}")
+            result_lines.append(f"  - Area: {area}")
+            result_lines.append(f"  - Status: ✅ Applied to NSO database")
+            result_lines.append(f"  - Note: Use NSO CLI 'commit' command to push to router")
+            
+            result = "\n".join(result_lines)
+            logger.info(f"✅ OSPF base configuration completed for {router_name}")
+            return result
+            
+        except Exception as ospf_error:
+            m.end_user_session()
+            logger.exception(f"❌ OSPF configuration error for {router_name}: {ospf_error}")
+            return f"Error configuring OSPF base for {router_name}: {ospf_error}"
+            
+    except Exception as e:
+        logger.exception(f"❌ Error provisioning OSPF base for {router_name}: {e}")
+        try:
+            m.end_user_session()
+        except:
+            pass
+        return f"Error provisioning OSPF base for {router_name}: {e}"
+
 def echo_text(text: str) -> str:
     """Echo back the provided text (debug/health)."""
     logger.info(f"🔧 Echoing text: {text}")
@@ -450,6 +545,7 @@ mcp.tool(get_router_interfaces_config)
 mcp.tool(configure_router_interface)
 mcp.tool(commit_router_changes)
 mcp.tool(rollback_router_changes)
+mcp.tool(provision_ospf_base)
 mcp.tool(echo_text)
 
 if __name__ == "__main__":

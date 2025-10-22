@@ -53,6 +53,7 @@ src/mcp_server/
 - `show_all_devices` - List all available routers
 - `get_router_interfaces_config` - Get complete interface configuration tree
 - `configure_router_interface` - Configure interfaces (IP, description, shutdown)
+- `provision_ospf_base` - Provision OSPF base configuration
 - `commit_router_changes` - Commit configuration changes to physical devices
 - `rollback_router_changes` - Rollback configuration to previous state
 - `echo_text` - Debug/health check tool
@@ -65,6 +66,13 @@ src/mcp_server/
 - ✅ **Apply changes** to NSO database
 - ✅ **Commit instructions** for physical device updates
 - ✅ **Rollback information** and CLI guidance
+
+### **OSPF Configuration Features**
+- ✅ **Configure OSPF router ID** in IPv4 format (e.g., `1.1.1.1`)
+- ✅ **Set OSPF area** (default: area 0)
+- ✅ **Apply OSPF base configuration** to NSO database
+- ✅ **Router validation** and IPv4 format checking
+- ✅ **Commit instructions** for OSPF deployment
 
 ### **Current Devices**
 - **xr9kv-1** (Port: 10022)
