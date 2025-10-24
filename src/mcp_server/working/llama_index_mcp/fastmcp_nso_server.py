@@ -163,36 +163,39 @@ def execute_router_command(router_name: str, command: str) -> str:
         return f"Error executing command '{command}' on {router_name}: {e}"
 
 def get_router_config_section(router_name: str, config_section: str) -> str:
-    """Get configuration for any top-level section of a router.
+    """Get configuration for any top-level section of a router (DEVICE-LEVEL CONFIG).
     
-    This function provides flexible access to router configuration sections:
-    - Display interface configurations (interface)
+    This function provides flexible access to DEVICE-LEVEL router configuration sections:
+    - Display interface configurations (interface) - ACTUAL ROUTER INTERFACE CONFIG
     - Display device-level OSPF configurations (ospf) - ACTUAL ROUTER OSPF CONFIG
-    - Display BGP configurations (bgp)
-    - Display any other top-level configuration section
+    - Display BGP configurations (bgp) - ACTUAL ROUTER BGP CONFIG
+    - Display system configurations (system) - ACTUAL ROUTER SYSTEM CONFIG
+    - Display any other top-level DEVICE configuration section
     
-    IMPORTANT OSPF DISTINCTION:
-    - 'ospf' parameter shows DEVICE-LEVEL OSPF configuration (actual router config)
-    - For NSO SERVICE-LEVEL OSPF, use get_ospf_service_config() tool instead
+    IMPORTANT CONFIG DISTINCTION:
+    - 'interface' shows DEVICE-LEVEL interface configuration (actual router interface config)
+    - 'ospf' shows DEVICE-LEVEL OSPF configuration (actual router OSPF config)
+    - 'bgp' shows DEVICE-LEVEL BGP configuration (actual router BGP config)
+    - For SERVICE-LEVEL configurations, use get_service_config() tool instead
     
     Args:
         router_name: Name of the router device (e.g., 'xr9kv-1', 'xr9kv-2', 'xr9kv-3')
         config_section: Configuration section name (e.g., 'interface', 'ospf', 'bgp', 'system')
         
     Returns:
-        str: Detailed configuration for the specified section
+        str: Detailed DEVICE-LEVEL configuration for the specified section
         
     Examples:
-        # Get interface configuration
+        # Get DEVICE-LEVEL interface configuration
         get_router_config_section('xr9kv-1', 'interface')
         
         # Get DEVICE-LEVEL OSPF configuration (actual router OSPF config)
         get_router_config_section('xr9kv-1', 'ospf')
         
-        # Get BGP configuration
+        # Get DEVICE-LEVEL BGP configuration (actual router BGP config)
         get_router_config_section('xr9kv-1', 'bgp')
         
-        # Get system configuration
+        # Get DEVICE-LEVEL system configuration
         get_router_config_section('xr9kv-1', 'system')
     """
     try:
@@ -209,8 +212,11 @@ def get_router_config_section(router_name: str, config_section: str) -> str:
         
         device = root.devices.device[router_name]
         
-        result_lines = [f"{config_section.title()} Configuration for {router_name}:"]
+        result_lines = [f"DEVICE-LEVEL {config_section.title()} Configuration for {router_name}:"]
         result_lines.append("=" * 60)
+        result_lines.append("Note: This shows DEVICE-LEVEL configuration (actual router config)")
+        result_lines.append("For SERVICE-LEVEL configurations, use get_service_config() tool")
+        result_lines.append("")
         
         # Handle different configuration sections
         if config_section.lower() == 'interface':
@@ -716,6 +722,324 @@ def rollback_router_changes(router_name: str, rollback_id: int = None) -> str:
         logger.exception(f"❌ Error with rollback for {router_name}: {e}")
         return f"Error with rollback for {router_name}: {e}"
 
+def delete_router_config_section(router_name: str, config_section: str, confirm: bool = False) -> str:
+    """Delete configuration for any top-level section of a router (DEVICE-LEVEL CONFIG).
+    
+    This function provides deletion capabilities for DEVICE-LEVEL router configuration sections:
+    - Delete interface configurations (interface) - ACTUAL ROUTER INTERFACE CONFIG
+    - Delete device-level OSPF configurations (ospf) - ACTUAL ROUTER OSPF CONFIG
+    - Delete BGP configurations (bgp) - ACTUAL ROUTER BGP CONFIG
+    - Delete system configurations (system) - ACTUAL ROUTER SYSTEM CONFIG
+    - Delete any other top-level DEVICE configuration section
+    
+    IMPORTANT CONFIG DISTINCTION:
+    - 'interface' deletes DEVICE-LEVEL interface configuration (actual router interface config)
+    - 'ospf' deletes DEVICE-LEVEL OSPF configuration (actual router OSPF config)
+    - 'bgp' deletes DEVICE-LEVEL BGP configuration (actual router BGP config)
+    - For SERVICE-LEVEL configurations, use delete_service_config() tool instead
+    
+    Args:
+        router_name: Name of the router device (e.g., 'xr9kv-1', 'xr9kv-2', 'xr9kv-3')
+        config_section: Configuration section name to delete (e.g., 'interface', 'ospf', 'bgp', 'system')
+        confirm: Must be True to actually perform the deletion (safety measure)
+        
+    Returns:
+        str: Detailed result message showing deletion status
+        
+    Examples:
+        # Delete DEVICE-LEVEL interface configuration
+        delete_router_config_section('xr9kv-1', 'interface', confirm=True)
+        
+        # Delete DEVICE-LEVEL OSPF configuration (actual router OSPF config)
+        delete_router_config_section('xr9kv-1', 'ospf', confirm=True)
+        
+        # Delete DEVICE-LEVEL BGP configuration (actual router BGP config)
+        delete_router_config_section('xr9kv-1', 'bgp', confirm=True)
+        
+        # Delete DEVICE-LEVEL system configuration
+        delete_router_config_section('xr9kv-1', 'system', confirm=True)
+    """
+    try:
+        if not confirm:
+            return f"❌ Deletion not confirmed. Set confirm=True to delete {config_section} configuration from {router_name}"
+        
+        logger.info(f"🗑️ Deleting DEVICE-LEVEL {config_section} configuration for router: {router_name}")
+        
+        m = maapi.Maapi()
+        m.start_user_session('cisco', 'test_context_1')
+        
+        t = m.start_write_trans()
+        root = maagic.get_root(t)
+        
+        # Validate router exists
+        if router_name not in root.devices.device:
+            m.end_user_session()
+            return f"Error: Router '{router_name}' not found in NSO devices"
+        
+        device = root.devices.device[router_name]
+        
+        result_lines = [f"🗑️ Deleting DEVICE-LEVEL {config_section.title()} Configuration for {router_name}:"]
+        result_lines.append("=" * 60)
+        result_lines.append("Note: This deletes DEVICE-LEVEL configuration (actual router config)")
+        result_lines.append("")
+        
+        # Handle different configuration sections
+        if config_section.lower() == 'interface':
+            # Delete interface configuration
+            if hasattr(device.config, 'interface'):
+                device.config.interface.delete()
+                result_lines.append(f"✅ Deleted DEVICE-LEVEL interface configuration")
+                logger.info(f"✅ Deleted interface configuration for {router_name}")
+            else:
+                result_lines.append(f"ℹ️ No interface configuration found to delete")
+        
+        elif config_section.lower() == 'ospf':
+            # Delete OSPF configuration
+            if hasattr(device.config, 'ospf'):
+                device.config.ospf.delete()
+                result_lines.append(f"✅ Deleted DEVICE-LEVEL OSPF configuration")
+                logger.info(f"✅ Deleted OSPF configuration for {router_name}")
+            else:
+                result_lines.append(f"ℹ️ No OSPF configuration found to delete")
+        
+        elif config_section.lower() == 'bgp':
+            # Delete BGP configuration
+            if hasattr(device.config, 'bgp'):
+                device.config.bgp.delete()
+                result_lines.append(f"✅ Deleted DEVICE-LEVEL BGP configuration")
+                logger.info(f"✅ Deleted BGP configuration for {router_name}")
+            else:
+                result_lines.append(f"ℹ️ No BGP configuration found to delete")
+        
+        elif config_section.lower() == 'system':
+            # Delete system configuration
+            if hasattr(device.config, 'system'):
+                device.config.system.delete()
+                result_lines.append(f"✅ Deleted DEVICE-LEVEL system configuration")
+                logger.info(f"✅ Deleted system configuration for {router_name}")
+            else:
+                result_lines.append(f"ℹ️ No system configuration found to delete")
+        
+        else:
+            # Generic handling for other configuration sections
+            if hasattr(device.config, config_section):
+                section_config = getattr(device.config, config_section)
+                section_config.delete()
+                result_lines.append(f"✅ Deleted DEVICE-LEVEL {config_section} configuration")
+                logger.info(f"✅ Deleted {config_section} configuration for {router_name}")
+            else:
+                result_lines.append(f"ℹ️ No {config_section} configuration found to delete")
+        
+        # Apply changes
+        t.apply()
+        
+        result_lines.append("")
+        result_lines.append(f"✅ Changes applied to NSO database for {router_name}")
+        result_lines.append(f"Note: Use NSO CLI 'commit' command to push to router")
+        
+        m.end_user_session()
+        
+        result = "\n".join(result_lines)
+        logger.info(f"✅ DEVICE-LEVEL {config_section} configuration deletion completed for {router_name}")
+        return result
+        
+    except Exception as e:
+        logger.exception(f"❌ Error deleting DEVICE-LEVEL {config_section} configuration for {router_name}: {e}")
+        try:
+            m.end_user_session()
+        except:
+            pass
+        return f"Error deleting DEVICE-LEVEL {config_section} configuration for {router_name}: {e}"
+
+def get_service_config(service_name: str, router_name: str = None) -> str:
+    """Get NSO SERVICE-LEVEL configuration for any service.
+    
+    This function shows SERVICE-LEVEL configurations from NSO service packages:
+    - Shows OSPF service configurations (root.ospf.base[router_name])
+    - Shows BGP service configurations (root.bgp.base[router_name])
+    - Shows any other NSO service package configurations
+    - Shows service instances and their settings
+    
+    IMPORTANT CONFIG DISTINCTION:
+    - This tool shows NSO SERVICE-LEVEL configurations (service packages)
+    - For DEVICE-LEVEL configs, use get_router_config_section() instead
+    - Service-level configs are managed by NSO service packages, not direct device config
+    
+    Args:
+        service_name: Service name (e.g., 'ospf', 'bgp', 'l3vpn', 'l2vpn')
+        router_name: Specific router name to show service config for, or None to show all
+        
+    Returns:
+        str: Detailed NSO service-level configuration
+        
+    Examples:
+        # Get NSO service-level OSPF config for specific router
+        get_service_config('ospf', 'xr9kv-1')
+        
+        # Get NSO service-level OSPF config for all routers
+        get_service_config('ospf')
+        
+        # Get NSO service-level BGP config for xr9kv-2
+        get_service_config('bgp', 'xr9kv-2')
+    """
+    try:
+        logger.info(f"🔧 Getting NSO SERVICE-LEVEL {service_name} configuration for: {router_name or 'all routers'}")
+        
+        m = maapi.Maapi()
+        m.start_user_session('cisco', 'test_context_1')
+        t = m.start_read_trans()
+        root = maagic.get_root(t)
+        
+        result_lines = [f"NSO SERVICE-LEVEL {service_name.upper()} Configuration:"]
+        result_lines.append("=" * 60)
+        result_lines.append("Note: This shows NSO service-level configuration, not device-level config")
+        result_lines.append("")
+        
+        # Check if service package is available
+        if hasattr(root, service_name) and hasattr(getattr(root, service_name), 'base'):
+            service_base = getattr(root, service_name).base
+            
+            if router_name:
+                # Show specific router's service config
+                if router_name in service_base:
+                    service_config = service_base[router_name]
+                    result_lines.append(f"{service_name.upper()} Service Configuration for {router_name}:")
+                    result_lines.append("-" * 40)
+                    
+                    # Show common service attributes
+                    for attr in ['router_id', 'area', 'enabled', 'as_number', 'neighbor']:
+                        if hasattr(service_config, attr):
+                            result_lines.append(f"  {attr}: {getattr(service_config, attr)}")
+                    
+                    # Show any additional service-level configurations
+                    for attr in dir(service_config):
+                        if not attr.startswith('_') and attr not in ['router_id', 'area', 'enabled', 'as_number', 'neighbor']:
+                            try:
+                                value = getattr(service_config, attr)
+                                if not callable(value):
+                                    result_lines.append(f"  {attr}: {value}")
+                            except:
+                                pass
+                else:
+                    result_lines.append(f"No {service_name} service configuration found for {router_name}")
+            else:
+                # Show all routers' service config
+                if hasattr(service_base, 'keys'):
+                    service_keys = list(service_base.keys())
+                    if service_keys:
+                        result_lines.append(f"{service_name.upper()} Service Configurations ({len(service_keys)} routers):")
+                        result_lines.append("-" * 40)
+                        
+                        for service_key in service_keys:
+                            service_config = service_base[service_key]
+                            result_lines.append(f"\nRouter: {service_key}")
+                            
+                            # Show common service attributes
+                            for attr in ['router_id', 'area', 'enabled', 'as_number', 'neighbor']:
+                                if hasattr(service_config, attr):
+                                    result_lines.append(f"  {attr}: {getattr(service_config, attr)}")
+                    else:
+                        result_lines.append(f"No {service_name} service configurations found")
+                else:
+                    result_lines.append(f"No {service_name} service configurations found")
+        else:
+            result_lines.append(f"{service_name} service package not available or not configured")
+            result_lines.append(f"Note: This requires NSO {service_name} service package to be installed")
+        
+        m.end_user_session()
+        
+        result = "\n".join(result_lines)
+        logger.info(f"✅ Got NSO service-level {service_name} configuration for: {router_name or 'all routers'}")
+        return result
+        
+    except Exception as e:
+        logger.exception(f"❌ Error getting NSO service-level {service_name} configuration: {e}")
+        return f"Error getting NSO service-level {service_name} configuration: {e}"
+
+def delete_service_config(service_name: str, router_name: str, confirm: bool = False) -> str:
+    """Delete NSO SERVICE-LEVEL configuration for any service.
+    
+    This function provides deletion capabilities for NSO SERVICE-LEVEL configurations:
+    - Delete OSPF service configurations (root.ospf.base[router_name])
+    - Delete BGP service configurations (root.bgp.base[router_name])
+    - Delete any other NSO service package configurations
+    - Delete service instances and their settings
+    
+    IMPORTANT CONFIG DISTINCTION:
+    - This tool deletes NSO SERVICE-LEVEL configurations (service packages)
+    - For DEVICE-LEVEL configs, use delete_router_config_section() instead
+    - Service-level configs are managed by NSO service packages, not direct device config
+    
+    Args:
+        service_name: Service name to delete (e.g., 'ospf', 'bgp', 'l3vpn', 'l2vpn')
+        router_name: Router name to delete service config for
+        confirm: Must be True to actually perform the deletion (safety measure)
+        
+    Returns:
+        str: Detailed result message showing deletion status
+        
+    Examples:
+        # Delete NSO service-level OSPF config for xr9kv-1
+        delete_service_config('ospf', 'xr9kv-1', confirm=True)
+        
+        # Delete NSO service-level BGP config for xr9kv-2
+        delete_service_config('bgp', 'xr9kv-2', confirm=True)
+        
+        # Delete NSO service-level L3VPN config for xr9kv-3
+        delete_service_config('l3vpn', 'xr9kv-3', confirm=True)
+    """
+    try:
+        if not confirm:
+            return f"❌ Deletion not confirmed. Set confirm=True to delete {service_name} service configuration from {router_name}"
+        
+        logger.info(f"🗑️ Deleting NSO SERVICE-LEVEL {service_name} configuration for router: {router_name}")
+        
+        m = maapi.Maapi()
+        m.start_user_session('cisco', 'test_context_1')
+        
+        t = m.start_write_trans()
+        root = maagic.get_root(t)
+        
+        result_lines = [f"🗑️ Deleting NSO SERVICE-LEVEL {service_name.upper()} Configuration for {router_name}:"]
+        result_lines.append("=" * 60)
+        result_lines.append("Note: This deletes NSO service-level configuration (service package)")
+        result_lines.append("")
+        
+        # Check if service package is available
+        if hasattr(root, service_name) and hasattr(getattr(root, service_name), 'base'):
+            service_base = getattr(root, service_name).base
+            
+            if router_name in service_base:
+                service_config = service_base[router_name]
+                service_config.delete()
+                result_lines.append(f"✅ Deleted NSO SERVICE-LEVEL {service_name} configuration for {router_name}")
+                logger.info(f"✅ Deleted {service_name} service configuration for {router_name}")
+            else:
+                result_lines.append(f"ℹ️ No {service_name} service configuration found for {router_name}")
+        else:
+            result_lines.append(f"ℹ️ {service_name} service package not available or not configured")
+        
+        # Apply changes
+        t.apply()
+        
+        result_lines.append("")
+        result_lines.append(f"✅ Changes applied to NSO service database")
+        result_lines.append(f"Note: Use NSO CLI 'commit' command to push to router")
+        
+        m.end_user_session()
+        
+        result = "\n".join(result_lines)
+        logger.info(f"✅ NSO SERVICE-LEVEL {service_name} configuration deletion completed for {router_name}")
+        return result
+        
+    except Exception as e:
+        logger.exception(f"❌ Error deleting NSO SERVICE-LEVEL {service_name} configuration for {router_name}: {e}")
+        try:
+            m.end_user_session()
+        except:
+            pass
+        return f"Error deleting NSO SERVICE-LEVEL {service_name} configuration for {router_name}: {e}"
+
 def get_ospf_service_config(router_name: str = None) -> str:
     """Get NSO SERVICE-LEVEL OSPF configuration.
     
@@ -938,10 +1262,13 @@ def echo_text(text: str) -> str:
 mcp.tool(show_all_devices)
 mcp.tool(get_router_interfaces_config)
 mcp.tool(get_router_config_section)
+mcp.tool(delete_router_config_section)
 mcp.tool(execute_router_command)
 mcp.tool(configure_router_interface)
 mcp.tool(commit_router_changes)
 mcp.tool(rollback_router_changes)
+mcp.tool(get_service_config)
+mcp.tool(delete_service_config)
 mcp.tool(get_ospf_service_config)
 mcp.tool(provision_ospf_base)
 mcp.tool(echo_text)
