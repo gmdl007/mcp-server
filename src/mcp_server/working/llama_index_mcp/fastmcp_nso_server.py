@@ -167,9 +167,13 @@ def get_router_config_section(router_name: str, config_section: str) -> str:
     
     This function provides flexible access to router configuration sections:
     - Display interface configurations (interface)
-    - Display OSPF configurations (ospf)
+    - Display device-level OSPF configurations (ospf) - ACTUAL ROUTER OSPF CONFIG
     - Display BGP configurations (bgp)
     - Display any other top-level configuration section
+    
+    IMPORTANT OSPF DISTINCTION:
+    - 'ospf' parameter shows DEVICE-LEVEL OSPF configuration (actual router config)
+    - For NSO SERVICE-LEVEL OSPF, use get_ospf_service_config() tool instead
     
     Args:
         router_name: Name of the router device (e.g., 'xr9kv-1', 'xr9kv-2', 'xr9kv-3')
@@ -182,7 +186,7 @@ def get_router_config_section(router_name: str, config_section: str) -> str:
         # Get interface configuration
         get_router_config_section('xr9kv-1', 'interface')
         
-        # Get OSPF configuration
+        # Get DEVICE-LEVEL OSPF configuration (actual router OSPF config)
         get_router_config_section('xr9kv-1', 'ospf')
         
         # Get BGP configuration
@@ -251,10 +255,10 @@ def get_router_config_section(router_name: str, config_section: str) -> str:
                                 result_lines.append(f"  Status: no shutdown")
         
         elif config_section.lower() == 'ospf':
-            # Handle OSPF configuration
+            # Handle DEVICE-LEVEL OSPF configuration (actual router OSPF config)
             if hasattr(device.config, 'ospf'):
                 ospf_config = device.config.ospf
-                result_lines.append(f"\nOSPF Configuration:")
+                result_lines.append(f"\nDEVICE-LEVEL OSPF Configuration (Actual Router Config):")
                 
                 # Check for OSPF base configuration
                 if hasattr(ospf_config, 'base'):
@@ -282,7 +286,8 @@ def get_router_config_section(router_name: str, config_section: str) -> str:
                             for if_key in interfaces:
                                 result_lines.append(f"      Interface: {if_key}")
             else:
-                result_lines.append(f"  No OSPF configuration found")
+                result_lines.append(f"  No DEVICE-LEVEL OSPF configuration found")
+                result_lines.append(f"  Note: This shows actual router OSPF config, not NSO service config")
         
         elif config_section.lower() == 'bgp':
             # Handle BGP configuration
@@ -711,13 +716,125 @@ def rollback_router_changes(router_name: str, rollback_id: int = None) -> str:
         logger.exception(f"❌ Error with rollback for {router_name}: {e}")
         return f"Error with rollback for {router_name}: {e}"
 
-def provision_ospf_base(router_name: str, router_id: str, area: str = "0") -> str:
-    """Provision OSPF base configuration on a router.
+def get_ospf_service_config(router_name: str = None) -> str:
+    """Get NSO SERVICE-LEVEL OSPF configuration.
     
-    This function provisions OSPF base configuration using NSO's OSPF package:
-    - Configure OSPF router ID
-    - Configure OSPF area
-    - Apply changes to NSO database
+    This function shows OSPF configuration from NSO's OSPF SERVICE PACKAGE:
+    - Shows NSO service-level OSPF base configurations
+    - Shows OSPF service instances and their settings
+    - Shows service-level OSPF area configurations
+    
+    IMPORTANT OSPF DISTINCTION:
+    - This tool shows NSO SERVICE-LEVEL OSPF (root.ospf.base[router_name])
+    - For DEVICE-LEVEL OSPF config, use get_router_config_section('ospf') instead
+    - Service-level OSPF is managed by NSO's OSPF package, not direct device config
+    
+    Args:
+        router_name: Specific router name to show OSPF service config for, or None to show all
+        
+    Returns:
+        str: Detailed NSO service-level OSPF configuration
+        
+    Examples:
+        # Get NSO service-level OSPF config for specific router
+        get_ospf_service_config('xr9kv-1')
+        
+        # Get NSO service-level OSPF config for all routers
+        get_ospf_service_config()
+        
+        # Get NSO service-level OSPF config for xr9kv-2
+        get_ospf_service_config('xr9kv-2')
+    """
+    try:
+        logger.info(f"🔧 Getting NSO SERVICE-LEVEL OSPF configuration for: {router_name or 'all routers'}")
+        
+        m = maapi.Maapi()
+        m.start_user_session('cisco', 'test_context_1')
+        t = m.start_read_trans()
+        root = maagic.get_root(t)
+        
+        result_lines = [f"NSO SERVICE-LEVEL OSPF Configuration:"]
+        result_lines.append("=" * 60)
+        result_lines.append("Note: This shows NSO service-level OSPF, not device-level OSPF config")
+        result_lines.append("")
+        
+        # Check if OSPF service package is available
+        if hasattr(root, 'ospf') and hasattr(root.ospf, 'base'):
+            ospf_base = root.ospf.base
+            
+            if router_name:
+                # Show specific router's OSPF service config
+                if router_name in ospf_base:
+                    service_config = ospf_base[router_name]
+                    result_lines.append(f"OSPF Service Configuration for {router_name}:")
+                    result_lines.append("-" * 40)
+                    
+                    if hasattr(service_config, 'router_id'):
+                        result_lines.append(f"  Router ID: {service_config.router_id}")
+                    if hasattr(service_config, 'area'):
+                        result_lines.append(f"  Area: {service_config.area}")
+                    if hasattr(service_config, 'enabled'):
+                        result_lines.append(f"  Enabled: {service_config.enabled}")
+                    
+                    # Show any additional service-level configurations
+                    for attr in dir(service_config):
+                        if not attr.startswith('_') and attr not in ['router_id', 'area', 'enabled']:
+                            try:
+                                value = getattr(service_config, attr)
+                                if not callable(value):
+                                    result_lines.append(f"  {attr}: {value}")
+                            except:
+                                pass
+                else:
+                    result_lines.append(f"No OSPF service configuration found for {router_name}")
+            else:
+                # Show all routers' OSPF service config
+                if hasattr(ospf_base, 'keys'):
+                    service_keys = list(ospf_base.keys())
+                    if service_keys:
+                        result_lines.append(f"OSPF Service Configurations ({len(service_keys)} routers):")
+                        result_lines.append("-" * 40)
+                        
+                        for service_key in service_keys:
+                            service_config = ospf_base[service_key]
+                            result_lines.append(f"\nRouter: {service_key}")
+                            
+                            if hasattr(service_config, 'router_id'):
+                                result_lines.append(f"  Router ID: {service_config.router_id}")
+                            if hasattr(service_config, 'area'):
+                                result_lines.append(f"  Area: {service_config.area}")
+                            if hasattr(service_config, 'enabled'):
+                                result_lines.append(f"  Enabled: {service_config.enabled}")
+                    else:
+                        result_lines.append("No OSPF service configurations found")
+                else:
+                    result_lines.append("No OSPF service configurations found")
+        else:
+            result_lines.append("OSPF service package not available or not configured")
+            result_lines.append("Note: This requires NSO OSPF service package to be installed")
+        
+        m.end_user_session()
+        
+        result = "\n".join(result_lines)
+        logger.info(f"✅ Got NSO service-level OSPF configuration for: {router_name or 'all routers'}")
+        return result
+        
+    except Exception as e:
+        logger.exception(f"❌ Error getting NSO service-level OSPF configuration: {e}")
+        return f"Error getting NSO service-level OSPF configuration: {e}"
+
+def provision_ospf_base(router_name: str, router_id: str, area: str = "0") -> str:
+    """Provision OSPF base configuration using NSO SERVICE-LEVEL OSPF package.
+    
+    This function provisions OSPF base configuration using NSO's OSPF SERVICE PACKAGE:
+    - Configure OSPF router ID in NSO service layer
+    - Configure OSPF area in NSO service layer
+    - Apply changes to NSO service database
+    
+    IMPORTANT OSPF DISTINCTION:
+    - This tool configures NSO SERVICE-LEVEL OSPF (root.ospf.base[router_name])
+    - For DEVICE-LEVEL OSPF config, use configure_router_interface() or execute_router_command()
+    - Service-level OSPF is managed by NSO's OSPF package, not direct device config
     
     Args:
         router_name: Name of the router device (e.g., 'xr9kv-1', 'xr9kv-2', 'xr9kv-3')
@@ -725,16 +842,16 @@ def provision_ospf_base(router_name: str, router_id: str, area: str = "0") -> st
         area: OSPF area ID (default: '0' for area 0)
         
     Returns:
-        str: Detailed result message showing OSPF configuration status
+        str: Detailed result message showing OSPF service configuration status
         
     Examples:
-        # Configure OSPF base for xr9kv-1
+        # Configure NSO SERVICE-LEVEL OSPF base for xr9kv-1
         provision_ospf_base('xr9kv-1', '1.1.1.1', '0')
         
-        # Configure OSPF base for xr9kv-2 with area 0
+        # Configure NSO SERVICE-LEVEL OSPF base for xr9kv-2 with area 0
         provision_ospf_base('xr9kv-2', '1.1.1.2')
         
-        # Configure OSPF base for xr9kv-3 with custom area
+        # Configure NSO SERVICE-LEVEL OSPF base for xr9kv-3 with custom area
         provision_ospf_base('xr9kv-3', '1.1.1.3', '1')
     """
     try:
@@ -788,10 +905,11 @@ def provision_ospf_base(router_name: str, router_id: str, area: str = "0") -> st
             
             m.end_user_session()
             
-            result_lines = [f"✅ Successfully provisioned OSPF base configuration for {router_name}:"]
+            result_lines = [f"✅ Successfully provisioned NSO SERVICE-LEVEL OSPF base configuration for {router_name}:"]
             result_lines.append(f"  - Router ID: {router_id}")
             result_lines.append(f"  - Area: {area}")
-            result_lines.append(f"  - Status: ✅ Applied to NSO database")
+            result_lines.append(f"  - Status: ✅ Applied to NSO SERVICE database")
+            result_lines.append(f"  - Note: This is NSO service-level OSPF, not device-level OSPF config")
             result_lines.append(f"  - Note: Use NSO CLI 'commit' command to push to router")
             
             result = "\n".join(result_lines)
@@ -824,6 +942,7 @@ mcp.tool(execute_router_command)
 mcp.tool(configure_router_interface)
 mcp.tool(commit_router_changes)
 mcp.tool(rollback_router_changes)
+mcp.tool(get_ospf_service_config)
 mcp.tool(provision_ospf_base)
 mcp.tool(echo_text)
 
