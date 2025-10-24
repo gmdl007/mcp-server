@@ -493,6 +493,11 @@ def provision_ospf_base(router_name: str, router_id: str, area: str = "0") -> st
         
         # Configure OSPF base
         try:
+            # Check if OSPF base configuration exists, create if not
+            if router_name not in root.ospf.base:
+                logger.info(f"🔧 Creating OSPF base configuration for {router_name}")
+                root.ospf.base.create(router_name)
+            
             # Access OSPF base configuration
             ospf_base = root.ospf.base[router_name]
             
