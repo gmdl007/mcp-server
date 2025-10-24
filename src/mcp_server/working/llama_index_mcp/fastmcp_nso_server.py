@@ -896,9 +896,16 @@ def get_service_config(service_name: str, router_name: str = None) -> str:
         result_lines.append("")
         
         # Check if service package is available
-        if hasattr(root, service_name) and hasattr(getattr(root, service_name), 'base'):
-            service_base = getattr(root, service_name).base
-            
+        if hasattr(root, service_name):
+            service_root = getattr(root, service_name)
+            if hasattr(service_root, 'base'):
+                service_base = service_root.base
+            else:
+                service_base = None
+        else:
+            service_base = None
+        
+        if service_base:
             if router_name:
                 # Show specific router's service config
                 if router_name in service_base:
@@ -1006,9 +1013,16 @@ def delete_service_config(service_name: str, router_name: str, confirm: bool = F
         result_lines.append("")
         
         # Check if service package is available
-        if hasattr(root, service_name) and hasattr(getattr(root, service_name), 'base'):
-            service_base = getattr(root, service_name).base
-            
+        if hasattr(root, service_name):
+            service_root = getattr(root, service_name)
+            if hasattr(service_root, 'base'):
+                service_base = service_root.base
+            else:
+                service_base = None
+        else:
+            service_base = None
+        
+        if service_base:
             if router_name in service_base:
                 service_config = service_base[router_name]
                 service_config.delete()
