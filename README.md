@@ -52,6 +52,7 @@ src/mcp_server/
 ### **Complete Network Automation Toolset**
 - `show_all_devices` - List all available routers
 - `get_router_interfaces_config` - Get complete interface configuration tree
+- `get_router_config_section` - Get configuration for any top-level section (interface, ospf, bgp, system)
 - `configure_router_interface` - Configure interfaces (IP, description, shutdown)
 - `provision_ospf_base` - Provision OSPF base configuration
 - `commit_router_changes` - Commit configuration changes to physical devices
@@ -67,12 +68,14 @@ src/mcp_server/
 - ✅ **Commit instructions** for physical device updates
 - ✅ **Rollback information** and CLI guidance
 
-### **OSPF Configuration Features**
-- ✅ **Configure OSPF router ID** in IPv4 format (e.g., `1.1.1.1`)
-- ✅ **Set OSPF area** (default: area 0)
-- ✅ **Apply OSPF base configuration** to NSO database
-- ✅ **Router validation** and IPv4 format checking
-- ✅ **Commit instructions** for OSPF deployment
+### **Flexible Configuration Display Features**
+- ✅ **Interface Configuration** - Detailed interface tree with IP, description, status
+- ✅ **OSPF Configuration** - Router ID, areas, and interface assignments
+- ✅ **BGP Configuration** - AS numbers, neighbors, and routing policies
+- ✅ **System Configuration** - System-level settings and parameters
+- ✅ **Generic Configuration** - Any top-level configuration section
+- ✅ **Smart Formatting** - Readable output with proper indentation
+- ✅ **Error Handling** - Graceful handling of missing configurations
 
 ### **Current Devices**
 - **xr9kv-1** (Port: 10022)

@@ -1,14 +1,18 @@
 # Created by: admin
-# Date: 2025-10-22 20:17:18
+# Date: 2025-10-22 20:18:38
 # Via: cli
 # Type: delta
 # Label: 
 # Comment: 
-# No: 10038
-# TransactionId: 1239
+# No: 10040
+# TransactionId: 1254
 # Hostname: GUDENG-M-H9KG
 
-interface {
+router {
     delete:
-    Loopback 0;
+    ospf 1;
+}
+mpls {
+    delete:
+    ldp;
 }

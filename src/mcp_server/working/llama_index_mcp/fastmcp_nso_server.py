@@ -69,6 +69,185 @@ def show_all_devices() -> str:
         logger.exception(f"❌ Error getting devices: {e}")
         return f"Error getting devices: {e}"
 
+def get_router_config_section(router_name: str, config_section: str) -> str:
+    """Get configuration for any top-level section of a router.
+    
+    This function provides flexible access to router configuration sections:
+    - Display interface configurations (interface)
+    - Display OSPF configurations (ospf)
+    - Display BGP configurations (bgp)
+    - Display any other top-level configuration section
+    
+    Args:
+        router_name: Name of the router device (e.g., 'xr9kv-1', 'xr9kv-2', 'xr9kv-3')
+        config_section: Configuration section name (e.g., 'interface', 'ospf', 'bgp', 'system')
+        
+    Returns:
+        str: Detailed configuration for the specified section
+        
+    Examples:
+        # Get interface configuration
+        get_router_config_section('xr9kv-1', 'interface')
+        
+        # Get OSPF configuration
+        get_router_config_section('xr9kv-1', 'ospf')
+        
+        # Get BGP configuration
+        get_router_config_section('xr9kv-1', 'bgp')
+        
+        # Get system configuration
+        get_router_config_section('xr9kv-1', 'system')
+    """
+    try:
+        logger.info(f"🔧 Getting {config_section} configuration for router: {router_name}")
+        m = maapi.Maapi()
+        m.start_user_session('cisco', 'test_context_1')
+        t = m.start_read_trans()
+        root = maagic.get_root(t)
+        
+        # Validate router exists
+        if router_name not in root.devices.device:
+            m.end_user_session()
+            return f"Error: Router '{router_name}' not found in NSO devices"
+        
+        device = root.devices.device[router_name]
+        
+        result_lines = [f"{config_section.title()} Configuration for {router_name}:"]
+        result_lines.append("=" * 60)
+        
+        # Handle different configuration sections
+        if config_section.lower() == 'interface':
+            # Special handling for interfaces (detailed)
+            interfaces = device.config.interface
+            interface_types = ['GigabitEthernet', 'Loopback', 'MgmtEth', 'TenGigE', 'Bundle_Ether']
+            
+            for if_type in interface_types:
+                if hasattr(interfaces, if_type):
+                    if_objects = getattr(interfaces, if_type)
+                    if hasattr(if_objects, 'keys'):
+                        interface_keys = list(if_objects.keys())
+                        for interface_key in interface_keys:
+                            interface_name = f"{if_type}/{str(interface_key[0])}"
+                            interface = if_objects[interface_key]
+                            
+                            result_lines.append(f"\n{interface_name}:")
+                            
+                            # Check for IPv4 address
+                            if hasattr(interface, 'ipv4') and hasattr(interface.ipv4, 'address'):
+                                if hasattr(interface.ipv4.address, 'ip') and hasattr(interface.ipv4.address, 'mask'):
+                                    ip = interface.ipv4.address.ip
+                                    mask = interface.ipv4.address.mask
+                                    result_lines.append(f"  IPv4: {ip} {mask}")
+                                else:
+                                    result_lines.append(f"  IPv4: Configured but no IP/mask found")
+                            else:
+                                result_lines.append(f"  IPv4: Not configured")
+                            
+                            # Check for description
+                            if hasattr(interface, 'description'):
+                                desc = interface.description
+                                result_lines.append(f"  Description: {desc}")
+                            
+                            # Check for shutdown status
+                            if hasattr(interface, 'shutdown'):
+                                if interface.shutdown.exists():
+                                    result_lines.append(f"  Status: shutdown")
+                                else:
+                                    result_lines.append(f"  Status: no shutdown")
+                            else:
+                                result_lines.append(f"  Status: no shutdown")
+        
+        elif config_section.lower() == 'ospf':
+            # Handle OSPF configuration
+            if hasattr(device.config, 'ospf'):
+                ospf_config = device.config.ospf
+                result_lines.append(f"\nOSPF Configuration:")
+                
+                # Check for OSPF base configuration
+                if hasattr(ospf_config, 'base'):
+                    result_lines.append(f"  Base Configuration:")
+                    base_configs = list(ospf_config.base.keys()) if hasattr(ospf_config.base, 'keys') else []
+                    for base_key in base_configs:
+                        base = ospf_config.base[base_key]
+                        result_lines.append(f"    Device: {base_key}")
+                        if hasattr(base, 'router_id'):
+                            result_lines.append(f"      Router ID: {base.router_id}")
+                        if hasattr(base, 'area'):
+                            result_lines.append(f"      Area: {base.area}")
+                else:
+                    result_lines.append(f"  No OSPF base configuration found")
+                
+                # Check for OSPF area configuration
+                if hasattr(ospf_config, 'area'):
+                    result_lines.append(f"  Area Configuration:")
+                    areas = list(ospf_config.area.keys()) if hasattr(ospf_config.area, 'keys') else []
+                    for area_key in areas:
+                        area = ospf_config.area[area_key]
+                        result_lines.append(f"    Area: {area_key}")
+                        if hasattr(area, 'interface'):
+                            interfaces = list(area.interface.keys()) if hasattr(area.interface, 'keys') else []
+                            for if_key in interfaces:
+                                result_lines.append(f"      Interface: {if_key}")
+            else:
+                result_lines.append(f"  No OSPF configuration found")
+        
+        elif config_section.lower() == 'bgp':
+            # Handle BGP configuration
+            if hasattr(device.config, 'bgp'):
+                bgp_config = device.config.bgp
+                result_lines.append(f"\nBGP Configuration:")
+                
+                # Check for BGP AS configuration
+                if hasattr(bgp_config, 'as'):
+                    result_lines.append(f"  AS Number: {getattr(bgp_config, 'as')}")
+                
+                # Check for BGP neighbors
+                if hasattr(bgp_config, 'neighbor'):
+                    result_lines.append(f"  Neighbors:")
+                    neighbors = list(bgp_config.neighbor.keys()) if hasattr(bgp_config.neighbor, 'keys') else []
+                    for neighbor_key in neighbors:
+                        neighbor = bgp_config.neighbor[neighbor_key]
+                        result_lines.append(f"    Neighbor: {neighbor_key}")
+                        if hasattr(neighbor, 'remote_as'):
+                            result_lines.append(f"      Remote AS: {neighbor.remote_as}")
+            else:
+                result_lines.append(f"  No BGP configuration found")
+        
+        else:
+            # Generic handling for other configuration sections
+            if hasattr(device.config, config_section):
+                section_config = getattr(device.config, config_section)
+                result_lines.append(f"\n{config_section.title()} Configuration:")
+                
+                # Try to display the configuration in a readable format
+                try:
+                    # Convert to string representation
+                    config_str = str(section_config)
+                    if config_str and config_str != 'None':
+                        # Split into lines and indent
+                        lines = config_str.split('\n')
+                        for line in lines[:20]:  # Limit to first 20 lines
+                            if line.strip():
+                                result_lines.append(f"  {line}")
+                        if len(lines) > 20:
+                            result_lines.append(f"  ... (truncated, {len(lines)-20} more lines)")
+                    else:
+                        result_lines.append(f"  No {config_section} configuration found")
+                except Exception as e:
+                    result_lines.append(f"  Error reading {config_section} configuration: {e}")
+            else:
+                result_lines.append(f"  No {config_section} configuration section found")
+        
+        m.end_user_session()
+        
+        result = "\n".join(result_lines)
+        logger.info(f"✅ Got {config_section} configuration for {router_name}")
+        return result
+        
+    except Exception as e:
+        logger.exception(f"❌ Error getting {config_section} configuration for {router_name}: {e}")
+        return f"Error getting {config_section} configuration for {router_name}: {e}"
+
 def get_router_interfaces_config(router_name: str) -> str:
     """Return complete interface configuration tree for a router."""
     try:
@@ -547,6 +726,7 @@ def echo_text(text: str) -> str:
 # Register tools with FastMCP
 mcp.tool(show_all_devices)
 mcp.tool(get_router_interfaces_config)
+mcp.tool(get_router_config_section)
 mcp.tool(configure_router_interface)
 mcp.tool(commit_router_changes)
 mcp.tool(rollback_router_changes)
