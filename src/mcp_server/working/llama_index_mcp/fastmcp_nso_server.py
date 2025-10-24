@@ -69,6 +69,99 @@ def show_all_devices() -> str:
         logger.exception(f"❌ Error getting devices: {e}")
         return f"Error getting devices: {e}"
 
+def execute_router_command(router_name: str, command: str) -> str:
+    """Execute a router command on a specific device.
+    
+    This function executes router commands directly on the device using NSO's live status:
+    - Execute show commands (e.g., 'show version', 'show interfaces')
+    - Execute configuration commands (e.g., 'configure terminal', 'interface GigabitEthernet0/0/0/0')
+    - Execute any valid router command
+    - Return command output in readable format
+    
+    Args:
+        router_name: Name of the router device (e.g., 'xr9kv-1', 'xr9kv-2', 'xr9kv-3')
+        command: Router command to execute (e.g., 'show version', 'show interfaces', 'show ospf neighbor')
+        
+    Returns:
+        str: Command output from the router
+        
+    Examples:
+        # Execute show commands
+        execute_router_command('xr9kv-1', 'show version')
+        execute_router_command('xr9kv-1', 'show interfaces')
+        execute_router_command('xr9kv-1', 'show ospf neighbor')
+        
+        # Execute configuration commands
+        execute_router_command('xr9kv-1', 'show running-config')
+        execute_router_command('xr9kv-1', 'show ip route')
+        
+        # Execute any router command
+        execute_router_command('xr9kv-2', 'show bgp summary')
+    """
+    try:
+        logger.info(f"🔧 Executing command '{command}' on router: {router_name}")
+        
+        m = maapi.Maapi()
+        m.start_user_session('cisco', 'test_context_1')
+        
+        t = m.start_read_trans()
+        root = maagic.get_root(t)
+        
+        # Validate router exists
+        if router_name not in root.devices.device:
+            m.end_user_session()
+            return f"Error: Router '{router_name}' not found in NSO devices"
+        
+        device = root.devices.device[router_name]
+        
+        try:
+            # Get the 'exec' action object for live status
+            show = device.live_status.__getitem__('exec').any
+            
+            # Prepare the input for the command
+            inp = show.get_input()
+            inp.args = [command]
+            
+            # Execute the command and get the result
+            result = show.request(inp)
+            
+            # Format the output
+            output_lines = [f"Command Execution Result for {router_name}:"]
+            output_lines.append("=" * 60)
+            output_lines.append(f"Command: {command}")
+            output_lines.append("-" * 40)
+            
+            if hasattr(result, 'result') and result.result:
+                # Split the result into lines for better formatting
+                result_lines = str(result.result).split('\n')
+                for line in result_lines:
+                    if line.strip():  # Only add non-empty lines
+                        output_lines.append(line)
+            else:
+                output_lines.append("No output returned from command")
+            
+            output_lines.append("-" * 40)
+            output_lines.append(f"✅ Command executed successfully on {router_name}")
+            
+            m.end_user_session()
+            
+            result_text = "\n".join(output_lines)
+            logger.info(f"✅ Command '{command}' executed successfully on {router_name}")
+            return result_text
+            
+        except Exception as cmd_error:
+            m.end_user_session()
+            logger.exception(f"❌ Command execution error for {router_name}: {cmd_error}")
+            return f"Error executing command '{command}' on {router_name}: {cmd_error}"
+            
+    except Exception as e:
+        logger.exception(f"❌ Error executing command on {router_name}: {e}")
+        try:
+            m.end_user_session()
+        except:
+            pass
+        return f"Error executing command '{command}' on {router_name}: {e}"
+
 def get_router_config_section(router_name: str, config_section: str) -> str:
     """Get configuration for any top-level section of a router.
     
@@ -727,6 +820,7 @@ def echo_text(text: str) -> str:
 mcp.tool(show_all_devices)
 mcp.tool(get_router_interfaces_config)
 mcp.tool(get_router_config_section)
+mcp.tool(execute_router_command)
 mcp.tool(configure_router_interface)
 mcp.tool(commit_router_changes)
 mcp.tool(rollback_router_changes)

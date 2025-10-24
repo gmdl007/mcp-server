@@ -53,6 +53,7 @@ src/mcp_server/
 - `show_all_devices` - List all available routers
 - `get_router_interfaces_config` - Get complete interface configuration tree
 - `get_router_config_section` - Get configuration for any top-level section (interface, ospf, bgp, system)
+- `execute_router_command` - Execute router commands directly on devices
 - `configure_router_interface` - Configure interfaces (IP, description, shutdown)
 - `provision_ospf_base` - Provision OSPF base configuration
 - `commit_router_changes` - Commit configuration changes to physical devices
@@ -68,14 +69,14 @@ src/mcp_server/
 - ✅ **Commit instructions** for physical device updates
 - ✅ **Rollback information** and CLI guidance
 
-### **Flexible Configuration Display Features**
-- ✅ **Interface Configuration** - Detailed interface tree with IP, description, status
-- ✅ **OSPF Configuration** - Router ID, areas, and interface assignments
-- ✅ **BGP Configuration** - AS numbers, neighbors, and routing policies
-- ✅ **System Configuration** - System-level settings and parameters
-- ✅ **Generic Configuration** - Any top-level configuration section
-- ✅ **Smart Formatting** - Readable output with proper indentation
-- ✅ **Error Handling** - Graceful handling of missing configurations
+### **Router Command Execution Features**
+- ✅ **Show Commands** - Execute show commands (e.g., 'show version', 'show interfaces')
+- ✅ **Configuration Commands** - Execute configuration commands
+- ✅ **Any Router Command** - Execute any valid router command
+- ✅ **Live Status Access** - Direct access to router live status via NSO
+- ✅ **Formatted Output** - Readable command output with proper formatting
+- ✅ **Error Handling** - Graceful handling of command execution errors
+- ✅ **Multi-Router Support** - Execute commands on any available router
 
 ### **Current Devices**
 - **xr9kv-1** (Port: 10022)

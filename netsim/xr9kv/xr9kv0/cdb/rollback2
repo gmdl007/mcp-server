@@ -1,31 +1,18 @@
 # Created by: admin
-# Date: 2025-10-22 21:32:59
+# Date: 2025-10-24 22:29:12
 # Via: cli
 # Type: delta
 # Label: 
 # Comment: 
-# No: 10052
-# TransactionId: 1329
+# No: 10054
+# TransactionId: 1344
 # Hostname: GUDENG-M-H9KG
 
 router {
-    ospf 1 {
-        router-id 1.1.1.1;
-        area 0 {
-            passive {
-                mode disable;
-            }
-            interface Loopback0;
-        }
-        address-family {
-            ipv4 {
-                unicast;
-            }
-        }
-    }
+    delete:
+    ospf 1;
 }
 mpls {
-    ldp {
-        router-id 1.1.1.1;
-    }
+    delete:
+    ldp;
 }
