@@ -3116,9 +3116,27 @@ def list_available_services() -> str:
                         'customer_service', 'service', 'service_type']
         
         # Explicitly check for known services at root level
-        known_root_services = ['ospf', 'bgp', 'BGP_GRP__BGP_GRP', 'l3vpn', 'l2vpn', 'mpls', 
-                             'isis', 'eigrp', 'rip', 'static', 'policy', 'access_list']
-        for service_name in known_root_services:
+        # Check for services with various naming patterns (underscores, double underscores, etc.)
+        known_root_services = ['ospf', 'bgp', 'BGP_GRP__BGP_GRP', 'BGP_GRP_BGP_GRP', 'l3vpn', 'l2vpn', 'mpls', 
+                             'isis', 'eigrp', 'rip', 'static', 'policy', 'access_list', 'vpls', 'vpws']
+        
+        # Also check all root attributes for service-like patterns
+        root_attrs_to_check = []
+        for attr in dir(root):
+            if (not attr.startswith('_') and 
+                attr not in exclude_attrs and 
+                attr not in service_attrs and
+                attr not in ['devices', 'templates', 'templates']):
+                # Check for routing/protocol-related names
+                protocol_keywords = ['ospf', 'bgp', 'vpn', 'mpls', 'isis', 'eigrp', 'rip', 'static', 
+                                   'policy', 'route', 'vpls', 'vpws', 'evpn', 'vxlan']
+                if any(keyword in attr.lower() for keyword in protocol_keywords):
+                    root_attrs_to_check.append(attr)
+        
+        # Combine known services and discovered protocol-related attributes
+        all_services_to_check = list(set(known_root_services + root_attrs_to_check))
+        
+        for service_name in all_services_to_check:
             if hasattr(root, service_name):
                 try:
                     service_obj = getattr(root, service_name)
@@ -3129,7 +3147,9 @@ def list_available_services() -> str:
                     elif hasattr(service_obj, 'instance'):
                         is_service = True
                     elif hasattr(service_obj, 'keys') and service_name not in ['device', 'devices']:
-                        is_service = True
+                        # Additional check: does it have create method (service containers usually do)
+                        if hasattr(service_obj, 'create'):
+                            is_service = True
                     
                     if is_service and service_name not in service_attrs and service_name not in root_service_attrs:
                         root_service_attrs.append(service_name)
