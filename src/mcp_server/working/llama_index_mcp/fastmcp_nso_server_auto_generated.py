@@ -3115,10 +3115,24 @@ def list_available_services() -> str:
                         'plan_notifications', 'commit_queue_notifications', 
                         'customer_service', 'service', 'service_type']
         
+        # Debug: explicitly check for known services
+        known_root_services = ['ospf', 'bgp', 'BGP_GRP__BGP_GRP', 'l3vpn', 'l2vpn']
+        for service_name in known_root_services:
+            if hasattr(root, service_name):
+                try:
+                    service_obj = getattr(root, service_name)
+                    if hasattr(service_obj, 'base'):
+                        if service_name not in all_service_attrs:
+                            root_service_attrs.append(service_name)
+                except:
+                    pass
+        
+        # Also check all root attributes generically
         for attr in dir(root):
             if (not attr.startswith('_') and 
                 attr not in exclude_attrs and 
-                attr not in service_attrs):
+                attr not in service_attrs and
+                attr not in root_service_attrs):  # Avoid duplicates
                 try:
                     attr_obj = getattr(root, attr, None)
                     if attr_obj and not callable(attr_obj):
