@@ -3288,17 +3288,24 @@ def get_service_model_info(service_name: str) -> str:
         service_obj = None
         service_path = None
         
+        # First check root.services (for services like customer_service, logging, etc.)
         if hasattr(root, 'services'):
             services = root.services
             if hasattr(services, service_name):
-                service_obj = getattr(services, service_name)
-                service_path = f"root.services.{service_name}"
+                try:
+                    service_obj = getattr(services, service_name)
+                    service_path = f"root.services.{service_name}"
+                except Exception as e:
+                    logger.debug(f"Error accessing root.services.{service_name}: {e}")
         
+        # Then check root level (for services like root.ospf, root.bgp)
         if not service_obj:
-            # Try root level (e.g., root.ospf)
             if hasattr(root, service_name):
-                service_obj = getattr(root, service_name)
-                service_path = f"root.{service_name}"
+                try:
+                    service_obj = getattr(root, service_name)
+                    service_path = f"root.{service_name}"
+                except Exception as e:
+                    logger.debug(f"Error accessing root.{service_name}: {e}")
         
         if not service_obj:
             m.end_user_session()
@@ -3310,6 +3317,10 @@ def get_service_model_info(service_name: str) -> str:
         result_lines.append(f"   Path: {service_path}")
         result_lines.append("-" * 70)
         
+        # Check what type of object this is
+        service_type = type(service_obj).__name__
+        result_lines.append(f"\n🔍 Service Type: {service_type}")
+        
         # Service structure analysis
         result_lines.append("\n📋 Service Structure:")
         structure_info = []
@@ -3318,20 +3329,26 @@ def get_service_model_info(service_name: str) -> str:
         if hasattr(service_obj, 'base'):
             base_obj = service_obj.base
             if hasattr(base_obj, 'keys'):
-                instances = list(base_obj.keys())
-                structure_info.append(f"  • base: Container with {len(instances)} instance(s)")
-                if instances:
-                    result_lines.append(f"     Instance keys: {', '.join(str(k) for k in instances[:5])}")
-                    if len(instances) > 5:
-                        result_lines.append(f"     ... and {len(instances) - 5} more")
+                try:
+                    instances = list(base_obj.keys())
+                    structure_info.append(f"  • base: Container with {len(instances)} instance(s)")
+                    if instances:
+                        result_lines.append(f"     Instance keys: {', '.join(str(k) for k in instances[:5])}")
+                        if len(instances) > 5:
+                            result_lines.append(f"     ... and {len(instances) - 5} more")
+                except:
+                    structure_info.append(f"  • base: Container (cannot list instances)")
             else:
                 structure_info.append(f"  • base: Container (no instances)")
         
         if hasattr(service_obj, 'instance'):
             instance_obj = service_obj.instance
             if hasattr(instance_obj, 'keys'):
-                instances = list(instance_obj.keys())
-                structure_info.append(f"  • instance: Container with {len(instances)} instance(s)")
+                try:
+                    instances = list(instance_obj.keys())
+                    structure_info.append(f"  • instance: Container with {len(instances)} instance(s)")
+                except:
+                    structure_info.append(f"  • instance: Container (cannot list instances)")
             else:
                 structure_info.append(f"  • instance: Container")
         
@@ -3342,14 +3359,48 @@ def get_service_model_info(service_name: str) -> str:
                 and attr not in ['base', 'instance', 'service']]
         
         if attrs:
-            structure_info.append(f"  • Other attributes: {', '.join(attrs[:10])}")
-            if len(attrs) > 10:
-                structure_info.append(f"    ... and {len(attrs) - 10} more")
+            structure_info.append(f"  • Other attributes: {', '.join(attrs[:15])}")
+            if len(attrs) > 15:
+                structure_info.append(f"    ... and {len(attrs) - 15} more")
         
         if structure_info:
             result_lines.extend(structure_info)
         else:
             result_lines.append("  • Direct service instances (no base/instance container)")
+        
+        # Special handling for NSO infrastructure services
+        infrastructure_services = {
+            'customer_service': """
+   Purpose: NSO Customer Service Management
+   Description: This is an NSO infrastructure service for managing customer-facing services.
+   It provides functionality for organizing services by customer, tracking service
+   ownership, and managing customer relationships.
+   
+   Note: This is a service management/orchestration tool, not a network protocol service.
+   It helps organize and manage other services (like OSPF, BGP) in a customer context.
+""",
+            'service_type': """
+   Purpose: Service Type Definitions
+   Description: Defines different types of services available in NSO.
+   Used for service categorization and management.
+""",
+            'logging': """
+   Purpose: Logging Configuration
+   Description: NSO logging service configuration for tracking service operations.
+""",
+            'scheduling': """
+   Purpose: Service Scheduling
+   Description: Schedule service operations (create, modify, delete) at specific times.
+""",
+            'properties': """
+   Purpose: Service Properties
+   Description: Global properties and settings for services.
+""",
+        }
+        
+        if service_name in infrastructure_services:
+            result_lines.append("\n📖 Service Description:")
+            result_lines.append(infrastructure_services[service_name])
         
         # Analyze a sample instance if available
         result_lines.append("\n📝 Sample Instance Structure:")
