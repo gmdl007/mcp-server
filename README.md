@@ -45,7 +45,10 @@ cd /Users/gudeng/MCP_Server
 source mcp_venv/bin/activate
 
 # Start FastMCP NSO Server
-python src/mcp_server/working/llama_index_mcp/fastmcp_nso_server.py
+python src/mcp_server/working/llama_index_mcp/fastmcp_nso_server_auto_generated.py
+
+# Or use the startup script
+./src/mcp_server/working/llama_index_mcp/start_fastmcp_nso_server_auto_generated.sh
 ```
 
 ### **Test with Jupyter Notebook**
@@ -67,10 +70,10 @@ src/mcp_server/
 ├── archive/old_files/          # Archived experimental files
 ├── working/                    # ✅ Working solutions
 │   └── llama_index_mcp/        # 🎯 FastMCP NSO Server
-│       ├── fastmcp_nso_server.py           # Main FastMCP server
+│       ├── fastmcp_nso_server_auto_generated.py  # Main FastMCP server (30+ tools)
 │       ├── mcp_client_demo.ipynb           # Jupyter notebook demo
 │       ├── comprehensive_tools_test.py     # Complete testing
-│       ├── start_fastmcp_nso_server.sh     # Startup script
+│       ├── start_fastmcp_nso_server_auto_generated.sh  # Startup script
 │       └── start_jupyter_demo.sh           # Jupyter startup
 └── mcp_requirements.txt
 ```
