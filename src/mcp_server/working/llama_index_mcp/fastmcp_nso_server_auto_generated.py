@@ -1002,11 +1002,29 @@ def get_ospf_service_config(router_name: str = None) -> str:
 # =============================================================================
 
 def setup_ospf_base_service(router_name: str, router_id: str, area: str = "0") -> str:
-    """Setup OSPF base service configuration (required: router_name, router_id; optional: area).
+    """Setup OSPF base service configuration using NSO service package.
     
-    Based on l-ospf-base service package YANG model.
-    Essential parameters: router_name, router_id
-    Optional parameters: area (defaults to "0")
+    This function creates or updates an OSPF base service instance in NSO. OSPF services
+    in NSO are managed via service packages, which provide a high-level abstraction for
+    configuring protocols. Services are then rendered to device-specific configurations.
+    
+    NSO Service Package Model:
+        Based on 'l-ospf-base' service package YANG model
+        Services are stored in: root.services.ospf.base[router_name]
+        Service instances map to router devices
+    
+    NSO API Usage:
+        - Write transaction to create/update service
+        - Access service via: root.services.ospf.base[router_name]
+        - Service properties: router_id, area
+        - apply() commits service to NSO CDB
+        - Service package then renders to device config
+    
+    Service Lifecycle:
+        1. Create service instance with router_id and area
+        2. Service package validates configuration
+        3. Service renders to device-specific OSPF config
+        4. Config is ready to be committed to device
     
     Args:
         router_name: Router device name (REQUIRED)
@@ -1014,7 +1032,19 @@ def setup_ospf_base_service(router_name: str, router_id: str, area: str = "0") -
         area: OSPF Area ID (optional, defaults to "0")
         
     Returns:
-        str: Configuration result message
+        str: Configuration result message showing service creation status
+        
+    Examples:
+        # Create OSPF base service for xr9kv-1
+        setup_ospf_base_service('xr9kv-1', '1.1.1.1', '0')
+        
+        # Create with custom area
+        setup_ospf_base_service('xr9kv-2', '2.2.2.2', '10')
+        
+    See Also:
+        - setup_ospf_neighbor_service(): Add OSPF neighbor relationships
+        - get_ospf_service_config(): Query existing OSPF service configuration
+        - delete_ospf_service(): Remove OSPF service
     """
     try:
         logger.info(f"🔧 Setting up OSPF base service for {router_name}")
@@ -1463,21 +1493,6 @@ def sync_from_device(router_name: str) -> str:
         - check_device_sync_status(): Check if sync is needed
         - compare_device_config(): See differences before syncing
     """
-    """Sync configuration from device to NSO (pull running config from device).
-    
-    This function pulls the running configuration from a physical device into NSO.
-    This is useful when the device config has changed outside of NSO.
-    
-    Args:
-        router_name: Name of the router device to sync from
-        
-    Returns:
-        str: Result message showing sync operation status
-        
-    Examples:
-        # Sync config from xr9kv-1
-        sync_from_device('xr9kv-1')
-    """
     try:
         logger.info(f"🔄 Syncing configuration from device: {router_name}")
         
@@ -1564,21 +1579,6 @@ def sync_to_device(router_name: str) -> str:
         - sync_from_device(): Pull device config to NSO (opposite operation)
         - check_device_sync_status(): Check if sync is needed
         - compare_device_config(): See what will be pushed
-    """
-    """Sync configuration from NSO to device (push NSO config to device).
-    
-    This function pushes the NSO configuration database to a physical device.
-    This synchronizes the device with what's configured in NSO.
-    
-    Args:
-        router_name: Name of the router device to sync to
-        
-    Returns:
-        str: Result message showing sync operation status
-        
-    Examples:
-        # Sync config to xr9kv-1
-        sync_to_device('xr9kv-1')
     """
     try:
         logger.info(f"🔄 Syncing configuration to device: {router_name}")
@@ -1768,6 +1768,47 @@ def compare_device_config(router_name: str) -> str:
     This function uses NSO's compare-config action to show the differences between
     the device's actual configuration and NSO's copy of the configuration.
     
+    NSO API Usage:
+        - Accesses device action: device._ncs_action_compare_config
+        - Invokes NSO's native compare-config action
+        - Returns unified diff format showing differences
+        - Uses write transaction (required for actions)
+    
+    Compare-Config Output Format:
+        - Lines marked with '-': Present on device but NOT in NSO
+        - Lines marked with '+': Would be present if sync-to was executed
+        - Shows unified diff format compatible with standard diff tools
+    
+    Use Cases:
+        - Verify sync status in detail
+        - See exactly what differs between NSO and device
+        - Preview what sync-to would change
+        - Audit configuration drift
+    
+    Args:
+        router_name: Name of the router device to compare
+        
+    Returns:
+        str: Detailed diff showing differences between NSO and device configurations
+        
+    Examples:
+        # Compare configs for xr9kv-1
+        compare_device_config('xr9kv-1')
+        
+    See Also:
+        - check_device_sync_status(): Quick sync status check
+        - sync_from_device(): Pull device config to NSO
+        - sync_to_device(): Push NSO config to device
+        
+    Note:
+        This uses NSO's native compare-config action which provides the most
+        accurate comparison. Equivalent to NSO CLI: 'devices device <name> compare-config'
+    """
+    """Compare NSO configuration with device configuration using compare-config action.
+    
+    This function uses NSO's compare-config action to show the differences between
+    the device's actual configuration and NSO's copy of the configuration.
+    
     Output format:
     - Lines marked with '-' are present on the device but not in NSO
     - Lines marked with '+' would be present if sync-to was executed
@@ -1912,10 +1953,25 @@ def compare_device_config(router_name: str) -> str:
 def rollback_router_configuration(rollback_id: int = 0) -> str:
     """Rollback NSO configuration to a previous state.
     
-    This function rolls back the NSO configuration to a specified rollback point.
-    - rollback_id=0: Rolls back 1 step (most recent commit)
-    - rollback_id=1: Rolls back 2 steps
-    - rollback_id=n: Rolls back (n+1) steps
+    This function rolls back the NSO configuration database (CDB) to a previous
+    rollback point. NSO maintains a history of configuration commits that can
+    be restored.
+    
+    NSO API Usage:
+        - Uses single_write_trans context manager
+        - Calls t.load_rollback(rollback_id) to load previous configuration
+        - Applies rollback with t.apply()
+        - Affects entire NSO configuration (not device-specific)
+    
+    Rollback ID Mapping:
+        - rollback_id=0: Rollback 1 step (most recent commit)
+        - rollback_id=1: Rollback 2 steps
+        - rollback_id=n: Rollback (n+1) steps
+    
+    Warning:
+        Rollback affects all devices and services in NSO, not just one device.
+        This is a global NSO operation. Use list_rollback_points() to see
+        available rollback points first.
     
     Args:
         rollback_id: The rollback ID to restore to (defaults to 0 for most recent)
@@ -1929,6 +1985,14 @@ def rollback_router_configuration(rollback_id: int = 0) -> str:
         
         # Rollback 2 steps
         rollback_router_configuration(1)
+        
+    See Also:
+        - list_rollback_points(): List available rollback points
+        - NSO CLI: 'show rollback' to see rollback history
+        
+    Note:
+        Rollback only affects NSO CDB. If config was already pushed to devices,
+        you may need to sync-to again after rollback.
     """
     try:
         logger.info(f"🔧 Rolling back configuration to rollback ID: {rollback_id}")
