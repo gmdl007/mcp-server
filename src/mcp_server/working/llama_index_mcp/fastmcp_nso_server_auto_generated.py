@@ -3115,17 +3115,18 @@ def list_available_services() -> str:
                         'plan_notifications', 'commit_queue_notifications', 
                         'customer_service', 'service', 'service_type']
         
-        # Debug: explicitly check for known services
+        # Explicitly check for known services at root level
         known_root_services = ['ospf', 'bgp', 'BGP_GRP__BGP_GRP', 'l3vpn', 'l2vpn']
         for service_name in known_root_services:
             if hasattr(root, service_name):
                 try:
                     service_obj = getattr(root, service_name)
                     if hasattr(service_obj, 'base'):
-                        if service_name not in all_service_attrs:
+                        if service_name not in service_attrs and service_name not in root_service_attrs:
                             root_service_attrs.append(service_name)
-                except:
-                    pass
+                            logger.info(f"✅ Found service at root level: {service_name}")
+                except Exception as e:
+                    logger.debug(f"Error checking {service_name}: {e}")
         
         # Also check all root attributes generically
         for attr in dir(root):
