@@ -3042,6 +3042,443 @@ def get_device_version(router_name: str) -> str:
         return f"Error getting version information for {router_name}: {e}"
 
 # =============================================================================
+# SERVICE MODEL DISCOVERY TOOLS (Service Abstraction Level)
+# =============================================================================
+
+def list_available_services() -> str:
+    """List all available service models/packages in NSO.
+    
+    This function discovers all service packages deployed in NSO. Service models
+    provide abstraction over device-specific configurations, allowing LLMs and
+    automation to work at a higher level without dealing with device-specific details.
+    
+    NSO Service Model Philosophy:
+        - Services abstract device-level configurations
+        - Services handle multi-device orchestration automatically
+        - LLMs can work with services (e.g., "create OSPF service") instead of
+          device-specific CLI commands
+        - Services automatically render to device-specific configs
+    
+    NSO API Usage:
+        - root.services: Access services container
+        - Discover services via introspection
+        - Services are typically organized as: root.services.<package_name>.<instance>
+    
+    Returns:
+        str: List of all available service packages with descriptions
+        
+    Examples:
+        list_available_services()
+        
+    See Also:
+        - get_service_model_info(): Get detailed information about a specific service
+        - list_service_instances(): List instances of a service
+    """
+    try:
+        logger.info("🔧 Discovering available service models in NSO...")
+        
+        m = maapi.Maapi()
+        m.start_user_session('admin', 'python')
+        t = m.start_read_trans()
+        root = maagic.get_root(t)
+        
+        result_lines = ["NSO Service Models Available:"]
+        result_lines.append("=" * 70)
+        result_lines.append("""
+💡 Service Model Philosophy:
+   Services provide abstraction over device configurations. Instead of configuring
+   device-specific CLI commands, you work with high-level service parameters.
+   NSO automatically translates services to device-specific configurations.
+""")
+        result_lines.append("")
+        
+        # Check if services container exists
+        if not hasattr(root, 'services'):
+            m.end_user_session()
+            result_lines.append("⚠️  Services container not found in NSO")
+            return "\n".join(result_lines)
+        
+        services = root.services
+        service_list = []
+        
+        # Discover services via introspection
+        service_attrs = [attr for attr in dir(services) 
+                        if not attr.startswith('_') 
+                        and not callable(getattr(services, attr, None))]
+        
+        if not service_attrs:
+            result_lines.append("⚠️  No service packages found")
+            result_lines.append("\n💡 To add service packages:")
+            result_lines.append("   1. Install service packages in NSO")
+            result_lines.append("   2. Load service YANG models")
+            result_lines.append("   3. Services will appear in root.services")
+        else:
+            result_lines.append(f"📦 Found {len(service_attrs)} Service Package(s):")
+            result_lines.append("-" * 70)
+            
+            for service_name in sorted(service_attrs):
+                try:
+                    service_obj = getattr(services, service_name)
+                    service_info = {
+                        'name': service_name,
+                        'instances': 0,
+                        'structure': []
+                    }
+                    
+                    # Check if it has instances (keys method)
+                    if hasattr(service_obj, 'keys'):
+                        try:
+                            keys = list(service_obj.keys())
+                            service_info['instances'] = len(keys)
+                        except:
+                            pass
+                    
+                    # Check structure (common patterns: base, instance, etc.)
+                    common_attrs = ['base', 'instance', 'service']
+                    for attr in common_attrs:
+                        if hasattr(service_obj, attr):
+                            service_info['structure'].append(attr)
+                    
+                    service_list.append(service_info)
+                    
+                    # Build description
+                    desc_lines = [f"\n🔹 {service_name}"]
+                    if service_info['instances'] > 0:
+                        desc_lines.append(f"   Instances: {service_info['instances']}")
+                    if service_info['structure']:
+                        desc_lines.append(f"   Structure: {', '.join(service_info['structure'])}")
+                    
+                    # Add known service descriptions
+                    known_services = {
+                        'ospf': 'OSPF Routing Service - High-level OSPF configuration (router-id, area, neighbors)',
+                        'bgp': 'BGP Routing Service - Border Gateway Protocol service abstraction',
+                        'l3vpn': 'L3VPN Service - Layer 3 VPN service for MPLS networks',
+                        'l2vpn': 'L2VPN Service - Layer 2 VPN service (VPLS, VPWS)',
+                        'BGP_GRP__BGP_GRP': 'BGP Group Service - BGP peer group management',
+                    }
+                    
+                    if service_name in known_services:
+                        desc_lines.append(f"   Description: {known_services[service_name]}")
+                    
+                    result_lines.extend(desc_lines)
+                    
+                except Exception as e:
+                    logger.debug(f"Error analyzing service {service_name}: {e}")
+                    result_lines.append(f"\n🔹 {service_name} (Error: {e})")
+        
+        result_lines.append("\n" + "=" * 70)
+        result_lines.append("""
+📚 Benefits of Service Abstraction:
+   ✅ Work at business logic level, not device CLI
+   ✅ Multi-device orchestration handled automatically
+   ✅ Device-specific differences abstracted away
+   ✅ Changes are validated before deployment
+   ✅ Services can be versioned and rollback-enabled
+""")
+        
+        m.end_user_session()
+        
+        result = "\n".join(result_lines)
+        logger.info(f"✅ Discovered {len(service_list)} service packages")
+        return result
+        
+    except Exception as e:
+        logger.exception(f"❌ Error listing services: {e}")
+        try:
+            m.end_user_session()
+        except:
+            pass
+        return f"Error listing available services: {e}"
+
+def get_service_model_info(service_name: str) -> str:
+    """Get detailed information about a specific service model.
+    
+    This function provides detailed information about a service package including:
+    - Service structure and organization
+    - Available parameters
+    - Service instances
+    - How to use the service
+    
+    NSO API Usage:
+        - root.services.<service_name>: Access service package
+        - Introspection to discover service structure
+        - Service instances: root.services.<service>.<instance_type>[<instance_key>]
+    
+    Args:
+        service_name: Name of the service package (e.g., 'ospf', 'bgp', 'l3vpn')
+        
+    Returns:
+        str: Detailed service model information
+        
+    Examples:
+        get_service_model_info('ospf')
+        get_service_model_info('l3vpn')
+        
+    See Also:
+        - list_available_services(): List all available services
+        - list_service_instances(): List instances of this service
+    """
+    try:
+        logger.info(f"🔧 Getting service model info for: {service_name}")
+        
+        m = maapi.Maapi()
+        m.start_user_session('admin', 'python')
+        t = m.start_read_trans()
+        root = maagic.get_root(t)
+        
+        result_lines = [f"Service Model Information: {service_name}"]
+        result_lines.append("=" * 70)
+        
+        if not hasattr(root, 'services'):
+            m.end_user_session()
+            return "❌ Services container not found in NSO"
+        
+        services = root.services
+        
+        if not hasattr(services, service_name):
+            m.end_user_session()
+            result_lines.append(f"❌ Service '{service_name}' not found")
+            result_lines.append(f"\n💡 Available services: {', '.join([attr for attr in dir(services) if not attr.startswith('_')])}")
+            return "\n".join(result_lines)
+        
+        service_obj = getattr(services, service_name)
+        
+        result_lines.append(f"\n📦 Service Package: {service_name}")
+        result_lines.append("-" * 70)
+        
+        # Service structure analysis
+        result_lines.append("\n📋 Service Structure:")
+        structure_info = []
+        
+        # Check for common service patterns
+        if hasattr(service_obj, 'base'):
+            base_obj = service_obj.base
+            if hasattr(base_obj, 'keys'):
+                instances = list(base_obj.keys())
+                structure_info.append(f"  • base: Container with {len(instances)} instance(s)")
+                if instances:
+                    result_lines.append(f"     Instance keys: {', '.join(str(k) for k in instances[:5])}")
+                    if len(instances) > 5:
+                        result_lines.append(f"     ... and {len(instances) - 5} more")
+            else:
+                structure_info.append(f"  • base: Container (no instances)")
+        
+        if hasattr(service_obj, 'instance'):
+            instance_obj = service_obj.instance
+            if hasattr(instance_obj, 'keys'):
+                instances = list(instance_obj.keys())
+                structure_info.append(f"  • instance: Container with {len(instances)} instance(s)")
+            else:
+                structure_info.append(f"  • instance: Container")
+        
+        # Show all attributes
+        attrs = [attr for attr in dir(service_obj) 
+                if not attr.startswith('_') 
+                and not callable(getattr(service_obj, attr, None))
+                and attr not in ['base', 'instance', 'service']]
+        
+        if attrs:
+            structure_info.append(f"  • Other attributes: {', '.join(attrs[:10])}")
+            if len(attrs) > 10:
+                structure_info.append(f"    ... and {len(attrs) - 10} more")
+        
+        if structure_info:
+            result_lines.extend(structure_info)
+        else:
+            result_lines.append("  • Direct service instances (no base/instance container)")
+        
+        # Analyze a sample instance if available
+        result_lines.append("\n📝 Sample Instance Structure:")
+        sample_instance = None
+        
+        if hasattr(service_obj, 'base'):
+            base = service_obj.base
+            if hasattr(base, 'keys'):
+                instance_keys = list(base.keys())
+                if instance_keys:
+                    try:
+                        sample_instance = base[instance_keys[0]]
+                        result_lines.append(f"  Sample instance key: {instance_keys[0]}")
+                    except:
+                        pass
+        
+        if sample_instance:
+            instance_attrs = [attr for attr in dir(sample_instance)
+                            if not attr.startswith('_')
+                            and not callable(getattr(sample_instance, attr, None))
+                            and attr != 'device']
+            
+            if instance_attrs:
+                result_lines.append(f"  Parameters: {', '.join(instance_attrs[:15])}")
+                if len(instance_attrs) > 15:
+                    result_lines.append(f"    ... and {len(instance_attrs) - 15} more")
+        else:
+            result_lines.append("  No instances found - service structure not yet populated")
+        
+        # Service-specific information
+        result_lines.append("\n💡 Usage Guide:")
+        service_usage_guides = {
+            'ospf': """
+   To create OSPF service:
+     1. Use setup_ospf_base_service(router_name, router_id, area)
+     2. Use setup_ospf_neighbor_service() to add neighbors
+     3. Service automatically configures OSPF on devices
+   
+   Abstraction: Instead of device commands like:
+     - router ospf 1
+     - router-id 1.1.1.1
+   
+   You use: setup_ospf_base_service('xr9kv-1', '1.1.1.1', '0')
+""",
+            'bgp': """
+   BGP services typically require:
+     - AS number
+     - Neighbor configuration
+     - Route policies
+   
+   Service handles device-specific BGP syntax automatically.
+""",
+        }
+        
+        if service_name in service_usage_guides:
+            result_lines.append(service_usage_guides[service_name])
+        else:
+            result_lines.append(f"""
+   Service '{service_name}' provides abstraction over device configurations.
+   Create instances via: root.services.{service_name}.base[instance_key]
+   NSO automatically renders to device-specific configurations.
+""")
+        
+        m.end_user_session()
+        
+        result = "\n".join(result_lines)
+        logger.info(f"✅ Retrieved service model info for {service_name}")
+        return result
+        
+    except Exception as e:
+        logger.exception(f"❌ Error getting service model info: {e}")
+        try:
+            m.end_user_session()
+        except:
+            pass
+        return f"Error getting service model info for {service_name}: {e}"
+
+def list_service_instances(service_name: str) -> str:
+    """List all instances of a specific service.
+    
+    This function lists all configured instances of a service model, showing
+    what service instances exist in NSO. This helps understand the current
+    service deployment state.
+    
+    Args:
+        service_name: Name of the service package (e.g., 'ospf', 'bgp')
+        
+    Returns:
+        str: List of service instances with their configurations
+        
+    Examples:
+        list_service_instances('ospf')
+        list_service_instances('l3vpn')
+        
+    See Also:
+        - list_available_services(): List all service packages
+        - get_service_model_info(): Get service model details
+    """
+    try:
+        logger.info(f"🔧 Listing instances for service: {service_name}")
+        
+        m = maapi.Maapi()
+        m.start_user_session('admin', 'python')
+        t = m.start_read_trans()
+        root = maagic.get_root(t)
+        
+        result_lines = [f"Service Instances: {service_name}"]
+        result_lines.append("=" * 70)
+        
+        if not hasattr(root, 'services'):
+            m.end_user_session()
+            return "❌ Services container not found"
+        
+        services = root.services
+        
+        if not hasattr(services, service_name):
+            m.end_user_session()
+            return f"❌ Service '{service_name}' not found"
+        
+        service_obj = getattr(services, service_name)
+        
+        # Find instances (check base, instance, or direct)
+        instances_found = False
+        
+        # Check base container
+        if hasattr(service_obj, 'base'):
+            base = service_obj.base
+            if hasattr(base, 'keys'):
+                instance_keys = list(base.keys())
+                if instance_keys:
+                    instances_found = True
+                    result_lines.append(f"\n📋 Found {len(instance_keys)} instance(s) in 'base' container:")
+                    result_lines.append("-" * 70)
+                    
+                    for key in instance_keys:
+                        try:
+                            instance = base[key]
+                            result_lines.append(f"\n  Instance Key: {key}")
+                            
+                            # Show key instance attributes
+                            attrs = [attr for attr in dir(instance)
+                                   if not attr.startswith('_')
+                                   and not callable(getattr(instance, attr, None))
+                                   and attr != 'device']
+                            
+                            # Get sample values for important attributes
+                            important_attrs = ['router_id', 'area', 'asn', 'vpn_id', 'name', 'enabled']
+                            for attr in important_attrs:
+                                if attr in attrs:
+                                    try:
+                                        value = getattr(instance, attr)
+                                        result_lines.append(f"    {attr}: {value}")
+                                    except:
+                                        pass
+                            
+                            if len(attrs) > len(important_attrs):
+                                result_lines.append(f"    (Total attributes: {len(attrs)})")
+                        except Exception as e:
+                            result_lines.append(f"    Error accessing instance {key}: {e}")
+        
+        # Check instance container
+        if hasattr(service_obj, 'instance'):
+            instance_container = service_obj.instance
+            if hasattr(instance_container, 'keys'):
+                instance_keys = list(instance_container.keys())
+                if instance_keys:
+                    instances_found = True
+                    result_lines.append(f"\n📋 Found {len(instance_keys)} instance(s) in 'instance' container:")
+                    result_lines.append("-" * 70)
+                    for key in instance_keys[:10]:  # Limit to first 10
+                        result_lines.append(f"  - {key}")
+                    if len(instance_keys) > 10:
+                        result_lines.append(f"  ... and {len(instance_keys) - 10} more")
+        
+        if not instances_found:
+            result_lines.append("\n⚠️  No service instances found")
+            result_lines.append(f"   Service '{service_name}' is available but has no instances yet.")
+        
+        m.end_user_session()
+        
+        result = "\n".join(result_lines)
+        logger.info(f"✅ Listed instances for service {service_name}")
+        return result
+        
+    except Exception as e:
+        logger.exception(f"❌ Error listing service instances: {e}")
+        try:
+            m.end_user_session()
+        except:
+            pass
+        return f"Error listing service instances for {service_name}: {e}"
+
+# =============================================================================
 # REGISTER TOOLS WITH FastMCP
 # =============================================================================
 
@@ -3071,6 +3508,11 @@ mcp.tool(check_yang_modules_compatibility)
 mcp.tool(list_device_modules)
 mcp.tool(get_device_ned_info)
 mcp.tool(get_device_version)  # Get device version information
+
+# Service Model Discovery Tools (Service Abstraction Level)
+mcp.tool(list_available_services)  # List all available service models
+mcp.tool(get_service_model_info)  # Get detailed service model information
+mcp.tool(list_service_instances)  # List instances of a service
 
 # Transaction Management Tools (Tool 7)
 mcp.tool(list_transactions)
