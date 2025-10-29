@@ -3147,9 +3147,17 @@ def list_available_services() -> str:
                     elif hasattr(service_obj, 'instance'):
                         is_service = True
                     elif hasattr(service_obj, 'keys') and service_name not in ['device', 'devices']:
-                        # Additional check: does it have create method (service containers usually do)
-                        if hasattr(service_obj, 'create'):
-                            is_service = True
+                        # Services can have keys() directly (like BGP_GRP__BGP_GRP)
+                        # Check if it also has create method or has keys
+                        try:
+                            test_keys = list(service_obj.keys())
+                            # If it has keys that can be listed, it's likely a service
+                            if len(test_keys) >= 0:  # Even 0 keys means it's a container
+                                is_service = True
+                        except:
+                            # If keys() exists but fails, check for create method
+                            if hasattr(service_obj, 'create'):
+                                is_service = True
                     
                     if is_service and service_name not in service_attrs and service_name not in root_service_attrs:
                         root_service_attrs.append(service_name)
