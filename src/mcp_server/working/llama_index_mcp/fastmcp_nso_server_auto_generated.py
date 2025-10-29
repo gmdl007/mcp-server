@@ -1804,26 +1804,6 @@ def compare_device_config(router_name: str) -> str:
         This uses NSO's native compare-config action which provides the most
         accurate comparison. Equivalent to NSO CLI: 'devices device <name> compare-config'
     """
-    """Compare NSO configuration with device configuration using compare-config action.
-    
-    This function uses NSO's compare-config action to show the differences between
-    the device's actual configuration and NSO's copy of the configuration.
-    
-    Output format:
-    - Lines marked with '-' are present on the device but not in NSO
-    - Lines marked with '+' would be present if sync-to was executed
-    - Shows a unified diff format
-    
-    Args:
-        router_name: Name of the router device to compare
-        
-    Returns:
-        str: Detailed diff showing differences between NSO and device configurations
-        
-    Examples:
-        # Compare config for xr9kv-1
-        compare_device_config('xr9kv-1')
-    """
     try:
         logger.info(f"🔍 Comparing configuration for device: {router_name}")
         

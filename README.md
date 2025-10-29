@@ -16,7 +16,22 @@ A **production-ready MCP (Model Context Protocol) server** that exposes Cisco NS
 ## 📚 **Documentation**
 
 - **[Complete Development Guide](docs/NSO_MCP_SERVER_GUIDE.md)** - Full setup, API usage, and extension guide
+  - Architecture overview
+  - NSO API usage patterns
+  - Adding new tools
+  - Testing procedures
+  
+- **[Netsim Setup Guide](docs/NETSIM_SETUP.md)** - Complete netsim device management
+  - Starting/stopping devices
+  - Adding devices to NSO
+  - Connection and sync procedures
+  - Troubleshooting
+  
 - **[Top 10 NSO Tools Reference](docs/NSO_TOP_10_TOOLS.md)** - Implemented and recommended tools
+  - Prioritized tool list
+  - Implementation guidance
+  - Netsim compatibility notes
+  
 - **[Quick Reference](QUICK_REFERENCE.md)** - Quick commands and setup
 
 ## 🚀 Quick Start
@@ -60,17 +75,48 @@ src/mcp_server/
 └── mcp_requirements.txt
 ```
 
-## 🛠️ **Available Tools**
+## 🛠️ **Available Tools (30+ Tools)**
 
-### **Complete Network Automation Toolset**
-- `show_all_devices` - List all available routers
-- `get_router_interfaces_config` - Get complete interface configuration tree
-- `get_router_config_section` - Get configuration for any top-level section (interface, ospf, bgp, system)
-- `execute_router_command` - Execute router commands directly on devices
+### **Device Management**
+- `show_all_devices` - List all devices managed by NSO
+- `get_device_capabilities` - Get device capabilities and NED information
+- `check_yang_modules_compatibility` - Verify YANG module compatibility
+- `list_device_modules` - List supported YANG modules
+- `get_device_ned_info` - Get NED (Network Element Driver) information
+
+### **Interface Configuration**
+- `get_router_interfaces_config` - Get complete interface configuration
 - `configure_router_interface` - Configure interfaces (IP, description, shutdown)
-- `provision_ospf_base` - Provision OSPF base configuration
-- `commit_router_changes` - Commit configuration changes to physical devices
-- `rollback_router_changes` - Rollback configuration to previous state
+- `get_interface_operational_status` - Get interface operational status via live-status
+
+### **Service Management**
+- `setup_ospf_base_service` - Create OSPF base service
+- `setup_ospf_neighbor_service` - Configure OSPF neighbor relationships
+- `remove_ospf_neighbor_service` - Remove OSPF neighbor
+- `delete_ospf_service` - Delete OSPF service
+- `get_ospf_service_config` - Query OSPF service configuration
+- `get_BGP_GRP__BGP_GRP_config` - BGP service management
+
+### **Device Sync & Comparison**
+- `check_device_sync_status` - Check device sync status (in-sync/out-of-sync)
+- `sync_from_device` - Pull configuration from device to NSO
+- `sync_to_device` - Push configuration from NSO to device
+- `compare_device_config` - Detailed diff comparison (uses compare-config action)
+- `show_sync_differences` - Show sync differences
+
+### **Operational Data (Live-Status)**
+- `explore_live_status` - Discover available live-status paths
+- `get_interface_operational_status` - Interface operational status
+
+### **Transaction & Lock Management**
+- `list_transactions` - List recent NSO transactions
+- `check_locks` - Check active locks in NSO
+
+### **Rollback Management**
+- `rollback_router_configuration` - Rollback NSO configuration
+- `list_rollback_points` - List available rollback points
+
+### **Debug & Health**
 - `echo_text` - Debug/health check tool
 
 ### **Interface Configuration Features**
