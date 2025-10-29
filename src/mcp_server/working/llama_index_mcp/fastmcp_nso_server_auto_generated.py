@@ -3109,17 +3109,28 @@ def list_available_services() -> str:
         # Also discover services directly from root (e.g., root.ospf, root.bgp)
         # Services can be at root level or under root.services
         root_service_attrs = []
-        known_service_patterns = ['ospf', 'bgp', 'l3vpn', 'l2vpn', 'vpn', 'mpls', 'policy']
+        # Exclude known non-service attributes
+        exclude_attrs = ['services', 'devices', 'device', 'template', 'templates', 
+                        'global_settings', 'logging', 'properties', 'scheduling',
+                        'plan_notifications', 'commit_queue_notifications', 
+                        'customer_service', 'service', 'service_type']
+        
         for attr in dir(root):
-            if not attr.startswith('_') and attr != 'services' and attr != 'devices':
-                attr_obj = getattr(root, attr, None)
-                if attr_obj and not callable(attr_obj):
-                    # Check if it looks like a service (has base, instance, or keys)
-                    if (hasattr(attr_obj, 'base') or 
-                        hasattr(attr_obj, 'instance') or 
-                        (hasattr(attr_obj, 'keys') and attr not in ['device', 'template'])):
-                        if attr not in service_attrs:  # Avoid duplicates
+            if (not attr.startswith('_') and 
+                attr not in exclude_attrs and 
+                attr not in service_attrs):
+                try:
+                    attr_obj = getattr(root, attr, None)
+                    if attr_obj and not callable(attr_obj):
+                        # Check if it looks like a service (has base, instance, or keys with service-like structure)
+                        if hasattr(attr_obj, 'base'):
+                            base_obj = attr_obj.base
+                            if hasattr(base_obj, 'keys') or hasattr(base_obj, 'create'):
+                                root_service_attrs.append(attr)
+                        elif hasattr(attr_obj, 'instance'):
                             root_service_attrs.append(attr)
+                except:
+                    pass
         
         all_service_attrs = service_attrs + root_service_attrs
         
