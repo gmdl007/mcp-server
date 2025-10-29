@@ -2915,6 +2915,133 @@ def get_interface_operational_status(router_name: str, interface_name: str = Non
         return f"Error getting interface operational status: {e}"
 
 # =============================================================================
+# DEVICE VERSION INFORMATION TOOL
+# =============================================================================
+
+def get_device_version(router_name: str) -> str:
+    """Get device version information using multiple methods.
+    
+    This function attempts to get device version information using multiple approaches:
+    1. First tries structured platform data (device.platform.version) - most reliable
+    2. Falls back to live-status exec.any with 'show version' command
+    3. Provides comprehensive version information from available sources
+    
+    NSO API Usage:
+        - Platform data: device.platform.version (structured data, preferred)
+        - Live-status: device.live_status.exec.any for command execution
+        - Device capabilities: device.capability for additional device info
+    
+    Args:
+        router_name: Name of the router device
+        
+    Returns:
+        str: Device version information from platform data and/or command output
+        
+    Examples:
+        # Get version for specific device
+        get_device_version('xr9kv-1')
+        
+    See Also:
+        - get_device_capabilities(): Get comprehensive device info including version
+        - explore_live_status(): Discover available operational data paths
+    """
+    try:
+        logger.info(f"🔧 Getting version information for: {router_name}")
+        
+        m = maapi.Maapi()
+        m.start_user_session('admin', 'python')
+        t = m.start_read_trans()
+        root = maagic.get_root(t)
+        
+        if router_name not in root.devices.device:
+            m.end_user_session()
+            return f"❌ Device '{router_name}' not found in NSO"
+        
+        device = root.devices.device[router_name]
+        result_lines = [f"Device Version Information for: {router_name}"]
+        result_lines.append("=" * 60)
+        
+        # Method 1: Try platform data (preferred - structured)
+        version_found = False
+        if hasattr(device, 'platform'):
+            platform = device.platform
+            result_lines.append("\n📊 Platform Information (Structured Data):")
+            result_lines.append("-" * 40)
+            
+            if hasattr(platform, 'name'):
+                result_lines.append(f"  Platform Name: {platform.name}")
+                version_found = True
+            
+            if hasattr(platform, 'version'):
+                result_lines.append(f"  Version: {platform.version}")
+                version_found = True
+                
+            if hasattr(platform, 'model'):
+                result_lines.append(f"  Model: {platform.model}")
+            
+            if hasattr(platform, 'serial_number'):
+                result_lines.append(f"  Serial Number: {platform.serial_number}")
+            
+            if not version_found:
+                result_lines.append("  ⚠️  Platform version not available in structured data")
+        
+        # Method 2: Fallback to live-status exec.any (show version command)
+        result_lines.append("\n💻 Command Execution (show version):")
+        result_lines.append("-" * 40)
+        try:
+            live_status = device.live_status
+            if hasattr(live_status, 'exec'):
+                exec_any = live_status.exec.any
+                inp = exec_any.get_input()
+                inp.args = ['show version']
+                result = exec_any.request(inp)
+                
+                if hasattr(result, 'result') and result.result:
+                    version_output = result.result.strip()
+                    result_lines.append(version_output)
+                    version_found = True
+                else:
+                    result_lines.append("  ⚠️  Command executed but no output returned")
+            else:
+                result_lines.append("  ⚠️  exec.any not available in live-status")
+        except Exception as cmd_e:
+            result_lines.append(f"  ⚠️  Could not execute 'show version': {cmd_e}")
+            result_lines.append("     (This is normal for netsim devices with limited command support)")
+        
+        # Method 3: Additional device information
+        result_lines.append("\n📱 Device Type Information:")
+        result_lines.append("-" * 40)
+        if hasattr(device, 'device_type'):
+            device_type = device.device_type
+            if hasattr(device_type, 'cli') and hasattr(device_type.cli, 'ned_id'):
+                result_lines.append(f"  NED ID: {device_type.cli.ned_id}")
+                # Extract version hint from NED ID if available (e.g., cisco-iosxr-cli-7.52)
+                ned_id = device_type.cli.ned_id
+                if 'cli-' in ned_id:
+                    parts = ned_id.split('cli-')
+                    if len(parts) > 1:
+                        version_hint = parts[-1].split(':')[0]
+                        result_lines.append(f"  NED Version Hint: {version_hint}")
+        
+        if not version_found:
+            result_lines.append("\n⚠️  Note: Version information may not be available for netsim devices.")
+            result_lines.append("   Real hardware devices will have full version information.")
+        
+        m.end_user_session()
+        
+        result = "\n".join(result_lines)
+        logger.info(f"✅ Retrieved version information for {router_name}")
+        return result
+        
+    except Exception as e:
+        logger.exception(f"❌ Error getting version information: {e}")
+        try:
+            m.end_user_session()
+        except:
+            pass
+        return f"Error getting version information for {router_name}: {e}"
+
+# =============================================================================
 # REGISTER TOOLS WITH FastMCP
 # =============================================================================
 
@@ -2943,6 +3070,7 @@ mcp.tool(get_device_capabilities)
 mcp.tool(check_yang_modules_compatibility)
 mcp.tool(list_device_modules)
 mcp.tool(get_device_ned_info)
+mcp.tool(get_device_version)  # Get device version information
 
 # Transaction Management Tools (Tool 7)
 mcp.tool(list_transactions)
