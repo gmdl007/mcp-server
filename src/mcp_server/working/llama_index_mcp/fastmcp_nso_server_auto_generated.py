@@ -3165,7 +3165,7 @@ def list_available_services() -> str:
                 except Exception as e:
                     logger.debug(f"Error checking {service_name}: {e}")
         
-        # Also check all root attributes generically
+        # Also check all root attributes generically for service-like structures
         for attr in dir(root):
             if (not attr.startswith('_') and 
                 attr not in exclude_attrs and 
@@ -3175,14 +3175,32 @@ def list_available_services() -> str:
                     attr_obj = getattr(root, attr, None)
                     if attr_obj and not callable(attr_obj):
                         # Check if it looks like a service (has base, instance, or keys with service-like structure)
+                        is_likely_service = False
+                        
                         if hasattr(attr_obj, 'base'):
                             base_obj = attr_obj.base
                             if hasattr(base_obj, 'keys') or hasattr(base_obj, 'create'):
-                                root_service_attrs.append(attr)
+                                is_likely_service = True
                         elif hasattr(attr_obj, 'instance'):
+                            is_likely_service = True
+                        elif hasattr(attr_obj, 'keys'):
+                            # Direct container (like BGP_GRP__BGP_GRP)
+                            try:
+                                # Test if keys() works - if it does, it's likely a service container
+                                test_keys = list(attr_obj.keys())
+                                if hasattr(attr_obj, 'create'):
+                                    is_likely_service = True
+                            except:
+                                pass
+                        
+                        # Also check for protocol-related names that might be services
+                        protocol_keywords = ['ospf', 'bgp', 'vpn', 'mpls', 'isis', 'eigrp', 'rip', 
+                                           'route', 'policy', 'vpls', 'vpws', 'evpn', 'vxlan', 'l3', 'l2']
+                        if any(kw in attr.lower() for kw in protocol_keywords) and is_likely_service:
                             root_service_attrs.append(attr)
-                except:
-                    pass
+                            logger.info(f"✅ Found protocol service via generic discovery: {attr}")
+                except Exception as e:
+                    logger.debug(f"Error checking {attr}: {e}")
         
         all_service_attrs = service_attrs + root_service_attrs
         
