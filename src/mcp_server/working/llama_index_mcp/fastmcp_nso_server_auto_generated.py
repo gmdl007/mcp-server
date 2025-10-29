@@ -3116,15 +3116,24 @@ def list_available_services() -> str:
                         'customer_service', 'service', 'service_type']
         
         # Explicitly check for known services at root level
-        known_root_services = ['ospf', 'bgp', 'BGP_GRP__BGP_GRP', 'l3vpn', 'l2vpn']
+        known_root_services = ['ospf', 'bgp', 'BGP_GRP__BGP_GRP', 'l3vpn', 'l2vpn', 'mpls', 
+                             'isis', 'eigrp', 'rip', 'static', 'policy', 'access_list']
         for service_name in known_root_services:
             if hasattr(root, service_name):
                 try:
                     service_obj = getattr(root, service_name)
+                    # Check if it has base, instance, or keys (indicating it's a service)
+                    is_service = False
                     if hasattr(service_obj, 'base'):
-                        if service_name not in service_attrs and service_name not in root_service_attrs:
-                            root_service_attrs.append(service_name)
-                            logger.info(f"✅ Found service at root level: {service_name}")
+                        is_service = True
+                    elif hasattr(service_obj, 'instance'):
+                        is_service = True
+                    elif hasattr(service_obj, 'keys') and service_name not in ['device', 'devices']:
+                        is_service = True
+                    
+                    if is_service and service_name not in service_attrs and service_name not in root_service_attrs:
+                        root_service_attrs.append(service_name)
+                        logger.info(f"✅ Found service at root level: {service_name}")
                 except Exception as e:
                     logger.debug(f"Error checking {service_name}: {e}")
         
