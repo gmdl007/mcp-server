@@ -1,34 +1,26 @@
+# Test scripts (temporary)
+test_live_status.py
+test_live_status_data.py
+test_exec_commands.py
+
 # Python
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
 *.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
+dist/
+build/
 
 # Virtual environments
+mcp_venv/
 venv/
 env/
-ENV/
-env.bak/
-venv.bak/
-mcp_venv/
-.venv/
+
+# Environment variables
+.env
+.env.local
 
 # IDE
 .vscode/
@@ -37,51 +29,22 @@ mcp_venv/
 *.swo
 *~
 
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# Logs
-*.log
-logs/
+# Jupyter
+.ipynb_checkpoints/
 
 # OS
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
 
-# NSO specific
-state/
-netsim/xr9kv/*/cdb/
-netsim/xr9kv/*/cli-history/
-netsim/xr9kv/*/local.data
-netsim/xr9kv/*/logs/
-netsim/xr9kv/*/rollbacks/
+# Logs
+*.log
 
 # Temporary files
 *.tmp
-*.temp
 *.bak
-*.backup
+*~
 
-# Archive files (keep structure but ignore content)
-archive/old_versions/
-archive/test_files/
-*.zip
-
-# Configuration files with sensitive data
-*.env
-.env
-config/secrets.json
-
-# Test outputs
-test_results/
-coverage/
-.pytest_cache/
-
-# Documentation build
-docs/_build/
-docs/build/
+# NSO/Netsim runtime files (generated)
+netsim/xr9kv/*/logs/
+netsim/xr9kv/*/state/
+netsim/xr9kv/*/tftp-root/
