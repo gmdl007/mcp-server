@@ -3101,24 +3101,52 @@ def list_available_services() -> str:
         services = root.services
         service_list = []
         
-        # Discover services via introspection
+        # Discover services from root.services
         service_attrs = [attr for attr in dir(services) 
                         if not attr.startswith('_') 
                         and not callable(getattr(services, attr, None))]
         
-        if not service_attrs:
+        # Also discover services directly from root (e.g., root.ospf, root.bgp)
+        # Services can be at root level or under root.services
+        root_service_attrs = []
+        known_service_patterns = ['ospf', 'bgp', 'l3vpn', 'l2vpn', 'vpn', 'mpls', 'policy']
+        for attr in dir(root):
+            if not attr.startswith('_') and attr != 'services' and attr != 'devices':
+                attr_obj = getattr(root, attr, None)
+                if attr_obj and not callable(attr_obj):
+                    # Check if it looks like a service (has base, instance, or keys)
+                    if (hasattr(attr_obj, 'base') or 
+                        hasattr(attr_obj, 'instance') or 
+                        (hasattr(attr_obj, 'keys') and attr not in ['device', 'template'])):
+                        if attr not in service_attrs:  # Avoid duplicates
+                            root_service_attrs.append(attr)
+        
+        all_service_attrs = service_attrs + root_service_attrs
+        
+        if not all_service_attrs:
             result_lines.append("⚠️  No service packages found")
             result_lines.append("\n💡 To add service packages:")
             result_lines.append("   1. Install service packages in NSO")
             result_lines.append("   2. Load service YANG models")
-            result_lines.append("   3. Services will appear in root.services")
+            result_lines.append("   3. Services will appear in root.services or root")
         else:
-            result_lines.append(f"📦 Found {len(service_attrs)} Service Package(s):")
+            if root_service_attrs:
+                result_lines.append(f"📦 Found {len(service_attrs)} service(s) in root.services")
+                result_lines.append(f"📦 Found {len(root_service_attrs)} service(s) at root level")
+                result_lines.append(f"📦 Total: {len(all_service_attrs)} Service Package(s):")
+            else:
+                result_lines.append(f"📦 Found {len(all_service_attrs)} Service Package(s):")
             result_lines.append("-" * 70)
             
-            for service_name in sorted(service_attrs):
+            for service_name in sorted(all_service_attrs):
                 try:
-                    service_obj = getattr(services, service_name)
+                    # Try root.services first, then root level
+                    if service_name in service_attrs:
+                        service_obj = getattr(services, service_name)
+                        service_path = f"root.services.{service_name}"
+                    else:
+                        service_obj = getattr(root, service_name)
+                        service_path = f"root.{service_name}"
                     service_info = {
                         'name': service_name,
                         'instances': 0,
@@ -3143,6 +3171,7 @@ def list_available_services() -> str:
                     
                     # Build description
                     desc_lines = [f"\n🔹 {service_name}"]
+                    desc_lines.append(f"   Path: {service_path}")
                     if service_info['instances'] > 0:
                         desc_lines.append(f"   Instances: {service_info['instances']}")
                     if service_info['structure']:
@@ -3229,21 +3258,30 @@ def get_service_model_info(service_name: str) -> str:
         result_lines = [f"Service Model Information: {service_name}"]
         result_lines.append("=" * 70)
         
-        if not hasattr(root, 'services'):
-            m.end_user_session()
-            return "❌ Services container not found in NSO"
+        # Try both root.services and root level
+        service_obj = None
+        service_path = None
         
-        services = root.services
+        if hasattr(root, 'services'):
+            services = root.services
+            if hasattr(services, service_name):
+                service_obj = getattr(services, service_name)
+                service_path = f"root.services.{service_name}"
         
-        if not hasattr(services, service_name):
+        if not service_obj:
+            # Try root level (e.g., root.ospf)
+            if hasattr(root, service_name):
+                service_obj = getattr(root, service_name)
+                service_path = f"root.{service_name}"
+        
+        if not service_obj:
             m.end_user_session()
             result_lines.append(f"❌ Service '{service_name}' not found")
-            result_lines.append(f"\n💡 Available services: {', '.join([attr for attr in dir(services) if not attr.startswith('_')])}")
+            result_lines.append(f"\n💡 Use list_available_services() to see available services")
             return "\n".join(result_lines)
         
-        service_obj = getattr(services, service_name)
-        
         result_lines.append(f"\n📦 Service Package: {service_name}")
+        result_lines.append(f"   Path: {service_path}")
         result_lines.append("-" * 70)
         
         # Service structure analysis
@@ -3395,17 +3433,22 @@ def list_service_instances(service_name: str) -> str:
         result_lines = [f"Service Instances: {service_name}"]
         result_lines.append("=" * 70)
         
-        if not hasattr(root, 'services'):
+        # Try both root.services and root level
+        service_obj = None
+        
+        if hasattr(root, 'services'):
+            services = root.services
+            if hasattr(services, service_name):
+                service_obj = getattr(services, service_name)
+        
+        if not service_obj:
+            # Try root level (e.g., root.ospf)
+            if hasattr(root, service_name):
+                service_obj = getattr(root, service_name)
+        
+        if not service_obj:
             m.end_user_session()
-            return "❌ Services container not found"
-        
-        services = root.services
-        
-        if not hasattr(services, service_name):
-            m.end_user_session()
-            return f"❌ Service '{service_name}' not found"
-        
-        service_obj = getattr(services, service_name)
+            return f"❌ Service '{service_name}' not found. Use list_available_services() to see available services."
         
         # Find instances (check base, instance, or direct)
         instances_found = False
