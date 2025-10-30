@@ -1100,6 +1100,93 @@ Note: Use NSO CLI 'commit' to push to physical router"""
             pass
         return f"❌ Error setting up OSPF base service: {e}"
 
+
+def normalize_ospf_service_interfaces() -> str:
+    """Normalize OSPF service interface ids to n/n/n/n and strip leading zeros.
+
+    - Fixes base[].neighbor[*].local-interface and remote-interface
+    - Fixes link[].device[].interface
+    - Only updates NSO CDB service layer (no device-level changes directly)
+    - Intended to correct values like '00/0/0' -> '0/0/0/0', '00/0/1' -> '0/0/0/1'
+    """
+    try:
+        m = maapi.Maapi()
+        m.start_user_session('cisco', 'test_context_1')
+        t = m.start_write_trans()
+        root = maagic.get_root(t)
+
+        def fix_iface(value: str) -> str:
+            if not value:
+                return value
+            v = str(value).strip()
+            # Already correct pattern
+            if v.count('/') == 3:
+                # Strip any leading zeros per segment
+                parts = [str(int(p)) if p.isdigit() else p for p in v.split('/')]
+                return '/'.join(parts)
+            # Common bad forms from template like '00/0/0' or '00/0/1' or '00/0/2'
+            if v in ('00/0/0', '00/0/1', '00/0/2', '00/0/3'):
+                last = v.split('/')[-1]
+                return f"0/0/0/{int(last)}"
+            # Fallback: compress multiple slashes to 4-part if possible
+            parts = [p for p in v.replace('GigabitEthernet', '').split('/') if p != '']
+            parts = [str(int(p)) for p in parts if p.isdigit()]
+            if len(parts) == 4:
+                return '/'.join(parts)
+            if len(parts) == 3:
+                return f"0/{parts[0]}/{parts[1]}/{parts[2]}"
+            return v
+
+        changes = []
+
+        if hasattr(root, 'ospf'):
+            # Normalize base neighbors
+            if hasattr(root.ospf, 'base'):
+                for dev_key in list(root.ospf.base.keys()):
+                    base = root.ospf.base[dev_key]
+                    if hasattr(base, 'neighbor'):
+                        for n_key in list(base.neighbor.keys()):
+                            nei = base.neighbor[n_key]
+                            old_li = str(getattr(nei, 'local_interface', '')) if hasattr(nei, 'local_interface') else ''
+                            new_li = fix_iface(old_li)
+                            if new_li and new_li != old_li:
+                                nei.local_interface = new_li
+                                changes.append(f"base[{dev_key}] neighbor[{n_key}] local-interface: {old_li} -> {new_li}")
+                            if hasattr(nei, 'remote_interface'):
+                                old_ri = str(getattr(nei, 'remote_interface', ''))
+                                new_ri = fix_iface(old_ri)
+                                if new_ri and new_ri != old_ri:
+                                    nei.remote_interface = new_ri
+                                    changes.append(f"base[{dev_key}] neighbor[{n_key}] remote-interface: {old_ri} -> {new_ri}")
+
+            # Normalize link device interfaces
+            if hasattr(root.ospf, 'link'):
+                for link_key in list(root.ospf.link.keys()):
+                    link = root.ospf.link[link_key]
+                    if hasattr(link, 'device'):
+                        for d_key in list(link.device.keys()):
+                            d = link.device[d_key]
+                            if hasattr(d, 'interface'):
+                                old_if = str(getattr(d, 'interface', ''))
+                                new_if = fix_iface(old_if)
+                                if new_if and new_if != old_if:
+                                    d.interface = new_if
+                                    changes.append(f"link[{link_key}] device[{d_key}] interface: {old_if} -> {new_if}")
+
+        t.apply()
+        m.end_user_session()
+
+        if not changes:
+            return "No OSPF service interface values required normalization"
+        return "\n".join(["✅ Normalized OSPF service interfaces:"] + [f"- {c}" for c in changes])
+
+    except Exception as e:
+        try:
+            m.end_user_session()
+        except:
+            pass
+        return f"❌ Error normalizing OSPF service interfaces: {e}"
+
 def setup_ospf_neighbor_service(
     router_name: str, 
     router_id: str,
@@ -3663,6 +3750,7 @@ mcp.tool(setup_ospf_base_service)  # Setup OSPF base service
 mcp.tool(setup_ospf_neighbor_service)  # Setup OSPF neighbor service
 mcp.tool(remove_ospf_neighbor_service)  # Remove OSPF neighbor service
 mcp.tool(delete_ospf_service)  # Delete OSPF base service
+mcp.tool(normalize_ospf_service_interfaces)  # Normalize OSPF service interface ids
 
 # OSPF Service Tools - Old broken-up tools (commented out)
 # mcp.tool(create_ospf_service)
