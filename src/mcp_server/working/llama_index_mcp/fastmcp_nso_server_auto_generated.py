@@ -3784,6 +3784,8 @@ mcp.tool(check_locks)
 # Live-Status Operational Data Tools
 mcp.tool(explore_live_status)
 mcp.tool(get_interface_operational_status)
+mcp.tool(redeploy_nso_package)  # Redeploy a specific NSO package
+mcp.tool(reload_nso_packages)   # Reload all NSO packages
 
 # Interface Configuration Tools
 def configure_router_interface(router_name: str, interface_name: str, ip_address: str = None, description: str = None, shutdown: bool = None, delete_ip: bool = False) -> str:
@@ -3948,6 +3950,131 @@ def configure_router_interface(router_name: str, interface_name: str, ip_address
         except:
             pass
         return f"Error configuring interface {interface_name} on {router_name}: {e}"
+
+# =============================================================================
+# NSO Package Management Tools (Reload/Redeploy)
+# =============================================================================
+
+def redeploy_nso_package(package_name: str) -> str:
+    """Redeploy a specific NSO package (equivalent to 'packages package <name> redeploy').
+
+    Args:
+        package_name: Exact package name as shown in 'packages package ?' (e.g., 'ospf')
+
+    Returns:
+        str: Result message with redeploy outcome
+    """
+    try:
+        logger.info(f"🔧 Redeploying NSO package: {package_name}")
+        m = maapi.Maapi()
+        m.start_user_session('cisco', 'test_context_1')
+        t = m.start_write_trans()
+        root = maagic.get_root(t)
+
+        # Try native action first
+        try:
+            if package_name not in root.packages.package:
+                m.end_user_session()
+                return f"❌ Package '{package_name}' not found"
+            pkg = root.packages.package[package_name]
+            action = pkg.redeploy
+            out = action()
+            t.apply()
+            m.end_user_session()
+            return f"✅ Redeploy result for '{package_name}': {getattr(out, 'result', True)}"
+        except Exception as api_err:
+            logger.debug(f"Native redeploy action failed, fallback to CLI exec: {api_err}")
+
+        # Fallback via CLI exec.any
+        try:
+            t = m.start_read_trans()
+            root = maagic.get_root(t)
+            # Use first device to exec CLI as fallback
+            devs = list(root.devices.device.keys())
+            target = devs[0][0] if devs else None
+            if not target:
+                m.end_user_session()
+                return "❌ No devices available to execute CLI fallback"
+            show = root.devices.device[target].live_status.__getitem__('exec').any
+            inp = show.get_input()
+            inp.args = [f"packages package {package_name} redeploy"]
+            res = show.request(inp)
+            m.end_user_session()
+            return f"✅ CLI redeploy issued for '{package_name}': {str(getattr(res, 'result', 'OK'))}"
+        except Exception as cli_err:
+            logger.exception(f"❌ Fallback CLI redeploy failed: {cli_err}")
+            try:
+                m.end_user_session()
+            except:
+                pass
+            return f"❌ Error redeploying package '{package_name}'"
+    except Exception as e:
+        logger.exception(f"❌ Error redeploying package '{package_name}': {e}")
+        return f"❌ Error redeploying package '{package_name}': {e}"
+
+
+def reload_nso_packages(force: bool = False) -> str:
+    """Reload all NSO packages (equivalent to 'packages reload [force]').
+
+    Args:
+        force: If True, run with 'force' (ignore warnings)
+
+    Returns:
+        str: Multi-line result with per-package reload results
+    """
+    try:
+        logger.info(f"🔧 Reloading NSO packages (force={force})")
+        m = maapi.Maapi()
+        m.start_user_session('cisco', 'test_context_1')
+        t = m.start_write_trans()
+        root = maagic.get_root(t)
+
+        # Try native action first
+        try:
+            action = root.packages.reload
+            inp = action.get_input()
+            if hasattr(inp, 'force'):
+                inp.force = force
+            out = action(inp)
+            t.apply()
+            m.end_user_session()
+            # Try to format results if available
+            lines = ["✅ Packages reload invoked"]
+            try:
+                for rr in getattr(out, 'reload_result', []):
+                    lines.append(f"{getattr(rr, 'package', '?')}: {getattr(rr, 'result', '?')}")
+            except Exception:
+                pass
+            return "\n".join(lines)
+        except Exception as api_err:
+            logger.debug(f"Native reload action failed, fallback to CLI exec: {api_err}")
+
+        # Fallback via CLI exec.any
+        try:
+            t = m.start_read_trans()
+            root = maagic.get_root(t)
+            devs = list(root.devices.device.keys())
+            target = devs[0][0] if devs else None
+            if not target:
+                m.end_user_session()
+                return "❌ No devices available to execute CLI fallback"
+            show = root.devices.device[target].live_status.__getitem__('exec').any
+            cmd = "packages reload force" if force else "packages reload"
+            inp = show.get_input()
+            inp.args = [cmd]
+            res = show.request(inp)
+            m.end_user_session()
+            return f"✅ CLI reload issued: {cmd}\n{str(getattr(res, 'result', 'OK'))}"
+        except Exception as cli_err:
+            logger.exception(f"❌ Fallback CLI reload failed: {cli_err}")
+            try:
+                m.end_user_session()
+            except:
+                pass
+            return "❌ Error reloading packages"
+    except Exception as e:
+        logger.exception(f"❌ Error reloading NSO packages: {e}")
+        return f"❌ Error reloading NSO packages: {e}"
 
 # Rollback Tools
 mcp.tool(rollback_router_configuration)
