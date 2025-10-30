@@ -1,0 +1,119 @@
+
+module example-service {
+    namespace "http://example.com/ns/example-service";
+    prefix ex-svc;
+    
+    description "Example service model for demonstration";
+    
+    container service {
+        description "Example service configuration";
+        
+        leaf service-name {
+            type string;
+            description "Name of the service instance";
+            mandatory true;
+        }
+        
+        leaf service-id {
+            type uint32;
+            description "Unique service identifier";
+            default 1;
+        }
+        
+        leaf enabled {
+            type boolean;
+            description "Whether the service is enabled";
+            default true;
+        }
+        
+        list endpoint {
+            key "address";
+            description "Service endpoints";
+            
+            leaf address {
+                type string;
+                description "Endpoint IP address";
+            }
+            
+            leaf port {
+                type uint16;
+                description "Endpoint port number";
+                default 80;
+            }
+            
+            leaf protocol {
+                type enumeration {
+                    enum "http";
+                    enum "https";
+                    enum "tcp";
+                    enum "udp";
+                }
+                description "Protocol type";
+                default "http";
+            }
+        }
+        
+        container authentication {
+            description "Authentication configuration";
+            
+            leaf method {
+                type enumeration {
+                    enum "none";
+                    enum "basic";
+                    enum "oauth2";
+                    enum "jwt";
+                }
+                description "Authentication method";
+                default "none";
+            }
+            
+            leaf username {
+                type string;
+                description "Username for authentication";
+            }
+            
+            leaf password {
+                type string;
+                description "Password for authentication";
+            }
+        }
+    }
+    
+    rpc start-service {
+        description "Start the service";
+        
+        input {
+            leaf service-name {
+                type string;
+                description "Name of service to start";
+                mandatory true;
+            }
+        }
+        
+        output {
+            leaf status {
+                type string;
+                description "Service start status";
+            }
+        }
+    }
+    
+    rpc stop-service {
+        description "Stop the service";
+        
+        input {
+            leaf service-name {
+                type string;
+                description "Name of service to stop";
+                mandatory true;
+            }
+        }
+        
+        output {
+            leaf status {
+                type string;
+                description "Service stop status";
+            }
+        }
+    }
+}

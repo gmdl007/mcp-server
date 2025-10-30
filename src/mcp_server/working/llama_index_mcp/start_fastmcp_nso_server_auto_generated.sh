@@ -3,7 +3,7 @@
 # FastMCP NSO Server - Auto-Generated Tools Version
 # Startup script for the auto-generated tools server
 
-echo "🚀 Starting FastMCP NSO Auto-Generated Tools Server..."
+# echo "🚀 Starting FastMCP NSO Auto-Generated Tools Server..." >&2
 
 # Change to the project directory
 cd /Users/gudeng/MCP_Server
@@ -18,4 +18,5 @@ export DYLD_LIBRARY_PATH="$NSO_DIR/lib"
 export PYTHONPATH="$NSO_DIR/src/ncs/pyapi"
 
 # Start the auto-generated tools server
-python src/mcp_server/working/llama_index_mcp/fastmcp_nso_server_auto_generated.py
+# Redirect stderr to a log file to keep stdout clean for MCP protocol
+exec python src/mcp_server/working/llama_index_mcp/fastmcp_nso_server_auto_generated.py 2>/tmp/fastmcp_auto_generated.log

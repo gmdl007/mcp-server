@@ -1,0 +1,15 @@
+# Created by: admin
+# Date: 2025-10-26 11:13:29
+# Via: cli
+# Type: delta
+# Label: 
+# Comment: 
+# No: 10066
+# TransactionId: 1467
+# Hostname: GUDENG-M-H9KG
+
+mpls {
+    ldp {
+        router-id 1.1.1.1;
+    }
+}

@@ -1,18 +1,18 @@
 # Created by: admin
-# Date: 2025-10-22 20:18:38
+# Date: 2025-10-30 16:35:03
 # Via: cli
 # Type: delta
 # Label: 
 # Comment: 
-# No: 10064
-# TransactionId: 1410
+# No: 10162
+# TransactionId: 2121
 # Hostname: GUDENG-M-H9KG
 
 router {
-    delete:
-    ospf 1;
+    ospf 1 {
+        area 0;
+    }
 }
 mpls {
-    delete:
     ldp;
 }

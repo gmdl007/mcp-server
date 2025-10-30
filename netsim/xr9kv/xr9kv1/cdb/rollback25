@@ -1,0 +1,16 @@
+# Created by: admin
+# Date: 2025-10-30 15:36:52
+# Via: cli
+# Type: delta
+# Label: 
+# Comment: 
+# No: 10118
+# TransactionId: 1827
+# Hostname: GUDENG-M-H9KG
+
+interface {
+    GigabitEthernet 0/0/0/1 {
+        delete:
+        shutdown;
+    }
+ }

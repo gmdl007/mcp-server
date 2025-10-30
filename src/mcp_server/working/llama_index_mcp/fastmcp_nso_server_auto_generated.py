@@ -1245,18 +1245,26 @@ def setup_ospf_neighbor_service(
             else:
                 neighbor = base_service.neighbor.create(neighbor_device)
             
-            # Convert interface format from "GigabitEthernet/0/0/0/0" to "GigabitEthernet0/0/0/0"
-            if '/' in local_interface:
-                local_if_formatted = local_interface.replace('/', '', 1)
-            else:
-                local_if_formatted = local_interface
-            
-            if remote_interface and '/' in remote_interface:
-                remote_if_formatted = remote_interface.replace('/', '', 1)
-            elif remote_interface:
-                remote_if_formatted = remote_interface
-            else:
-                remote_if_formatted = None
+            # Normalize interface: accept '0/0/0/0' or 'GigabitEthernet0/0/0/0' or 'GigabitEthernet/0/0/0/0'
+            def normalize_iface(value: str) -> str:
+                if not value:
+                    return value
+                v = str(value).strip()
+                v = v.replace('GigabitEthernet/', 'GigabitEthernet')
+                # If starts with GigabitEthernet, strip the type to store n/n/n/n in service
+                if v.startswith('GigabitEthernet'):
+                    v = v[len('GigabitEthernet'):]
+                # Ensure it is n/n/n/n; if it's like '00/0/0' convert to '0/0/0/0'
+                parts = [p for p in v.split('/') if p != '']
+                if len(parts) == 3:
+                    parts = ['0'] + parts
+                if len(parts) == 4:
+                    parts = [str(int(p)) if p.isdigit() else p for p in parts]
+                    return '/'.join(parts)
+                return v
+
+            local_if_formatted = normalize_iface(local_interface)
+            remote_if_formatted = normalize_iface(remote_interface) if remote_interface else None
             
             neighbor.local_interface = local_if_formatted
             neighbor.local_ip = local_ip
@@ -3784,8 +3792,6 @@ mcp.tool(check_locks)
 # Live-Status Operational Data Tools
 mcp.tool(explore_live_status)
 mcp.tool(get_interface_operational_status)
-mcp.tool(redeploy_nso_package)  # Redeploy a specific NSO package
-mcp.tool(reload_nso_packages)   # Reload all NSO packages
 
 # Interface Configuration Tools
 def configure_router_interface(router_name: str, interface_name: str, ip_address: str = None, description: str = None, shutdown: bool = None, delete_ip: bool = False) -> str:
@@ -4091,6 +4097,8 @@ mcp.tool(show_all_devices)
 # Interface Configuration Tools
 mcp.tool(get_router_interfaces_config)
 mcp.tool(configure_router_interface)
+mcp.tool(redeploy_nso_package)  # Redeploy a specific NSO package
+mcp.tool(reload_nso_packages)   # Reload all NSO packages
 
 # Utility Tools
 mcp.tool(echo_text)

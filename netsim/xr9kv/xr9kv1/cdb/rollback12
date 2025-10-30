@@ -1,0 +1,35 @@
+# Created by: admin
+# Date: 2025-10-30 16:15:04
+# Via: cli
+# Type: delta
+# Label: 
+# Comment: 
+# No: 10144
+# TransactionId: 1995
+# Hostname: GUDENG-M-H9KG
+
+interface {
+    GigabitEthernet 000/0 {
+        ipv4 {
+            address {
+                ip   192.0.2.2;
+                mask 255.255.255.0;
+            }
+        }
+    }
+}
+router {
+    ospf 1 {
+        area 0 {
+            interface GigabitEthernet000/0 {
+                network point-to-point;
+            }
+        }
+    }
+}
+mpls {
+    ldp {
+        interface GigabitEthernet000/0 {
+        }
+    }
+ }

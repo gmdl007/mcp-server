@@ -1,0 +1,28 @@
+# Created by: admin
+# Date: 2025-10-30 16:29:44
+# Via: cli
+# Type: delta
+# Label: 
+# Comment: 
+# No: 10158
+# TransactionId: 2091
+# Hostname: GUDENG-M-H9KG
+
+interface {
+    delete:
+    GigabitEthernet 00/0/1;
+}
+router {
+    ospf 1 {
+        area 0 {
+            delete:
+            interface GigabitEthernet00/0/1;
+        }
+    }
+}
+mpls {
+    ldp {
+        delete:
+        interface GigabitEthernet00/0/1;
+    }
+ }
