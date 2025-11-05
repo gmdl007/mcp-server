@@ -8,7 +8,6 @@ Using FastMCP to create an MCP server with NSO tools
 import os
 import sys
 import logging
-import requests
 import base64
 from dotenv import load_dotenv
 

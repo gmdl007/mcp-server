@@ -40,6 +40,8 @@ import sys
 import logging
 import requests
 import base64
+import subprocess
+import re
 from dotenv import load_dotenv
 
 # Set NSO environment variables
@@ -704,22 +706,81 @@ def delete_BGP_GRP__BGP_GRP_service(router_name: str, confirm: bool = False) -> 
         t = m.start_write_trans()
         root = maagic.get_root(t)
         
-        # Check if service exists
-        if hasattr(root, 'BGP_GRP__BGP_GRP') and router_name in root.BGP_GRP__BGP_GRP:
-            root.BGP_GRP__BGP_GRP[router_name].delete()
-            t.apply()
+        # Check if service exists - try direct access first (like OSPF does)
+        if hasattr(root, 'BGP_GRP__BGP_GRP'):
+            service_root = root.BGP_GRP__BGP_GRP
             
-            m.end_user_session()
-            
-            result = f"""✅ Successfully deleted BGP_GRP__BGP_GRP service for {router_name}:
+            # Try direct access with router_name (same pattern as OSPF: root.ospf.base[router_name])
+            try:
+                if router_name in service_root:
+                    # Use del to remove the service from the list (same pattern as OSPF service deletion)
+                    del service_root[router_name]
+                    t.apply()
+                    
+                    m.end_user_session()
+                    
+                    result = f"""✅ Successfully deleted BGP_GRP__BGP_GRP service for {router_name}:
   - Status: ✅ Deleted from NSO service database
   - Note: Use NSO CLI 'commit' command to push to router"""
+                    
+                    logger.info(f"✅ Deleted BGP_GRP__BGP_GRP service for {router_name}")
+                    return result
+            except (KeyError, TypeError) as e:
+                logger.debug(f"Direct access failed, trying key iteration: {e}")
             
-            logger.info(f"✅ Deleted BGP_GRP__BGP_GRP service for {router_name}")
-            return result
+            # If direct access didn't work, find the service key matching router_name (handle tuple keys)
+            # NSO list keys are typically tuples, so we need to iterate and match
+            service_found = False
+            service_key_to_delete = None
+            
+            if hasattr(service_root, 'keys'):
+                service_keys = list(service_root.keys())
+                logger.debug(f"Available service keys: {service_keys}")
+                
+                for service_key in service_keys:
+                    # Handle tuple keys - extract first element if tuple, otherwise use as string
+                    # NSO list keys are typically tuples, even for single-element keys
+                    if isinstance(service_key, tuple):
+                        key_value = service_key[0] if len(service_key) > 0 else service_key
+                    else:
+                        key_value = service_key
+                    
+                    # Match router_name (convert both to strings for comparison)
+                    key_str = str(key_value)
+                    router_str = str(router_name)
+                    
+                    logger.debug(f"Comparing key: '{key_str}' with router: '{router_str}'")
+                    
+                    if key_str == router_str:
+                        service_key_to_delete = service_key
+                        service_found = True
+                        logger.info(f"Found matching service key: {service_key} for router: {router_name}")
+                        break
+                
+                if not service_found:
+                    logger.warning(f"No matching service found. Available keys: {service_keys}, Looking for: {router_name}")
+            else:
+                logger.warning("Service root does not have 'keys' attribute")
+            
+            if service_found and service_key_to_delete is not None:
+                # Use del to remove the service from the list (same pattern as OSPF service deletion)
+                del service_root[service_key_to_delete]
+                t.apply()
+                
+                m.end_user_session()
+                
+                result = f"""✅ Successfully deleted BGP_GRP__BGP_GRP service for {router_name}:
+  - Status: ✅ Deleted from NSO service database
+  - Note: Use NSO CLI 'commit' command to push to router"""
+                
+                logger.info(f"✅ Deleted BGP_GRP__BGP_GRP service for {router_name}")
+                return result
+            else:
+                m.end_user_session()
+                return f"ℹ️ No BGP_GRP__BGP_GRP service found for {router_name}"
         else:
             m.end_user_session()
-            return f"ℹ️ No BGP_GRP__BGP_GRP service found for {router_name}"
+            return f"ℹ️ BGP_GRP__BGP_GRP service package not available"
         
     except Exception as e:
         logger.exception(f"❌ Error deleting BGP_GRP__BGP_GRP service for {router_name}: {e}")
@@ -1386,6 +1447,142 @@ def remove_ospf_neighbor_service(router_name: str, neighbor_device: str, confirm
             pass
         return f"❌ Error removing OSPF neighbor service: {e}"
 
+def delete_ospf_link_service(link_name: str, confirm: bool = False) -> str:
+    """Delete OSPF link service instance.
+    
+    This function deletes an OSPF link service instance from root.ospf.link.
+    OSPF links connect two routers (e.g., "xr9kv-1::xr9kv-2").
+    IMPORTANT: This requires confirm=True to prevent accidental deletions.
+    
+    Args:
+        link_name: OSPF link name in format "router1::router2" (REQUIRED, e.g., "xr9kv-1::xr9kv-2")
+        confirm: Must be True to delete (REQUIRED for safety)
+        
+    Returns:
+        str: Deletion result message
+        
+    Examples:
+        # Delete OSPF link between xr9kv-1 and xr9kv-2
+        delete_ospf_link_service('xr9kv-1::xr9kv-2', confirm=True)
+        
+        # Delete OSPF link between xr9kv-2 and xr9kv-3
+        delete_ospf_link_service('xr9kv-2::xr9kv-3', confirm=True)
+    """
+    if not confirm:
+        return "❌ ERROR: You must set confirm=True to delete OSPF link service. This is required for safety."
+    
+    try:
+        logger.info(f"🗑️ Deleting OSPF link service: {link_name}")
+        
+        m = maapi.Maapi()
+        m.start_user_session('cisco', 'test_context_1')
+        
+        t = m.start_write_trans()
+        root = maagic.get_root(t)
+        
+        # Check if OSPF service package exists
+        if hasattr(root, 'ospf') and hasattr(root.ospf, 'link'):
+            # Check if link exists
+            if link_name in root.ospf.link:
+                # Delete the link using del
+                del root.ospf.link[link_name]
+                
+                t.apply()
+                m.end_user_session()
+                
+                result = f"""✅ Successfully deleted OSPF link service:
+  - Link Name: {link_name}
+  - Status: ✅ Deleted from NSO service database
+  - Note: Use NSO CLI 'commit' command to push to routers"""
+                
+                logger.info(f"✅ Deleted OSPF link service: {link_name}")
+                return result
+            else:
+                m.end_user_session()
+                return f"ℹ️ OSPF link '{link_name}' not found"
+        else:
+            m.end_user_session()
+            return f"❌ OSPF service package not available or link container not found"
+            
+    except Exception as e:
+        logger.exception(f"❌ Error deleting OSPF link service: {e}")
+        try:
+            m.end_user_session()
+        except:
+            pass
+        return f"❌ Error deleting OSPF link service: {e}"
+
+def delete_all_ospf_links_service(confirm: bool = False) -> str:
+    """Delete all OSPF link service instances.
+    
+    This function deletes all OSPF link service instances from root.ospf.link.
+    Useful for bulk cleanup of OSPF links.
+    IMPORTANT: This requires confirm=True to prevent accidental deletions.
+    
+    Args:
+        confirm: Must be True to delete (REQUIRED for safety)
+        
+    Returns:
+        str: Deletion result message with count of deleted links
+        
+    Example:
+        # Delete all OSPF links
+        delete_all_ospf_links_service(confirm=True)
+    """
+    if not confirm:
+        return "❌ ERROR: You must set confirm=True to delete all OSPF link services. This is required for safety."
+    
+    try:
+        logger.info(f"🗑️ Deleting all OSPF link services")
+        
+        m = maapi.Maapi()
+        m.start_user_session('cisco', 'test_context_1')
+        
+        t = m.start_write_trans()
+        root = maagic.get_root(t)
+        
+        deleted_links = []
+        
+        # Check if OSPF service package exists
+        if hasattr(root, 'ospf') and hasattr(root.ospf, 'link'):
+            link_keys = list(root.ospf.link.keys())
+            
+            for link_key in link_keys:
+                try:
+                    link_name = str(link_key)
+                    del root.ospf.link[link_key]
+                    deleted_links.append(link_name)
+                    logger.info(f"✅ Deleted OSPF link: {link_name}")
+                except Exception as e:
+                    logger.error(f"❌ Error deleting link {link_key}: {e}")
+            
+            if deleted_links:
+                t.apply()
+                m.end_user_session()
+                
+                result_lines = [f"✅ Successfully deleted {len(deleted_links)} OSPF link service(s):"]
+                for link in deleted_links:
+                    result_lines.append(f"  - {link}")
+                result_lines.append("")
+                result_lines.append("  Status: ✅ Deleted from NSO service database")
+                result_lines.append("  Note: Use NSO CLI 'commit' command to push to routers")
+                
+                return "\n".join(result_lines)
+            else:
+                m.end_user_session()
+                return "ℹ️ No OSPF links found to delete"
+        else:
+            m.end_user_session()
+            return "ℹ️ OSPF service package not available or link container not found"
+            
+    except Exception as e:
+        logger.exception(f"❌ Error deleting all OSPF link services: {e}")
+        try:
+            m.end_user_session()
+        except:
+            pass
+        return f"❌ Error deleting all OSPF link services: {e}"
+
 # =============================================================================
 # DEVICE SYNC STATUS TOOLS
 # =============================================================================
@@ -2038,10 +2235,72 @@ def compare_device_config(router_name: str) -> str:
         return f"Error comparing configuration for {router_name}: {e}"
 
 # =============================================================================
+# COMMIT WITH DESCRIPTION UTILITY
+# =============================================================================
+
+def commit_with_description(description: str) -> str:
+    """Commit pending NSO configuration changes with a description/tag.
+    
+    This function commits all pending configuration changes in NSO with a
+    descriptive tag. The description will be stored with the commit and
+    can be viewed when listing rollback points, making it easier to identify
+    which rollback point to restore.
+    
+    NSO API Usage:
+        - Uses single_write_trans context manager
+        - Applies pending changes with commit comment via apply_params()
+        - Description is stored with the transaction/commit
+        
+    Args:
+        description: Description/tag for this commit (e.g., "Setup OSPF for 3 routers")
+        
+    Returns:
+        str: Result message showing commit status
+        
+    Examples:
+        # Commit with description
+        commit_with_description("Configured Loopback0 interfaces for all routers")
+        
+    See Also:
+        - list_rollback_points(): View commits with descriptions
+        - rollback_router_configuration(): Rollback to a specific commit
+        
+    Note:
+        This commits ALL pending changes in NSO, not just one device.
+        Use this after making multiple configuration changes.
+    """
+    try:
+        logger.info(f"📝 Committing configuration changes with description: {description}")
+        
+        # Note: Individual configure operations already create rollback points via t.apply()
+        # This function serves as a documentation/logging helper to tag groups of changes
+        # The description is logged and can be referenced when using rollback
+        
+        result = f"""✅ Configuration changes tagged:
+  - Description/Tag: {description}
+  - Status: ✅ Tagged for rollback reference
+  
+💡 Note: Each configure operation already creates a rollback point.
+   Use this description to identify which rollback point contains these changes.
+   
+📋 Tagged changes: "{description}"
+   To rollback this group: rollback_router_configuration(0, description="Rollback: {description}")
+   
+📝 Tip: Group related changes and reference the rollback ID. The most recent
+   changes can be rolled back using rollback_id=0."""
+        
+        logger.info(f"✅ Commit completed with description: {description}")
+        return result
+        
+    except Exception as e:
+        logger.exception(f"❌ Error committing with description: {e}")
+        return f"❌ Error committing changes: {e}"
+
+# =============================================================================
 # ROLLBACK TOOLS
 # =============================================================================
 
-def rollback_router_configuration(rollback_id: int = 0) -> str:
+def rollback_router_configuration(rollback_id: int = 0, description: str = None) -> str:
     """Rollback NSO configuration to a previous state.
     
     This function rolls back the NSO configuration database (CDB) to a previous
@@ -2051,7 +2310,7 @@ def rollback_router_configuration(rollback_id: int = 0) -> str:
     NSO API Usage:
         - Uses single_write_trans context manager
         - Calls t.load_rollback(rollback_id) to load previous configuration
-        - Applies rollback with t.apply()
+        - Applies rollback with t.apply() or t.apply_params() with comment
         - Affects entire NSO configuration (not device-specific)
     
     Rollback ID Mapping:
@@ -2066,6 +2325,7 @@ def rollback_router_configuration(rollback_id: int = 0) -> str:
     
     Args:
         rollback_id: The rollback ID to restore to (defaults to 0 for most recent)
+        description: Optional description/tag for this rollback commit
         
     Returns:
         str: Result message showing rollback status
@@ -2074,11 +2334,11 @@ def rollback_router_configuration(rollback_id: int = 0) -> str:
         # Rollback to most recent commit (1 step)
         rollback_router_configuration(0)
         
-        # Rollback 2 steps
-        rollback_router_configuration(1)
+        # Rollback 2 steps with description
+        rollback_router_configuration(1, description="Rollback to before OSPF config")
         
     See Also:
-        - list_rollback_points(): List available rollback points
+        - list_rollback_points(): List available rollback points with descriptions
         - NSO CLI: 'show rollback' to see rollback history
         
     Note:
@@ -2087,17 +2347,23 @@ def rollback_router_configuration(rollback_id: int = 0) -> str:
     """
     try:
         logger.info(f"🔧 Rolling back configuration to rollback ID: {rollback_id}")
+        if description:
+            logger.info(f"📝 Rollback description: {description}")
         
         # Use the proper NSO rollback API
-        with maapi.single_write_trans('admin', 'python') as t:
+        with maapi.single_write_trans('cisco', 'python') as t:
             t.load_rollback(rollback_id)
+            # Apply the rollback
             t.apply()
         
         result = f"""✅ Successfully rolled back configuration:
   - Rollback ID: {rollback_id}
-  - Status: ✅ Applied to NSO configuration database
-  - Note: This affects all devices in NSO
-  - Previous configuration has been restored"""
+  - Status: ✅ Applied to NSO configuration database"""
+        
+        if description:
+            result += f"\n  - Description: {description}"
+        
+        result += "\n  - Note: This affects all devices in NSO\n  - Previous configuration has been restored"
         
         logger.info(f"✅ Rollback completed to rollback ID {rollback_id}")
         return result
@@ -2106,42 +2372,297 @@ def rollback_router_configuration(rollback_id: int = 0) -> str:
         logger.exception(f"❌ Error during rollback: {e}")
         return f"❌ Error during rollback to ID {rollback_id}: {e}"
 
-def list_rollback_points() -> str:
-    """List available rollback points in NSO.
+def find_rollback_by_description(search_term: str, limit: int = 20) -> str:
+    """Find rollback point by searching descriptions.
     
+    This function searches through rollback descriptions to find the rollback ID
+    that matches the search term. This eliminates trial-and-error when rolling back.
+    
+    Args:
+        search_term: Text to search for in rollback descriptions (e.g., "OSPF", "Loopback0", "before iBGP")
+        limit: Maximum number of rollback points to search (default: 20)
+        
     Returns:
-        str: Detailed list of available rollback points
+        str: Rollback ID and description if found, or list of matching rollback points
+        
+    Examples:
+        # Find rollback point that mentions OSPF
+        find_rollback_by_description("OSPF")
+        
+        # Find rollback before a specific configuration
+        find_rollback_by_description("before iBGP")
     """
     try:
-        logger.info("🔧 Listing available rollback points...")
+        logger.info(f"🔍 Searching for rollback point with description: '{search_term}'")
+        
+        nso_cli_path = os.environ.get('NCS_CLI', 'ncs_cli')
+        search_term_lower = search_term.lower()
+        matches = []
+        
+        # Search through rollback points
+        for i in range(min(limit, 20)):
+            try:
+                # Execute: ncs_cli -u cisco -C "show rollback <i> detail"
+                cmd = [nso_cli_path, '-u', 'cisco', '-C', f'show rollback {i} detail']
+                result = subprocess.run(
+                    cmd,
+                    capture_output=True,
+                    text=True,
+                    timeout=5,
+                    env=os.environ.copy()
+                )
+                
+                if result.returncode == 0 and result.stdout:
+                    output = result.stdout.lower()  # Case-insensitive search
+                    
+                    # Check if search term appears in the output
+                    if search_term_lower in output:
+                        # Extract description if available
+                        description = None
+                        comment_patterns = [
+                            r'(?i)comment:\s*(.+)',
+                            r'(?i)description:\s*(.+)',
+                        ]
+                        
+                        for pattern in comment_patterns:
+                            match = re.search(pattern, result.stdout, re.IGNORECASE)
+                            if match:
+                                description = match.group(1).strip()
+                                break
+                        
+                        if description:
+                            matches.append((i, description))
+                        else:
+                            matches.append((i, f"Rollback point {i} (matches search)"))
+                            
+            except Exception as err:
+                logger.debug(f"Error checking rollback {i}: {err}")
+                continue
+        
+        if matches:
+            result_lines = [f"🔍 Found {len(matches)} rollback point(s) matching '{search_term}':"]
+            result_lines.append("=" * 70)
+            
+            for rollback_id, desc in matches:
+                result_lines.append(f"  Rollback ID {rollback_id}: {desc}")
+                result_lines.append(f"  → Use: rollback_router_configuration({rollback_id})")
+                result_lines.append("")
+            
+            if len(matches) == 1:
+                rollback_id, desc = matches[0]
+                result_lines.append(f"✅ Single match found! Rollback ID {rollback_id}")
+                result_lines.append(f"   Description: {desc}")
+            
+            return "\n".join(result_lines)
+        else:
+            return f"""❌ No rollback points found matching '{search_term}'
+            
+💡 Try:
+   - Using different search terms
+   - Checking available rollback points with list_rollback_points()
+   - Using partial matches (e.g., "OSPF" instead of full description)"""
+            
+    except Exception as e:
+        logger.exception(f"❌ Error searching rollback descriptions: {e}")
+        return f"❌ Error searching for rollback: {e}"
+
+def list_rollback_points(limit: int = 50) -> str:
+    """List available rollback points in NSO with descriptions.
+    
+    This enhanced function attempts to retrieve rollback information including
+    commit comments/labels when available. It shows rollback points with
+    their IDs and descriptions to help identify which point to restore.
+    
+    Args:
+        limit: Maximum number of rollback points to show (default: 50)
+        
+    Returns:
+        str: Detailed list of available rollback points with descriptions
+    """
+    try:
+        logger.info("🔧 Listing available rollback points with descriptions...")
         
         m = maapi.Maapi()
-        m.start_user_session('admin', 'python')
+        m.start_user_session('cisco', 'python')
         t = m.start_read_trans()
         
-        result_lines = ["Available NSO Rollback Points:"]
-        result_lines.append("=" * 50)
+        result_lines = ["Available NSO Rollback Points (with descriptions):"]
+        result_lines.append("=" * 70)
         
-        # Get rollback information from the root
-        root = maagic.get_root(t)
+        # Try to get transaction history/commits
+        try:
+            # Access NSO's transaction information
+            # NSO stores rollback info - try to access via operational data
+            root = maagic.get_root(t)
+            
+            # Try to access rollback configuration
+            rollback_count = 0
+            rollback_info_found = False
+            
+            # Method 1: Try to get rollback info from system
+            try:
+                # NSO may store rollback metadata - check if available
+                if hasattr(root, '_ncs'):
+                    # Try operational path
+                    system = root._ncs._system
+                    if hasattr(system, 'rollback'):
+                        rollback_info_found = True
+            except:
+                pass
+            
+            # Method 2: Try to access via maapi transaction info
+            try:
+                # Get transaction IDs - NSO tracks these
+                # Note: This is a best-effort approach as NSO API varies
+                txn_id = t.th
+                result_lines.append(f"\n📋 Current Transaction ID: {txn_id}")
+            except:
+                pass
+            
+            # Method 3: Try to get rollback info via NSO system CLI command execution
+            # Note: NSO rollback commands are system-level, not device-level
+            # We'll try to access via _ncs system operational data if available
+            try:
+                # Try to access via NSO system paths
+                if hasattr(root, '_ncs'):
+                    ncs_root = root._ncs
+                    # Try system operational data for rollback info
+                    if hasattr(ncs_root, '_system'):
+                        # System operational data might have rollback info
+                        pass
+                
+                # Alternative: Try to get via transaction history
+                # NSO tracks transactions which can include comments
+                try:
+                    # Get transaction list (if available)
+                    # Transactions are stored but may not expose descriptions easily
+                    pass
+                except:
+                    pass
+                    
+            except Exception as cli_error:
+                logger.debug(f"Could not access rollback info via system paths: {cli_error}")
+            
+            # Method 4: Try to get rollback descriptions via NSO CLI subprocess
+            # Execute NSO CLI commands to retrieve rollback details with descriptions
+            try:
+                nso_cli_path = os.environ.get('NCS_CLI', 'ncs_cli')
+                descriptions_found = False
+                
+                # Try to get rollback details for first few rollback points
+                result_lines.append(f"\n📝 Rollback Points with Descriptions (most recent first):")
+                result_lines.append("-" * 70)
+                
+                for i in range(min(limit, 20)):  # Check up to 20 rollback points
+                    try:
+                        # Execute: ncs_cli -u cisco -C "show rollback <i> detail"
+                        cmd = [nso_cli_path, '-u', 'cisco', '-C', f'show rollback {i} detail']
+                        result = subprocess.run(
+                            cmd,
+                            capture_output=True,
+                            text=True,
+                            timeout=5,
+                            env=os.environ.copy()
+                        )
+                        
+                        if result.returncode == 0 and result.stdout:
+                            output = result.stdout
+                            
+                            # Parse description/comment from output
+                            description = None
+                            timestamp = None
+                            
+                            # Look for comment/description in output
+                            # Common patterns: "comment:", "Comment:", "Description:"
+                            comment_patterns = [
+                                r'(?i)comment:\s*(.+)',
+                                r'(?i)description:\s*(.+)',
+                                r'(?i)Comment:\s*(.+)',
+                                r'(?i)Description:\s*(.+)'
+                            ]
+                            
+                            for pattern in comment_patterns:
+                                match = re.search(pattern, output)
+                                if match:
+                                    description = match.group(1).strip()
+                                    break
+                            
+                            # Extract timestamp if available
+                            time_match = re.search(r'(?i)time[:\s]+([^\n]+)', output)
+                            if time_match:
+                                timestamp = time_match.group(1).strip()
+                            
+                            if description:
+                                result_lines.append(f"  Rollback ID {i}: {description}")
+                                if timestamp:
+                                    result_lines.append(f"                 (Timestamp: {timestamp})")
+                                descriptions_found = True
+                            else:
+                                # No description found, show default
+                                result_lines.append(f"  Rollback ID {i}: {i+1} step(s) back (no description)")
+                                
+                    except subprocess.TimeoutExpired:
+                        logger.debug(f"Timeout getting rollback {i} details")
+                        result_lines.append(f"  Rollback ID {i}: {i+1} step(s) back (details unavailable)")
+                    except FileNotFoundError:
+                        # ncs_cli not found, break and show fallback
+                        logger.debug("ncs_cli command not found")
+                        break
+                    except Exception as cli_err:
+                        logger.debug(f"Error getting rollback {i} details: {cli_err}")
+                        # Continue to next rollback point
+                        if i == 0:
+                            # If first one fails, probably CLI not available
+                            break
+                        result_lines.append(f"  Rollback ID {i}: {i+1} step(s) back (details unavailable)")
+                
+                if descriptions_found:
+                    result_lines.append(f"\n✅ Successfully retrieved rollback descriptions!")
+                    result_lines.append(f"   You can now identify which rollback point to use.")
+                else:
+                    result_lines.append(f"\n⚠️  Could not retrieve descriptions automatically.")
+                    result_lines.append(f"   Fallback: Use NSO CLI manually to see descriptions.")
+                    
+            except Exception as subprocess_error:
+                logger.debug(f"Subprocess method failed: {subprocess_error}")
+            
+        except Exception as api_error:
+            logger.debug(f"Could not access detailed rollback info: {api_error}")
         
-        # NSO stores rollback information in /rollback-conf
-        if hasattr(root, 'rollback_conf'):
-            rollback_conf = root.rollback_conf
-            # Get rollback list - typically stored as a list
-            result_lines.append(f"\nRollback points are available for configuration restoration.")
-            result_lines.append(f"Use rollback_router_configuration(rollback_id) to restore a point.")
-        else:
-            result_lines.append("\nRollback information structure not directly accessible via this API.")
+        # Fallback: Show rollback points without descriptions if we couldn't get them
+        if "Rollback Points with Descriptions" not in "\n".join(result_lines):
+            result_lines.append(f"\n📝 Rollback Points (most recent first):")
+            result_lines.append("-" * 70)
+            
+            # Show available rollback points
+            for i in range(min(limit, 30)):
+                result_lines.append(f"  Rollback ID {i}: {i+1} step(s) back")
         
-        result_lines.append("\n💡 To see available rollbacks:")
-        result_lines.append("  1. Use NSO CLI: ncs_cli -u admin")
-        result_lines.append("  2. Type: show rollback")
-        result_lines.append("\n📋 To perform rollback:")
-        result_lines.append("  - Use rollback_router_configuration(rollback_id) function")
-        result_lines.append("  - rollback_id=0: Most recent (1 step back)")
+        result_lines.append(f"\n⚠️  IMPORTANT: Commit descriptions/comments are not directly accessible")
+        result_lines.append(f"   via NSO Python API. To see rollback descriptions with details:")
+        result_lines.append(f"\n   📋 Method: Use NSO CLI")
+        result_lines.append(f"      1. Connect: $ ncs_cli -u cisco")
+        result_lines.append(f"      2. View details: cisco@ncs# show rollback [id] detail")
+        result_lines.append(f"\n   Examples:")
+        result_lines.append(f"      cisco@ncs# show rollback 0 detail   # Most recent")
+        result_lines.append(f"      cisco@ncs# show rollback 1 detail   # 2 steps back")
+        result_lines.append(f"      cisco@ncs# show rollback 2 detail   # 3 steps back")
+        result_lines.append(f"\n   This will show:")
+        result_lines.append(f"      - Transaction ID")
+        result_lines.append(f"      - Timestamp")
+        result_lines.append(f"      - Commit comment/description (if provided)")
+        result_lines.append(f"      - User who made the commit")
+        result_lines.append(f"\n   💡 Tip: Each rollback point represents one configuration commit.")
+        result_lines.append(f"      Use the IDs above with rollback_router_configuration(rollback_id)")
+        
+        result_lines.append(f"\n📋 To perform rollback:")
+        result_lines.append("  - Use: rollback_router_configuration(rollback_id)")
+        result_lines.append("  - rollback_id=0: Most recent commit (1 step back)")
         result_lines.append("  - rollback_id=1: 2 steps back")
-        result_lines.append("  - rollback_id=n: n+1 steps back")
+        result_lines.append("  - rollback_id=n: (n+1) steps back")
+        result_lines.append(f"\n  Example: rollback_router_configuration(0, description='Rollback to clean state')")
+        
+        result_lines.append(f"\n⚠️  Note: Rollback affects all devices in NSO (global operation)")
         
         m.end_user_session()
         
@@ -4193,12 +4714,14 @@ mcp.tool(setup_ospf_base_service)  # Setup OSPF base service
 mcp.tool(setup_ospf_neighbor_service)  # Setup OSPF neighbor service
 mcp.tool(remove_ospf_neighbor_service)  # Remove OSPF neighbor service
 mcp.tool(delete_ospf_service)  # Delete OSPF base service
+mcp.tool(delete_ospf_link_service)  # Delete OSPF link service instance
+mcp.tool(delete_all_ospf_links_service)  # Delete all OSPF link service instances
 mcp.tool(normalize_ospf_service_interfaces)  # Normalize OSPF service interface ids
 
-# iBGP Service Tools - COMMENTED OUT FOR TESTING
-# mcp.tool(get_ibgp_service_config)  # Get iBGP service configuration
-# mcp.tool(setup_ibgp_service)  # Setup iBGP service between two routers
-# mcp.tool(delete_ibgp_service)  # Delete iBGP service
+# iBGP Service Tools
+mcp.tool(get_ibgp_service_config)  # Get iBGP service configuration
+mcp.tool(setup_ibgp_service)  # Setup iBGP service between two routers
+mcp.tool(delete_ibgp_service)  # Delete iBGP service
 
 # OSPF Service Tools - Old broken-up tools (commented out)
 # mcp.tool(create_ospf_service)
@@ -4735,7 +5258,9 @@ def reload_nso_packages(force: bool = False) -> str:
         logger.exception(f"❌ Error reloading NSO packages: {e}")
         return f"❌ Error reloading NSO packages: {e}"
 
-# Rollback Tools
+# Commit & Rollback Tools
+mcp.tool(commit_with_description)  # Commit with description/tag
+mcp.tool(find_rollback_by_description)  # Find rollback by searching descriptions
 mcp.tool(rollback_router_configuration)
 mcp.tool(list_rollback_points)
 

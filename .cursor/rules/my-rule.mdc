@@ -1,4 +1,5 @@
 ---
+description: Defines unified development standards for integrating Cisco NSO network automation with LlamaIndex-based AI workflows using Python — ensuring modular, type-safe, and functional code structure, consistent error handling, efficient MAAPI/MCP interactions, and reliable AI-driven orchestration of network services.
 alwaysApply: false
 ---
 # Cisco NSO + LlamaIndex AI Context Rules
