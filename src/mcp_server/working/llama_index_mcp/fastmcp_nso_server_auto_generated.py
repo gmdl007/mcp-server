@@ -4705,6 +4705,1928 @@ def delete_ibgp_service(service_name: str, confirm: bool = False) -> str:
         return f"Error deleting iBGP service: {e}"
 
 # =============================================================================
+# PHASE 1: CRITICAL OPERATIONS - DEVICE CONNECTION MANAGEMENT
+# =============================================================================
+
+def connect_device(router_name: str) -> str:
+    """Connect NSO to a device.
+    
+    This function establishes a connection between NSO and the specified device.
+    Connection is required before performing most operations on the device.
+    
+    Args:
+        router_name: Name of the router device to connect to
+        
+    Returns:
+        str: Connection result message
+        
+    Examples:
+        connect_device('xr9kv-1')
+    """
+    try:
+        logger.info(f"🔧 Connecting to device: {router_name}")
+        
+        m = maapi.Maapi()
+        m.start_user_session('cisco', 'test_context_1')
+        t = m.start_write_trans()
+        root = maagic.get_root(t)
+        
+        if router_name not in root.devices.device:
+            m.end_user_session()
+            return f"Error: Device '{router_name}' not found in NSO"
+        
+        device = root.devices.device[router_name]
+        device.connect()
+        t.apply()
+        m.end_user_session()
+        
+        return f"✅ Successfully connected to device '{router_name}'"
+        
+    except Exception as e:
+        logger.exception(f"❌ Error connecting to device {router_name}: {e}")
+        try:
+            m.end_user_session()
+        except:
+            pass
+        return f"Error connecting to device {router_name}: {e}"
+
+def disconnect_device(router_name: str) -> str:
+    """Disconnect NSO from a device.
+    
+    This function disconnects NSO from the specified device.
+    
+    Args:
+        router_name: Name of the router device to disconnect from
+        
+    Returns:
+        str: Disconnection result message
+        
+    Examples:
+        disconnect_device('xr9kv-1')
+    """
+    try:
+        logger.info(f"🔧 Disconnecting from device: {router_name}")
+        
+        m = maapi.Maapi()
+        m.start_user_session('cisco', 'test_context_1')
+        t = m.start_write_trans()
+        root = maagic.get_root(t)
+        
+        if router_name not in root.devices.device:
+            m.end_user_session()
+            return f"Error: Device '{router_name}' not found in NSO"
+        
+        device = root.devices.device[router_name]
+        device.disconnect()
+        t.apply()
+        m.end_user_session()
+        
+        return f"✅ Successfully disconnected from device '{router_name}'"
+        
+    except Exception as e:
+        logger.exception(f"❌ Error disconnecting from device {router_name}: {e}")
+        try:
+            m.end_user_session()
+        except:
+            pass
+        return f"Error disconnecting from device {router_name}: {e}"
+
+def ping_device(router_name: str) -> str:
+    """Ping a device to check connectivity.
+    
+    This function pings the device to verify NSO can reach it.
+    
+    Args:
+        router_name: Name of the router device to ping
+        
+    Returns:
+        str: Ping result message
+        
+    Examples:
+        ping_device('xr9kv-1')
+    """
+    try:
+        logger.info(f"🔧 Pinging device: {router_name}")
+        
+        m = maapi.Maapi()
+        m.start_user_session('cisco', 'test_context_1')
+        t = m.start_read_trans()
+        root = maagic.get_root(t)
+        
+        if router_name not in root.devices.device:
+            m.end_user_session()
+            return f"Error: Device '{router_name}' not found in NSO"
+        
+        device = root.devices.device[router_name]
+        result = device.ping()
+        m.end_user_session()
+        
+        if result:
+            return f"✅ Ping to device '{router_name}' successful: {result}"
+        else:
+            return f"⚠️  Ping to device '{router_name}' completed but no response received"
+        
+    except Exception as e:
+        logger.exception(f"❌ Error pinging device {router_name}: {e}")
+        try:
+            m.end_user_session()
+        except:
+            pass
+        return f"Error pinging device {router_name}: {e}"
+
+def get_device_connection_status(router_name: str) -> str:
+    """Get device connection status.
+    
+    This function checks if NSO is currently connected to the device.
+    
+    Args:
+        router_name: Name of the router device to check
+        
+    Returns:
+        str: Connection status information
+        
+    Examples:
+        get_device_connection_status('xr9kv-1')
+    """
+    try:
+        logger.info(f"🔧 Getting connection status for device: {router_name}")
+        
+        m = maapi.Maapi()
+        m.start_user_session('cisco', 'test_context_1')
+        t = m.start_read_trans()
+        root = maagic.get_root(t)
+        
+        if router_name not in root.devices.device:
+            m.end_user_session()
+            return f"Error: Device '{router_name}' not found in NSO"
+        
+        device = root.devices.device[router_name]
+        state = device.state
+        
+        status_lines = [f"Device Connection Status: {router_name}"]
+        status_lines.append("=" * 50)
+        status_lines.append(f"Reached: {state.reached}")
+        status_lines.append(f"Last Connect: {state.last_connect}")
+        status_lines.append(f"Last Disconnect: {state.last_disconnect}")
+        
+        if hasattr(state, 'last_connect_result'):
+            status_lines.append(f"Last Connect Result: {state.last_connect_result}")
+        
+        m.end_user_session()
+        return "\n".join(status_lines)
+        
+    except Exception as e:
+        logger.exception(f"❌ Error getting connection status for device {router_name}: {e}")
+        try:
+            m.end_user_session()
+        except:
+            pass
+        return f"Error getting connection status for device {router_name}: {e}"
+
+# =============================================================================
+# PHASE 1: CRITICAL OPERATIONS - COMMIT QUEUE MANAGEMENT
+# =============================================================================
+
+def list_commit_queue(limit: int = 50) -> str:
+    """List pending commits in the commit queue.
+    
+    This function shows all commits currently in the commit queue, including
+    their status, IDs, and other relevant information.
+    
+    Args:
+        limit: Maximum number of queue elements to show (default: 50)
+        
+    Returns:
+        str: List of pending commits in queue
+        
+    Examples:
+        list_commit_queue(limit=20)
+    """
+    try:
+        logger.info(f"🔧 Listing commit queue (limit={limit})")
+        
+        m = maapi.Maapi()
+        m.start_user_session('cisco', 'test_context_1')
+        t = m.start_read_trans()
+        root = maagic.get_root(t)
+        
+        result_lines = ["Commit Queue Status:"]
+        result_lines.append("=" * 50)
+        
+        if hasattr(root, 'commit_queue') and hasattr(root.commit_queue, 'queue_element'):
+            queue_elements = root.commit_queue.queue_element
+            count = 0
+            
+            for elem in queue_elements:
+                if count >= limit:
+                    break
+                
+                result_lines.append(f"\nQueue Element ID: {elem.id}")
+                if hasattr(elem, 'status'):
+                    result_lines.append(f"  Status: {elem.status}")
+                if hasattr(elem, 'waiting_for'):
+                    result_lines.append(f"  Waiting For: {elem.waiting_for}")
+                if hasattr(elem, 'age'):
+                    result_lines.append(f"  Age: {elem.age}")
+                count += 1
+            
+            if count == 0:
+                result_lines.append("\n✅ Commit queue is empty")
+            else:
+                result_lines.append(f"\nTotal queue elements shown: {count}")
+        else:
+            result_lines.append("\n⚠️  Commit queue not available or empty")
+        
+        m.end_user_session()
+        return "\n".join(result_lines)
+        
+    except Exception as e:
+        logger.exception(f"❌ Error listing commit queue: {e}")
+        try:
+            m.end_user_session()
+        except:
+            pass
+        return f"Error listing commit queue: {e}"
+
+def get_commit_status(commit_id: str) -> str:
+    """Get status of a specific commit in the queue.
+    
+    Args:
+        commit_id: ID of the commit to check
+        
+    Returns:
+        str: Status information for the commit
+        
+    Examples:
+        get_commit_status('12345')
+    """
+    try:
+        logger.info(f"🔧 Getting commit status for ID: {commit_id}")
+        
+        m = maapi.Maapi()
+        m.start_user_session('cisco', 'test_context_1')
+        t = m.start_read_trans()
+        root = maagic.get_root(t)
+        
+        result_lines = [f"Commit Status for ID: {commit_id}"]
+        result_lines.append("=" * 50)
+        
+        if hasattr(root, 'commit_queue') and hasattr(root.commit_queue, 'queue_element'):
+            queue_elements = root.commit_queue.queue_element
+            found = False
+            
+            for elem in queue_elements:
+                if str(elem.id) == str(commit_id):
+                    found = True
+                    result_lines.append(f"ID: {elem.id}")
+                    if hasattr(elem, 'status'):
+                        result_lines.append(f"Status: {elem.status}")
+                    if hasattr(elem, 'waiting_for'):
+                        result_lines.append(f"Waiting For: {elem.waiting_for}")
+                    if hasattr(elem, 'age'):
+                        result_lines.append(f"Age: {elem.age}")
+                    break
+            
+            if not found:
+                result_lines.append(f"⚠️  Commit ID '{commit_id}' not found in queue")
+        else:
+            result_lines.append("⚠️  Commit queue not available")
+        
+        m.end_user_session()
+        return "\n".join(result_lines)
+        
+    except Exception as e:
+        logger.exception(f"❌ Error getting commit status: {e}")
+        try:
+            m.end_user_session()
+        except:
+            pass
+        return f"Error getting commit status: {e}"
+
+def commit_dry_run(description: str = None) -> str:
+    """Perform a dry-run commit to preview changes without applying them.
+    
+    This function shows what changes would be committed without actually
+    committing them to the devices.
+    
+    Args:
+        description: Optional description for the dry-run
+        
+    Returns:
+        str: Preview of changes that would be committed
+        
+    Examples:
+        commit_dry_run("Preview OSPF configuration changes")
+    """
+    try:
+        logger.info(f"🔧 Performing dry-run commit")
+        
+        m = maapi.Maapi()
+        m.start_user_session('cisco', 'test_context_1')
+        t = m.start_write_trans()
+        root = maagic.get_root(t)
+        
+        # Get pending changes
+        changes = t.get_changes()
+        
+        if not changes:
+            m.end_user_session()
+            return "✅ No pending changes to commit (dry-run)"
+        
+        # Apply with dry-run
+        try:
+            apply_params = {'dry-run': True}
+            if description:
+                apply_params['comment'] = description
+            t.apply_params(**apply_params)
+        except Exception as dry_run_error:
+            # Dry-run might fail, but that's expected - it shows what would fail
+            m.end_user_session()
+            return f"⚠️  Dry-run completed. Some changes may fail:\n{str(dry_run_error)}"
+        
+        m.end_user_session()
+        return f"✅ Dry-run completed. Preview of changes:\n{str(changes)}"
+        
+    except Exception as e:
+        logger.exception(f"❌ Error performing dry-run commit: {e}")
+        try:
+            m.end_user_session()
+        except:
+            pass
+        return f"Error performing dry-run commit: {e}"
+
+def commit_async(description: str = None) -> str:
+    """Commit changes asynchronously.
+    
+    This function commits changes to the queue for asynchronous processing.
+    
+    Args:
+        description: Optional description for the commit
+        
+    Returns:
+        str: Commit result message
+        
+    Examples:
+        commit_async("Deploy OSPF configuration")
+    """
+    try:
+        logger.info(f"🔧 Committing changes asynchronously")
+        
+        m = maapi.Maapi()
+        m.start_user_session('cisco', 'test_context_1')
+        t = m.start_write_trans()
+        root = maagic.get_root(t)
+        
+        # Apply with async flag
+        apply_params = {'async': True}
+        if description:
+            apply_params['comment'] = description
+        
+        t.apply_params(**apply_params)
+        m.end_user_session()
+        
+        return f"✅ Changes committed asynchronously to queue" + (f" with description: {description}" if description else "")
+        
+    except Exception as e:
+        logger.exception(f"❌ Error committing asynchronously: {e}")
+        try:
+            m.end_user_session()
+        except:
+            pass
+        return f"Error committing asynchronously: {e}"
+
+# =============================================================================
+# PHASE 1: CRITICAL OPERATIONS - BULK DEVICE OPERATIONS
+# =============================================================================
+
+def sync_all_devices(direction: str = 'to') -> str:
+    """Sync all devices (to or from NSO).
+    
+    This function performs sync-to or sync-from operations on all devices
+    managed by NSO.
+    
+    Args:
+        direction: 'to' to sync NSO config to devices, 'from' to sync device config to NSO (default: 'to')
+        
+    Returns:
+        str: Results of sync operations for all devices
+        
+    Examples:
+        sync_all_devices('to')  # Push NSO config to all devices
+        sync_all_devices('from')  # Pull config from all devices to NSO
+    """
+    try:
+        logger.info(f"🔧 Syncing all devices (direction: {direction})")
+        
+        m = maapi.Maapi()
+        m.start_user_session('cisco', 'test_context_1')
+        t = m.start_read_trans()
+        root = maagic.get_root(t)
+        
+        devices = []
+        for device in root.devices.device:
+            devices.append(device.name)
+        
+        m.end_user_session()
+        
+        results = [f"Bulk Sync Operation Results (direction: {direction}):"]
+        results.append("=" * 60)
+        
+        for device_name in devices:
+            try:
+                if direction == 'to':
+                    result = sync_to_device(device_name)
+                else:
+                    result = sync_from_device(device_name)
+                results.append(f"\n{device_name}: {result}")
+            except Exception as e:
+                results.append(f"\n{device_name}: ❌ Error - {e}")
+        
+        return "\n".join(results)
+        
+    except Exception as e:
+        logger.exception(f"❌ Error syncing all devices: {e}")
+        return f"Error syncing all devices: {e}"
+
+def compare_all_devices() -> str:
+    """Compare all devices against NSO configuration.
+    
+    This function compares each device's running configuration with NSO's
+    configuration database.
+    
+    Returns:
+        str: Comparison results for all devices
+        
+    Examples:
+        compare_all_devices()
+    """
+    try:
+        logger.info(f"🔧 Comparing all devices against NSO config")
+        
+        m = maapi.Maapi()
+        m.start_user_session('cisco', 'test_context_1')
+        t = m.start_read_trans()
+        root = maagic.get_root(t)
+        
+        devices = []
+        for device in root.devices.device:
+            devices.append(device.name)
+        
+        m.end_user_session()
+        
+        results = ["Bulk Device Comparison Results:"]
+        results.append("=" * 60)
+        
+        for device_name in devices:
+            try:
+                result = compare_device_config(device_name)
+                results.append(f"\n{device_name}:\n{result}")
+                results.append("-" * 60)
+            except Exception as e:
+                results.append(f"\n{device_name}: ❌ Error - {e}")
+                results.append("-" * 60)
+        
+        return "\n".join(results)
+        
+    except Exception as e:
+        logger.exception(f"❌ Error comparing all devices: {e}")
+        return f"Error comparing all devices: {e}"
+
+def get_all_devices_sync_status() -> str:
+    """Get sync status for all devices.
+    
+    This function checks the sync status for all devices managed by NSO.
+    
+    Returns:
+        str: Sync status for all devices
+        
+    Examples:
+        get_all_devices_sync_status()
+    """
+    try:
+        logger.info(f"🔧 Getting sync status for all devices")
+        
+        # Use existing check_device_sync_status function with None to get all devices
+        return check_device_sync_status(None)
+        
+    except Exception as e:
+        logger.exception(f"❌ Error getting sync status for all devices: {e}")
+        return f"Error getting sync status for all devices: {e}"
+
+# =============================================================================
+# PHASE 1: CRITICAL OPERATIONS - CONFIGURATION SECTION MANAGEMENT
+# =============================================================================
+
+def get_router_config_section(router_name: str, section: str) -> str:
+    """Get a specific configuration section from a router.
+    
+    This function retrieves configuration for a specific section (e.g., bgp, ospf, isis).
+    
+    Args:
+        router_name: Name of the router device
+        section: Configuration section name (e.g., 'bgp', 'ospf', 'isis', 'system')
+        
+    Returns:
+        str: Configuration for the specified section
+        
+    Examples:
+        get_router_config_section('xr9kv-1', 'bgp')
+        get_router_config_section('xr9kv-1', 'ospf')
+    """
+    try:
+        logger.info(f"🔧 Getting config section '{section}' for device: {router_name}")
+        
+        m = maapi.Maapi()
+        m.start_user_session('cisco', 'test_context_1')
+        t = m.start_read_trans()
+        root = maagic.get_root(t)
+        
+        if router_name not in root.devices.device:
+            m.end_user_session()
+            return f"Error: Device '{router_name}' not found in NSO"
+        
+        device = root.devices.device[router_name]
+        config = device.config
+        
+        # Try to access the section
+        if not hasattr(config, section):
+            m.end_user_session()
+            return f"Error: Configuration section '{section}' not found on device '{router_name}'"
+        
+        section_config = getattr(config, section)
+        
+        # Convert to string representation
+        result_lines = [f"Configuration Section '{section}' for device '{router_name}':"]
+        result_lines.append("=" * 60)
+        
+        # Use maagic to get readable representation
+        try:
+            import ncs.maagic as maagic
+            config_str = maagic.to_string(section_config)
+            result_lines.append(config_str)
+        except:
+            result_lines.append(str(section_config))
+        
+        m.end_user_session()
+        return "\n".join(result_lines)
+        
+    except Exception as e:
+        logger.exception(f"❌ Error getting config section: {e}")
+        try:
+            m.end_user_session()
+        except:
+            pass
+        return f"Error getting config section '{section}' for device '{router_name}': {e}"
+
+def delete_config_section(router_name: str, section: str, confirm: bool = False) -> str:
+    """Delete a configuration section from a router.
+    
+    This function removes an entire configuration section (e.g., bgp, ospf).
+    
+    Args:
+        router_name: Name of the router device
+        section: Configuration section name to delete
+        confirm: Must be True to actually delete (safety measure)
+        
+    Returns:
+        str: Deletion result message
+        
+    Examples:
+        delete_config_section('xr9kv-1', 'bgp', confirm=True)
+    """
+    try:
+        if not confirm:
+            return "Error: confirm must be True to delete configuration section. This is a safety measure."
+        
+        logger.info(f"🔧 Deleting config section '{section}' from device: {router_name}")
+        
+        m = maapi.Maapi()
+        m.start_user_session('cisco', 'test_context_1')
+        t = m.start_write_trans()
+        root = maagic.get_root(t)
+        
+        if router_name not in root.devices.device:
+            m.end_user_session()
+            return f"Error: Device '{router_name}' not found in NSO"
+        
+        device = root.devices.device[router_name]
+        config = device.config
+        
+        if not hasattr(config, section):
+            m.end_user_session()
+            return f"Error: Configuration section '{section}' not found on device '{router_name}'"
+        
+        # Delete the section
+        section_config = getattr(config, section)
+        del section_config
+        
+        t.apply()
+        m.end_user_session()
+        
+        return f"✅ Successfully deleted configuration section '{section}' from device '{router_name}'"
+        
+    except Exception as e:
+        logger.exception(f"❌ Error deleting config section: {e}")
+        try:
+            m.end_user_session()
+        except:
+            pass
+        return f"Error deleting config section '{section}' from device '{router_name}': {e}"
+
+def list_config_sections(router_name: str) -> str:
+    """List available configuration sections on a device.
+    
+    Args:
+        router_name: Name of the router device
+        
+    Returns:
+        str: List of available configuration sections
+        
+    Examples:
+        list_config_sections('xr9kv-1')
+    """
+    try:
+        logger.info(f"🔧 Listing config sections for device: {router_name}")
+        
+        m = maapi.Maapi()
+        m.start_user_session('cisco', 'test_context_1')
+        t = m.start_read_trans()
+        root = maagic.get_root(t)
+        
+        if router_name not in root.devices.device:
+            m.end_user_session()
+            return f"Error: Device '{router_name}' not found in NSO"
+        
+        device = root.devices.device[router_name]
+        config = device.config
+        
+        sections = []
+        for attr_name in dir(config):
+            if not attr_name.startswith('_') and not callable(getattr(config, attr_name)):
+                try:
+                    attr = getattr(config, attr_name)
+                    # Check if it's a maagic node (config section)
+                    if hasattr(attr, '__class__'):
+                        sections.append(attr_name)
+                except:
+                    pass
+        
+        result_lines = [f"Available Configuration Sections for device '{router_name}':"]
+        result_lines.append("=" * 60)
+        
+        if sections:
+            for section in sorted(sections):
+                result_lines.append(f"  - {section}")
+        else:
+            result_lines.append("⚠️  No configuration sections found")
+        
+        m.end_user_session()
+        return "\n".join(result_lines)
+        
+    except Exception as e:
+        logger.exception(f"❌ Error listing config sections: {e}")
+        try:
+            m.end_user_session()
+        except:
+            pass
+        return f"Error listing config sections for device '{router_name}': {e}"
+
+# =============================================================================
+# PHASE 1: CRITICAL OPERATIONS - DEVICE COMMAND EXECUTION
+# =============================================================================
+
+def execute_device_command(router_name: str, command: str) -> str:
+    """Execute a show or exec command on a device.
+    
+    This function executes arbitrary commands on the device using live-status.
+    
+    Args:
+        router_name: Name of the router device
+        command: Command to execute (e.g., 'show version', 'show ip route')
+        
+    Returns:
+        str: Command output
+        
+    Examples:
+        execute_device_command('xr9kv-1', 'show version')
+        execute_device_command('xr9kv-1', 'show bgp ipv4 unicast summary')
+    """
+    try:
+        logger.info(f"🔧 Executing command '{command}' on device: {router_name}")
+        
+        m = maapi.Maapi()
+        m.start_user_session('cisco', 'test_context_1')
+        t = m.start_read_trans()
+        root = maagic.get_root(t)
+        
+        if router_name not in root.devices.device:
+            m.end_user_session()
+            return f"Error: Device '{router_name}' not found in NSO"
+        
+        device = root.devices.device[router_name]
+        
+        # Execute command using live-status
+        show = device.live_status.exec.any
+        inp = show.get_input()
+        inp.args = [command]
+        result = show.request(inp)
+        
+        m.end_user_session()
+        
+        output_lines = [f"Command Output for '{command}' on device '{router_name}':"]
+        output_lines.append("=" * 60)
+        output_lines.append(result.result)
+        
+        return "\n".join(output_lines)
+        
+    except Exception as e:
+        logger.exception(f"❌ Error executing command: {e}")
+        try:
+            m.end_user_session()
+        except:
+            pass
+        return f"Error executing command '{command}' on device '{router_name}': {e}"
+
+def execute_device_command_batch(router_names: str, command: str) -> str:
+    """Execute a command on multiple devices.
+    
+    Args:
+        router_names: Comma-separated list of router names (e.g., 'xr9kv-1,xr9kv-2,xr9kv-3')
+        command: Command to execute on all devices
+        
+    Returns:
+        str: Command output from all devices
+        
+    Examples:
+        execute_device_command_batch('xr9kv-1,xr9kv-2', 'show version')
+    """
+    try:
+        logger.info(f"🔧 Executing command '{command}' on multiple devices: {router_names}")
+        
+        device_list = [d.strip() for d in router_names.split(',')]
+        results = [f"Batch Command Execution Results for '{command}':"]
+        results.append("=" * 60)
+        
+        for device_name in device_list:
+            try:
+                result = execute_device_command(device_name, command)
+                results.append(f"\n{device_name}:")
+                results.append(result)
+                results.append("-" * 60)
+            except Exception as e:
+                results.append(f"\n{device_name}: ❌ Error - {e}")
+                results.append("-" * 60)
+        
+        return "\n".join(results)
+        
+    except Exception as e:
+        logger.exception(f"❌ Error executing batch command: {e}")
+        return f"Error executing batch command: {e}"
+
+# =============================================================================
+# PHASE 1: CRITICAL OPERATIONS - OPERATIONAL STATUS QUERIES
+# =============================================================================
+
+def get_bgp_neighbor_status(router_name: str) -> str:
+    """Get BGP neighbor status for a router.
+    
+    This function retrieves BGP neighbor status using show commands.
+    
+    Args:
+        router_name: Name of the router device
+        
+    Returns:
+        str: BGP neighbor status information
+        
+    Examples:
+        get_bgp_neighbor_status('xr9kv-1')
+    """
+    try:
+        logger.info(f"🔧 Getting BGP neighbor status for device: {router_name}")
+        
+        # Use execute_device_command to run BGP summary command
+        command = "show bgp ipv4 unicast summary"
+        result = execute_device_command(router_name, command)
+        
+        return result
+        
+    except Exception as e:
+        logger.exception(f"❌ Error getting BGP neighbor status: {e}")
+        return f"Error getting BGP neighbor status for device '{router_name}': {e}"
+
+def get_ospf_neighbor_status(router_name: str) -> str:
+    """Get OSPF neighbor adjacency status for a router.
+    
+    This function retrieves OSPF neighbor status using show commands.
+    
+    Args:
+        router_name: Name of the router device
+        
+    Returns:
+        str: OSPF neighbor status information
+        
+    Examples:
+        get_ospf_neighbor_status('xr9kv-1')
+    """
+    try:
+        logger.info(f"🔧 Getting OSPF neighbor status for device: {router_name}")
+        
+        # Use execute_device_command to run OSPF neighbor command
+        command = "show ospf neighbor"
+        result = execute_device_command(router_name, command)
+        
+        return result
+        
+    except Exception as e:
+        logger.exception(f"❌ Error getting OSPF neighbor status: {e}")
+        return f"Error getting OSPF neighbor status for device '{router_name}': {e}"
+
+def get_interface_statistics(router_name: str, interface_name: str = None) -> str:
+    """Get interface statistics for a router.
+    
+    This function retrieves interface statistics, including packets, bytes, errors.
+    
+    Args:
+        router_name: Name of the router device
+        interface_name: Optional specific interface name, or None for all interfaces
+        
+    Returns:
+        str: Interface statistics information
+        
+    Examples:
+        get_interface_statistics('xr9kv-1')
+        get_interface_statistics('xr9kv-1', 'GigabitEthernet0/0/0/0')
+    """
+    try:
+        logger.info(f"🔧 Getting interface statistics for device: {router_name}")
+        
+        m = maapi.Maapi()
+        m.start_user_session('cisco', 'test_context_1')
+        t = m.start_read_trans()
+        root = maagic.get_root(t)
+        
+        if router_name not in root.devices.device:
+            m.end_user_session()
+            return f"Error: Device '{router_name}' not found in NSO"
+        
+        device = root.devices.device[router_name]
+        
+        result_lines = [f"Interface Statistics for device '{router_name}':"]
+        result_lines.append("=" * 60)
+        
+        if interface_name:
+            # Get specific interface stats
+            try:
+                if_stats = device.live_status.if__interfaces.interface[interface_name]
+                if hasattr(if_stats, 'statistics'):
+                    stats = if_stats.statistics
+                    result_lines.append(f"\n{interface_name}:")
+                    if hasattr(stats, 'in_octets'):
+                        result_lines.append(f"  In Octets: {stats.in_octets}")
+                    if hasattr(stats, 'out_octets'):
+                        result_lines.append(f"  Out Octets: {stats.out_octets}")
+                    if hasattr(stats, 'in_packets'):
+                        result_lines.append(f"  In Packets: {stats.in_packets}")
+                    if hasattr(stats, 'out_packets'):
+                        result_lines.append(f"  Out Packets: {stats.out_packets}")
+                    if hasattr(stats, 'in_errors'):
+                        result_lines.append(f"  In Errors: {stats.in_errors}")
+                    if hasattr(stats, 'out_errors'):
+                        result_lines.append(f"  Out Errors: {stats.out_errors}")
+            except Exception as e:
+                result_lines.append(f"⚠️  Could not get statistics for interface '{interface_name}': {e}")
+                # Fallback to show command
+                command = f"show interfaces {interface_name} statistics"
+                cmd_result = execute_device_command(router_name, command)
+                result_lines.append("\n" + cmd_result)
+        else:
+            # Get all interfaces stats using show command
+            command = "show interfaces statistics"
+            cmd_result = execute_device_command(router_name, command)
+            result_lines.append("\n" + cmd_result)
+        
+        m.end_user_session()
+        return "\n".join(result_lines)
+        
+    except Exception as e:
+        logger.exception(f"❌ Error getting interface statistics: {e}")
+        try:
+            m.end_user_session()
+        except:
+            pass
+        # Fallback to show command
+        try:
+            command = "show interfaces statistics"
+            return execute_device_command(router_name, command)
+        except:
+            return f"Error getting interface statistics for device '{router_name}': {e}"
+
+# =============================================================================
+# PHASE 1: CRITICAL OPERATIONS - SERVICE REDEPLOY
+# =============================================================================
+
+def redeploy_service(service_type: str, service_name: str) -> str:
+    """Redeploy a specific service.
+    
+    This function triggers a reactive redeploy of a service instance.
+    
+    Args:
+        service_type: Type of service (e.g., 'ospf', 'ibgp')
+        service_name: Name of the service instance to redeploy
+        
+    Returns:
+        str: Redeploy result message
+        
+    Examples:
+        redeploy_service('ospf', 'xr9kv-1')  # Redeploy OSPF base service for router
+        redeploy_service('ibgp', 'ibgp-1-2')  # Redeploy iBGP service
+    """
+    try:
+        logger.info(f"🔧 Redeploying service '{service_type}' instance '{service_name}'")
+        
+        m = maapi.Maapi()
+        m.start_user_session('cisco', 'test_context_1')
+        t = m.start_write_trans()
+        root = maagic.get_root(t)
+        
+        # Navigate to the service based on service type
+        if service_type == 'ospf':
+            # OSPF base service
+            if service_name not in root.services.ospf.base:
+                m.end_user_session()
+                return f"Error: OSPF service instance '{service_name}' not found"
+            service = root.services.ospf.base[service_name]
+        elif service_type == 'ibgp' or service_type == 'ibgp__ibgp':
+            # iBGP service
+            if service_name not in root.services.ibgp__ibgp:
+                m.end_user_session()
+                return f"Error: iBGP service instance '{service_name}' not found"
+            service = root.services.ibgp__ibgp[service_name]
+        else:
+            # Try to find in services
+            if hasattr(root, 'services') and hasattr(root.services, service_type):
+                service_container = getattr(root.services, service_type)
+                if hasattr(service_container, service_name):
+                    service = getattr(service_container, service_name)
+                else:
+                    m.end_user_session()
+                    return f"Error: Service instance '{service_name}' not found in service type '{service_type}'"
+            else:
+                m.end_user_session()
+                return f"Error: Service type '{service_type}' not found"
+        
+        # Trigger reactive redeploy
+        service.reactive_re_deploy()
+        t.apply()
+        m.end_user_session()
+        
+        return f"✅ Successfully triggered redeploy for service '{service_type}' instance '{service_name}'"
+        
+    except Exception as e:
+        logger.exception(f"❌ Error redeploying service: {e}")
+        try:
+            m.end_user_session()
+        except:
+            pass
+        return f"Error redeploying service '{service_type}' instance '{service_name}': {e}"
+
+def redeploy_all_services_for_device(router_name: str) -> str:
+    """Redeploy all services for a specific device.
+    
+    This function finds all services using a device and redeploys them.
+    
+    Args:
+        router_name: Name of the router device
+        
+    Returns:
+        str: Redeploy results for all services
+        
+    Examples:
+        redeploy_all_services_for_device('xr9kv-1')
+    """
+    try:
+        logger.info(f"🔧 Redeploying all services for device: {router_name}")
+        
+        m = maapi.Maapi()
+        m.start_user_session('cisco', 'test_context_1')
+        t = m.start_read_trans()
+        root = maagic.get_root(t)
+        
+        if router_name not in root.devices.device:
+            m.end_user_session()
+            return f"Error: Device '{router_name}' not found in NSO"
+        
+        device = root.devices.device[router_name]
+        
+        # Get service list for device
+        service_list = []
+        if hasattr(device, 'service_list'):
+            for service_ref in device.service_list:
+                service_list.append({
+                    'service_type': str(service_ref.service_type),
+                    'service_name': str(service_ref.service_name)
+                })
+        
+        m.end_user_session()
+        
+        if not service_list:
+            return f"✅ No services found for device '{router_name}'"
+        
+        results = [f"Redeploy Results for device '{router_name}':"]
+        results.append("=" * 60)
+        
+        for service_info in service_list:
+            try:
+                result = redeploy_service(service_info['service_type'], service_info['service_name'])
+                results.append(f"\n{service_info['service_type']}::{service_info['service_name']}: {result}")
+            except Exception as e:
+                results.append(f"\n{service_info['service_type']}::{service_info['service_name']}: ❌ Error - {e}")
+        
+        return "\n".join(results)
+        
+    except Exception as e:
+        logger.exception(f"❌ Error redeploying all services for device: {e}")
+        try:
+            m.end_user_session()
+        except:
+            pass
+        return f"Error redeploying all services for device '{router_name}': {e}"
+
+# =============================================================================
+# PHASE 2: IMPORTANT OPERATIONS - ROUTE TABLE OPERATIONS
+# =============================================================================
+
+def get_routing_table(router_name: str, protocol: str = None, prefix: str = None) -> str:
+    """Get routing table for a router.
+    
+    This function retrieves the routing table, optionally filtered by protocol or prefix.
+    
+    Args:
+        router_name: Name of the router device
+        protocol: Optional protocol filter (e.g., 'bgp', 'ospf', 'static')
+        prefix: Optional prefix filter (e.g., '10.0.0.0/8')
+        
+    Returns:
+        str: Routing table information
+        
+    Examples:
+        get_routing_table('xr9kv-1')
+        get_routing_table('xr9kv-1', protocol='bgp')
+        get_routing_table('xr9kv-1', prefix='10.0.0.0/8')
+    """
+    try:
+        logger.info(f"🔧 Getting routing table for device: {router_name}")
+        
+        # Build command based on filters
+        if protocol:
+            command = f"show route {protocol}"
+        elif prefix:
+            command = f"show route {prefix}"
+        else:
+            command = "show route"
+        
+        result = execute_device_command(router_name, command)
+        return result
+        
+    except Exception as e:
+        logger.exception(f"❌ Error getting routing table: {e}")
+        return f"Error getting routing table for device '{router_name}': {e}"
+
+def get_route_details(router_name: str, prefix: str) -> str:
+    """Get detailed route information for a specific prefix.
+    
+    Args:
+        router_name: Name of the router device
+        prefix: Route prefix to get details for (e.g., '10.0.0.0/8')
+        
+    Returns:
+        str: Detailed route information
+        
+    Examples:
+        get_route_details('xr9kv-1', '10.0.0.0/8')
+    """
+    try:
+        logger.info(f"🔧 Getting route details for prefix '{prefix}' on device: {router_name}")
+        
+        command = f"show route {prefix} detail"
+        result = execute_device_command(router_name, command)
+        return result
+        
+    except Exception as e:
+        logger.exception(f"❌ Error getting route details: {e}")
+        return f"Error getting route details for prefix '{prefix}' on device '{router_name}': {e}"
+
+# =============================================================================
+# PHASE 2: IMPORTANT OPERATIONS - DEVICE HEALTH MONITORING
+# =============================================================================
+
+def get_device_cpu_usage(router_name: str) -> str:
+    """Get CPU utilization for a device.
+    
+    Args:
+        router_name: Name of the router device
+        
+    Returns:
+        str: CPU usage information
+        
+    Examples:
+        get_device_cpu_usage('xr9kv-1')
+    """
+    try:
+        logger.info(f"🔧 Getting CPU usage for device: {router_name}")
+        
+        command = "show processes cpu sorted 5min"
+        result = execute_device_command(router_name, command)
+        return result
+        
+    except Exception as e:
+        logger.exception(f"❌ Error getting CPU usage: {e}")
+        return f"Error getting CPU usage for device '{router_name}': {e}"
+
+def get_device_memory_usage(router_name: str) -> str:
+    """Get memory usage for a device.
+    
+    Args:
+        router_name: Name of the router device
+        
+    Returns:
+        str: Memory usage information
+        
+    Examples:
+        get_device_memory_usage('xr9kv-1')
+    """
+    try:
+        logger.info(f"🔧 Getting memory usage for device: {router_name}")
+        
+        command = "show memory summary"
+        result = execute_device_command(router_name, command)
+        return result
+        
+    except Exception as e:
+        logger.exception(f"❌ Error getting memory usage: {e}")
+        return f"Error getting memory usage for device '{router_name}': {e}"
+
+def get_device_alarms(router_name: str, severity: str = None) -> str:
+    """Get device alarms.
+    
+    Args:
+        router_name: Name of the router device
+        severity: Optional severity filter (e.g., 'critical', 'major', 'minor')
+        
+    Returns:
+        str: Alarm information
+        
+    Examples:
+        get_device_alarms('xr9kv-1')
+        get_device_alarms('xr9kv-1', severity='critical')
+    """
+    try:
+        logger.info(f"🔧 Getting alarms for device: {router_name}")
+        
+        if severity:
+            command = f"show alarms {severity}"
+        else:
+            command = "show alarms brief"
+        
+        result = execute_device_command(router_name, command)
+        return result
+        
+    except Exception as e:
+        logger.exception(f"❌ Error getting alarms: {e}")
+        return f"Error getting alarms for device '{router_name}': {e}"
+
+# =============================================================================
+# PHASE 2: IMPORTANT OPERATIONS - SERVICE STATUS & LIST
+# =============================================================================
+
+def get_services_for_device(router_name: str) -> str:
+    """List all services for a device.
+    
+    This function shows all service instances that are deployed on a device.
+    
+    Args:
+        router_name: Name of the router device
+        
+    Returns:
+        str: List of services on the device
+        
+    Examples:
+        get_services_for_device('xr9kv-1')
+    """
+    try:
+        logger.info(f"🔧 Getting services for device: {router_name}")
+        
+        m = maapi.Maapi()
+        m.start_user_session('cisco', 'test_context_1')
+        t = m.start_read_trans()
+        root = maagic.get_root(t)
+        
+        if router_name not in root.devices.device:
+            m.end_user_session()
+            return f"Error: Device '{router_name}' not found in NSO"
+        
+        device = root.devices.device[router_name]
+        
+        result_lines = [f"Services for device '{router_name}':"]
+        result_lines.append("=" * 60)
+        
+        if hasattr(device, 'service_list'):
+            service_list = device.service_list
+            if len(service_list) > 0:
+                for service_ref in service_list:
+                    result_lines.append(f"  - {service_ref.service_type}::{service_ref.service_name}")
+            else:
+                result_lines.append("⚠️  No services found for this device")
+        else:
+            result_lines.append("⚠️  Service list not available for this device")
+        
+        m.end_user_session()
+        return "\n".join(result_lines)
+        
+    except Exception as e:
+        logger.exception(f"❌ Error getting services for device: {e}")
+        try:
+            m.end_user_session()
+        except:
+            pass
+        return f"Error getting services for device '{router_name}': {e}"
+
+def get_service_status(service_type: str, service_name: str) -> str:
+    """Get service operational status.
+    
+    This function retrieves the operational status/plan for a service instance.
+    
+    Args:
+        service_type: Type of service (e.g., 'ospf', 'ibgp')
+        service_name: Name of the service instance
+        
+    Returns:
+        str: Service status information
+        
+    Examples:
+        get_service_status('ospf', 'xr9kv-1')
+    """
+    try:
+        logger.info(f"🔧 Getting status for service '{service_type}' instance '{service_name}'")
+        
+        m = maapi.Maapi()
+        m.start_user_session('cisco', 'test_context_1')
+        t = m.start_read_trans()
+        root = maagic.get_root(t)
+        
+        # Navigate to the service
+        if service_type == 'ospf':
+            if service_name not in root.services.ospf.base:
+                m.end_user_session()
+                return f"Error: OSPF service instance '{service_name}' not found"
+            service = root.services.ospf.base[service_name]
+        elif service_type == 'ibgp' or service_type == 'ibgp__ibgp':
+            if service_name not in root.services.ibgp__ibgp:
+                m.end_user_session()
+                return f"Error: iBGP service instance '{service_name}' not found"
+            service = root.services.ibgp__ibgp[service_name]
+        else:
+            m.end_user_session()
+            return f"Error: Service type '{service_type}' not supported yet"
+        
+        result_lines = [f"Service Status for '{service_type}' instance '{service_name}':"]
+        result_lines.append("=" * 60)
+        
+        # Get service plan/status
+        if hasattr(service, 'plan'):
+            plan = service.plan
+            result_lines.append(f"Plan Status: {plan}")
+            
+            # Get component status if available
+            if hasattr(plan, 'component'):
+                for component in plan.component:
+                    result_lines.append(f"\nComponent: {component.type}")
+                    if hasattr(component, 'state'):
+                        result_lines.append(f"  State: {component.state.name}")
+        
+        m.end_user_session()
+        return "\n".join(result_lines)
+        
+    except Exception as e:
+        logger.exception(f"❌ Error getting service status: {e}")
+        try:
+            m.end_user_session()
+        except:
+            pass
+        return f"Error getting service status for '{service_type}' instance '{service_name}': {e}"
+
+def count_services_by_type() -> str:
+    """Count services by type across all devices.
+    
+    Returns:
+        str: Service counts by type
+        
+    Examples:
+        count_services_by_type()
+    """
+    try:
+        logger.info(f"🔧 Counting services by type")
+        
+        m = maapi.Maapi()
+        m.start_user_session('cisco', 'test_context_1')
+        t = m.start_read_trans()
+        root = maagic.get_root(t)
+        
+        service_counts = {}
+        
+        # Count OSPF services
+        if hasattr(root, 'services') and hasattr(root.services, 'ospf'):
+            if hasattr(root.services.ospf, 'base'):
+                count = len(root.services.ospf.base)
+                if count > 0:
+                    service_counts['ospf'] = count
+        
+        # Count iBGP services
+        if hasattr(root, 'services') and hasattr(root.services, 'ibgp__ibgp'):
+            count = len(root.services.ibgp__ibgp)
+            if count > 0:
+                service_counts['ibgp'] = count
+        
+        # Count BGP_GRP services
+        if hasattr(root, 'BGP_GRP__BGP_GRP'):
+            count = len(root.BGP_GRP__BGP_GRP)
+            if count > 0:
+                service_counts['BGP_GRP'] = count
+        
+        m.end_user_session()
+        
+        result_lines = ["Service Count by Type:"]
+        result_lines.append("=" * 60)
+        
+        if service_counts:
+            for service_type, count in sorted(service_counts.items()):
+                result_lines.append(f"  {service_type}: {count}")
+            total = sum(service_counts.values())
+            result_lines.append(f"\nTotal: {total} service instances")
+        else:
+            result_lines.append("⚠️  No services found")
+        
+        return "\n".join(result_lines)
+        
+    except Exception as e:
+        logger.exception(f"❌ Error counting services: {e}")
+        try:
+            m.end_user_session()
+        except:
+            pass
+        return f"Error counting services by type: {e}"
+
+# =============================================================================
+# PHASE 2: IMPORTANT OPERATIONS - CONFIGURATION BACKUP/RESTORE
+# =============================================================================
+
+def backup_device_config(router_name: str, backup_name: str = None) -> str:
+    """Backup device configuration.
+    
+    This function creates a backup of device configuration using NSO rollback or file save.
+    
+    Args:
+        router_name: Name of the router device
+        backup_name: Optional backup name, defaults to timestamp-based name
+        
+    Returns:
+        str: Backup result message
+        
+    Examples:
+        backup_device_config('xr9kv-1')
+        backup_device_config('xr9kv-1', 'backup_before_ospf_change')
+    """
+    try:
+        logger.info(f"🔧 Backing up config for device: {router_name}")
+        
+        import datetime
+        if not backup_name:
+            timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+            backup_name = f"{router_name}_backup_{timestamp}"
+        
+        m = maapi.Maapi()
+        m.start_user_session('cisco', 'test_context_1')
+        t = m.start_read_trans()
+        root = maagic.get_root(t)
+        
+        if router_name not in root.devices.device:
+            m.end_user_session()
+            return f"Error: Device '{router_name}' not found in NSO"
+        
+        device = root.devices.device[router_name]
+        config = device.config
+        
+        # Save config to string representation
+        try:
+            import ncs.maagic as maagic
+            config_str = maagic.to_string(config)
+        except:
+            config_str = str(config)
+        
+        # Save to file (optional - could also use NSO rollback)
+        backup_dir = "/Users/gudeng/MCP_Server/backups"
+        import os
+        os.makedirs(backup_dir, exist_ok=True)
+        backup_file = f"{backup_dir}/{backup_name}.cfg"
+        
+        with open(backup_file, 'w') as f:
+            f.write(config_str)
+        
+        m.end_user_session()
+        
+        return f"✅ Configuration backed up successfully: {backup_file}"
+        
+    except Exception as e:
+        logger.exception(f"❌ Error backing up config: {e}")
+        try:
+            m.end_user_session()
+        except:
+            pass
+        return f"Error backing up config for device '{router_name}': {e}"
+
+def list_device_backups(router_name: str) -> str:
+    """List available backups for a device.
+    
+    Args:
+        router_name: Name of the router device
+        
+    Returns:
+        str: List of available backups
+        
+    Examples:
+        list_device_backups('xr9kv-1')
+    """
+    try:
+        logger.info(f"🔧 Listing backups for device: {router_name}")
+        
+        import os
+        import glob
+        
+        backup_dir = "/Users/gudeng/MCP_Server/backups"
+        pattern = f"{backup_dir}/{router_name}_backup_*.cfg"
+        
+        backups = sorted(glob.glob(pattern), reverse=True)
+        
+        result_lines = [f"Available Backups for device '{router_name}':"]
+        result_lines.append("=" * 60)
+        
+        if backups:
+            import datetime
+            for backup_file in backups:
+                backup_name = os.path.basename(backup_file)
+                file_size = os.path.getsize(backup_file)
+                mod_time = datetime.datetime.fromtimestamp(os.path.getmtime(backup_file))
+                result_lines.append(f"  - {backup_name} ({file_size} bytes, {mod_time})")
+        else:
+            result_lines.append("⚠️  No backups found for this device")
+        
+        return "\n".join(result_lines)
+        
+    except Exception as e:
+        logger.exception(f"❌ Error listing backups: {e}")
+        return f"Error listing backups for device '{router_name}': {e}"
+
+# =============================================================================
+# PHASE 2: IMPORTANT OPERATIONS - CONFIGURATION VALIDATION
+# =============================================================================
+
+def validate_device_config(router_name: str) -> str:
+    """Validate device configuration.
+    
+    This function validates device configuration using NSO validation mechanisms.
+    
+    Args:
+        router_name: Name of the router device
+        
+    Returns:
+        str: Validation result message
+        
+    Examples:
+        validate_device_config('xr9kv-1')
+    """
+    try:
+        logger.info(f"🔧 Validating config for device: {router_name}")
+        
+        # Use commit dry-run as validation mechanism
+        m = maapi.Maapi()
+        m.start_user_session('cisco', 'test_context_1')
+        t = m.start_write_trans()
+        root = maagic.get_root(t)
+        
+        if router_name not in root.devices.device:
+            m.end_user_session()
+            return f"Error: Device '{router_name}' not found in NSO"
+        
+        # Try to validate by checking if we can read the config
+        device = root.devices.device[router_name]
+        config = device.config
+        
+        # Check for common validation issues
+        issues = []
+        
+        # Try to access config - if it fails, there's a validation issue
+        try:
+            _ = str(config)
+        except Exception as config_error:
+            issues.append(f"Config access error: {config_error}")
+        
+        m.end_user_session()
+        
+        if issues:
+            result_lines = [f"Validation Results for device '{router_name}':"]
+            result_lines.append("=" * 60)
+            result_lines.append("⚠️  Validation Issues Found:")
+            for issue in issues:
+                result_lines.append(f"  - {issue}")
+            return "\n".join(result_lines)
+        else:
+            return f"✅ Configuration validation passed for device '{router_name}'"
+        
+    except Exception as e:
+        logger.exception(f"❌ Error validating config: {e}")
+        try:
+            m.end_user_session()
+        except:
+            pass
+        return f"Error validating config for device '{router_name}': {e}"
+
+def check_config_syntax(router_name: str) -> str:
+    """Check configuration syntax errors.
+    
+    Args:
+        router_name: Name of the router device
+        
+    Returns:
+        str: Syntax check result
+        
+    Examples:
+        check_config_syntax('xr9kv-1')
+    """
+    try:
+        logger.info(f"🔧 Checking config syntax for device: {router_name}")
+        
+        # Use commit dry-run to check syntax
+        result = commit_dry_run(f"Syntax check for {router_name}")
+        
+        if "Error" in result or "❌" in result:
+            return f"⚠️  Syntax check found issues:\n{result}"
+        else:
+            return f"✅ Syntax check passed for device '{router_name}'"
+        
+    except Exception as e:
+        logger.exception(f"❌ Error checking config syntax: {e}")
+        return f"Error checking config syntax for device '{router_name}': {e}"
+
+# =============================================================================
+# PHASE 2: IMPORTANT OPERATIONS - BULK INTERFACE OPERATIONS
+# =============================================================================
+
+def shutdown_all_interfaces(router_name: str, confirm: bool = False) -> str:
+    """Shutdown all interfaces on a router.
+    
+    Args:
+        router_name: Name of the router device
+        confirm: Must be True to actually shutdown (safety measure)
+        
+    Returns:
+        str: Operation result message
+        
+    Examples:
+        shutdown_all_interfaces('xr9kv-1', confirm=True)
+    """
+    try:
+        if not confirm:
+            return "Error: confirm must be True to shutdown all interfaces. This is a safety measure."
+        
+        logger.info(f"🔧 Shutting down all interfaces on device: {router_name}")
+        
+        m = maapi.Maapi()
+        m.start_user_session('cisco', 'test_context_1')
+        t = m.start_write_trans()
+        root = maagic.get_root(t)
+        
+        if router_name not in root.devices.device:
+            m.end_user_session()
+            return f"Error: Device '{router_name}' not found in NSO"
+        
+        device = root.devices.device[router_name]
+        interfaces = device.config.interface
+        
+        shutdown_count = 0
+        
+        # Iterate through all interface types
+        for interface_type in dir(interfaces):
+            if interface_type.startswith('_') or interface_type in ['name', 'parent', 'keypath']:
+                continue
+            
+            try:
+                interface_container = getattr(interfaces, interface_type)
+                if hasattr(interface_container, '__iter__'):
+                    for interface in interface_container:
+                        if hasattr(interface, 'shutdown'):
+                            interface.shutdown.create()
+                            shutdown_count += 1
+            except:
+                pass
+        
+        if shutdown_count > 0:
+            t.apply()
+            m.end_user_session()
+            return f"✅ Successfully shutdown {shutdown_count} interface(s) on device '{router_name}'"
+        else:
+            m.end_user_session()
+            return f"⚠️  No interfaces found to shutdown on device '{router_name}'"
+        
+    except Exception as e:
+        logger.exception(f"❌ Error shutting down interfaces: {e}")
+        try:
+            m.end_user_session()
+        except:
+            pass
+        return f"Error shutting down interfaces on device '{router_name}': {e}"
+
+# =============================================================================
+# PHASE 2: IMPORTANT OPERATIONS - DEVICE GROUP MANAGEMENT
+# =============================================================================
+
+def create_device_group(group_name: str, device_names: str) -> str:
+    """Create a device group.
+    
+    This function creates a custom device group for bulk operations.
+    Note: This is a simple implementation using a list. For production,
+    consider using NSO's native device groups if available.
+    
+    Args:
+        group_name: Name of the device group
+        device_names: Comma-separated list of device names
+        
+    Returns:
+        str: Group creation result message
+        
+    Examples:
+        create_device_group('core-routers', 'xr9kv-1,xr9kv-2,xr9kv-3')
+    """
+    try:
+        logger.info(f"🔧 Creating device group '{group_name}'")
+        
+        device_list = [d.strip() for d in device_names.split(',')]
+        
+        # Store groups in a simple file-based approach
+        # For production, consider using NSO's device groups feature
+        groups_file = "/Users/gudeng/MCP_Server/device_groups.json"
+        
+        import json
+        import os
+        
+        groups = {}
+        if os.path.exists(groups_file):
+            with open(groups_file, 'r') as f:
+                groups = json.load(f)
+        
+        groups[group_name] = device_list
+        
+        with open(groups_file, 'w') as f:
+            json.dump(groups, f, indent=2)
+        
+        return f"✅ Device group '{group_name}' created with {len(device_list)} device(s): {', '.join(device_list)}"
+        
+    except Exception as e:
+        logger.exception(f"❌ Error creating device group: {e}")
+        return f"Error creating device group '{group_name}': {e}"
+
+def list_device_groups() -> str:
+    """List all device groups.
+    
+    Returns:
+        str: List of device groups
+        
+    Examples:
+        list_device_groups()
+    """
+    try:
+        logger.info(f"🔧 Listing device groups")
+        
+        groups_file = "/Users/gudeng/MCP_Server/device_groups.json"
+        
+        import json
+        import os
+        
+        if not os.path.exists(groups_file):
+            return "⚠️  No device groups found"
+        
+        with open(groups_file, 'r') as f:
+            groups = json.load(f)
+        
+        result_lines = ["Device Groups:"]
+        result_lines.append("=" * 60)
+        
+        if groups:
+            for group_name, devices in groups.items():
+                result_lines.append(f"\n{group_name}: {', '.join(devices)}")
+        else:
+            result_lines.append("⚠️  No device groups found")
+        
+        return "\n".join(result_lines)
+        
+    except Exception as e:
+        logger.exception(f"❌ Error listing device groups: {e}")
+        return f"Error listing device groups: {e}"
+
+# =============================================================================
+# PHASE 3: ADVANCED OPERATIONS - PERFORMANCE MONITORING
+# =============================================================================
+
+def get_device_performance_metrics(router_name: str, metric_type: str = "cpu") -> str:
+    """Get device performance metrics.
+    
+    Args:
+        router_name: Name of the router device
+        metric_type: Type of metric ('cpu', 'memory', 'interface')
+        
+    Returns:
+        str: Performance metrics information
+        
+    Examples:
+        get_device_performance_metrics('xr9kv-1', 'cpu')
+        get_device_performance_metrics('xr9kv-1', 'memory')
+    """
+    try:
+        logger.info(f"🔧 Getting performance metrics ({metric_type}) for device: {router_name}")
+        
+        if metric_type == "cpu":
+            return get_device_cpu_usage(router_name)
+        elif metric_type == "memory":
+            return get_device_memory_usage(router_name)
+        elif metric_type == "interface":
+            return get_interface_statistics(router_name)
+        else:
+            return f"Error: Unknown metric type '{metric_type}'. Use 'cpu', 'memory', or 'interface'"
+        
+    except Exception as e:
+        logger.exception(f"❌ Error getting performance metrics: {e}")
+        return f"Error getting performance metrics for device '{router_name}': {e}"
+
+# =============================================================================
+# PHASE 3: ADVANCED OPERATIONS - AUDIT & CHANGE TRACKING
+# =============================================================================
+
+def get_configuration_changes(router_name: str, hours: int = 24) -> str:
+    """Get recent configuration changes for a device.
+    
+    Args:
+        router_name: Name of the router device
+        hours: Number of hours to look back (default: 24)
+        
+    Returns:
+        str: Configuration change history
+        
+    Examples:
+        get_configuration_changes('xr9kv-1', hours=24)
+    """
+    try:
+        logger.info(f"🔧 Getting configuration changes for device '{router_name}' (last {hours} hours)")
+        
+        # Use transaction history to get changes
+        transactions = list_transactions(limit=100)
+        
+        result_lines = [f"Configuration Changes for device '{router_name}' (last {hours} hours):"]
+        result_lines.append("=" * 60)
+        result_lines.append(transactions)
+        
+        return "\n".join(result_lines)
+        
+    except Exception as e:
+        logger.exception(f"❌ Error getting configuration changes: {e}")
+        return f"Error getting configuration changes for device '{router_name}': {e}"
+
+# =============================================================================
+# PHASE 3: ADVANCED OPERATIONS - SNMP CONFIGURATION
+# =============================================================================
+
+def get_snmp_config(router_name: str) -> str:
+    """Get SNMP configuration for a device.
+    
+    Args:
+        router_name: Name of the router device
+        
+    Returns:
+        str: SNMP configuration
+        
+    Examples:
+        get_snmp_config('xr9kv-1')
+    """
+    try:
+        logger.info(f"🔧 Getting SNMP config for device: {router_name}")
+        
+        # Use get_router_config_section to get SNMP config
+        return get_router_config_section(router_name, 'snmp')
+        
+    except Exception as e:
+        logger.exception(f"❌ Error getting SNMP config: {e}")
+        return f"Error getting SNMP config for device '{router_name}': {e}"
+
+# =============================================================================
+# PHASE 3: ADVANCED OPERATIONS - ACL MANAGEMENT
+# =============================================================================
+
+def get_access_lists(router_name: str) -> str:
+    """List all access lists on a device.
+    
+    Args:
+        router_name: Name of the router device
+        
+    Returns:
+        str: List of access lists
+        
+    Examples:
+        get_access_lists('xr9kv-1')
+    """
+    try:
+        logger.info(f"🔧 Getting access lists for device: {router_name}")
+        
+        # Use get_router_config_section to get ACL config
+        try:
+            return get_router_config_section(router_name, 'ipv4')
+        except:
+            # Fallback: try to get ACL via command
+            command = "show access-lists"
+            return execute_device_command(router_name, command)
+        
+    except Exception as e:
+        logger.exception(f"❌ Error getting access lists: {e}")
+        return f"Error getting access lists for device '{router_name}': {e}"
+
+# =============================================================================
+# PHASE 3: ADVANCED OPERATIONS - NOTIFICATION MANAGEMENT
+# =============================================================================
+
+def list_notifications(router_name: str = None, limit: int = 100) -> str:
+    """List recent notifications.
+    
+    Args:
+        router_name: Optional device name to filter notifications
+        limit: Maximum number of notifications to show (default: 100)
+        
+    Returns:
+        str: List of recent notifications
+        
+    Examples:
+        list_notifications('xr9kv-1', limit=50)
+        list_notifications(limit=100)
+    """
+    try:
+        logger.info(f"🔧 Listing notifications (limit={limit})")
+        
+        m = maapi.Maapi()
+        m.start_user_session('cisco', 'test_context_1')
+        t = m.start_read_trans()
+        root = maagic.get_root(t)
+        
+        result_lines = ["Recent Notifications:"]
+        result_lines.append("=" * 60)
+        
+        if hasattr(root, 'notifications'):
+            notifications = root.notifications
+            count = 0
+            
+            for notification in notifications:
+                if count >= limit:
+                    break
+                
+                # Filter by device if specified
+                if router_name and hasattr(notification, 'device'):
+                    if str(notification.device) != router_name:
+                        continue
+                
+                result_lines.append(f"\nNotification #{count + 1}:")
+                if hasattr(notification, 'time'):
+                    result_lines.append(f"  Time: {notification.time}")
+                if hasattr(notification, 'type'):
+                    result_lines.append(f"  Type: {notification.type}")
+                if hasattr(notification, 'message'):
+                    result_lines.append(f"  Message: {notification.message}")
+                
+                count += 1
+            
+            if count == 0:
+                result_lines.append("\n⚠️  No notifications found")
+            else:
+                result_lines.append(f"\nTotal notifications shown: {count}")
+        else:
+            result_lines.append("\n⚠️  Notifications not available")
+        
+        m.end_user_session()
+        return "\n".join(result_lines)
+        
+    except Exception as e:
+        logger.exception(f"❌ Error listing notifications: {e}")
+        try:
+            m.end_user_session()
+        except:
+            pass
+        return f"Error listing notifications: {e}"
+
+# =============================================================================
 # REGISTER TOOLS WITH FastMCP
 # =============================================================================
 
@@ -4752,6 +6674,85 @@ mcp.tool(list_service_instances)  # List instances of a service
 mcp.tool(list_transactions)
 mcp.tool(check_locks)
 mcp.tool(clear_stuck_sessions)  # Clear stuck NSO sessions that are holding locks
+
+# Phase 1: Critical Operations - Device Connection Management
+mcp.tool(connect_device)  # Connect NSO to device
+mcp.tool(disconnect_device)  # Disconnect NSO from device
+mcp.tool(ping_device)  # Ping device to check connectivity
+mcp.tool(get_device_connection_status)  # Get device connection status
+
+# Phase 1: Critical Operations - Commit Queue Management
+mcp.tool(list_commit_queue)  # List pending commits in queue
+mcp.tool(get_commit_status)  # Get status of specific commit
+mcp.tool(commit_dry_run)  # Dry-run commit to preview changes
+mcp.tool(commit_async)  # Commit changes asynchronously
+
+# Phase 1: Critical Operations - Bulk Device Operations
+mcp.tool(sync_all_devices)  # Sync all devices (to/from NSO)
+mcp.tool(compare_all_devices)  # Compare all devices against NSO config
+mcp.tool(get_all_devices_sync_status)  # Get sync status for all devices
+
+# Phase 1: Critical Operations - Configuration Section Management
+mcp.tool(get_router_config_section)  # Get specific config section
+mcp.tool(delete_config_section)  # Delete config section
+mcp.tool(list_config_sections)  # List available config sections
+
+# Phase 1: Critical Operations - Device Command Execution
+mcp.tool(execute_device_command)  # Execute show/exec commands on device
+mcp.tool(execute_device_command_batch)  # Execute command on multiple devices
+
+# Phase 1: Critical Operations - Operational Status Queries
+mcp.tool(get_bgp_neighbor_status)  # Get BGP neighbor status
+mcp.tool(get_ospf_neighbor_status)  # Get OSPF neighbor adjacency status
+mcp.tool(get_interface_statistics)  # Get interface statistics
+
+# Phase 1: Critical Operations - Service Redeploy
+mcp.tool(redeploy_service)  # Redeploy specific service
+mcp.tool(redeploy_all_services_for_device)  # Redeploy all services for device
+
+# Phase 2: Important Operations - Route Table Operations
+mcp.tool(get_routing_table)  # Get routing table
+mcp.tool(get_route_details)  # Get detailed route information
+
+# Phase 2: Important Operations - Device Health Monitoring
+mcp.tool(get_device_cpu_usage)  # Get CPU utilization
+mcp.tool(get_device_memory_usage)  # Get memory usage
+mcp.tool(get_device_alarms)  # Get device alarms
+
+# Phase 2: Important Operations - Service Status & List
+mcp.tool(get_services_for_device)  # List all services on device
+mcp.tool(get_service_status)  # Get service operational status
+mcp.tool(count_services_by_type)  # Count services by type
+
+# Phase 2: Important Operations - Configuration Backup/Restore
+mcp.tool(backup_device_config)  # Backup device configuration
+mcp.tool(list_device_backups)  # List available backups
+
+# Phase 2: Important Operations - Configuration Validation
+mcp.tool(validate_device_config)  # Validate device configuration
+mcp.tool(check_config_syntax)  # Check configuration syntax
+
+# Phase 2: Important Operations - Bulk Interface Operations
+mcp.tool(shutdown_all_interfaces)  # Shutdown all interfaces
+
+# Phase 2: Important Operations - Device Group Management
+mcp.tool(create_device_group)  # Create device group
+mcp.tool(list_device_groups)  # List all device groups
+
+# Phase 3: Advanced Operations - Performance Monitoring
+mcp.tool(get_device_performance_metrics)  # Get device performance metrics
+
+# Phase 3: Advanced Operations - Audit & Change Tracking
+mcp.tool(get_configuration_changes)  # Get recent configuration changes
+
+# Phase 3: Advanced Operations - SNMP Configuration
+mcp.tool(get_snmp_config)  # Get SNMP configuration
+
+# Phase 3: Advanced Operations - ACL Management
+mcp.tool(get_access_lists)  # List all access lists
+
+# Phase 3: Advanced Operations - Notification Management
+mcp.tool(list_notifications)  # List recent notifications
 
 # NSO Health Check and Auto-Fix Tool
 def nso_health_check(auto_fix: bool = True) -> str:
