@@ -44,8 +44,8 @@ import subprocess
 import re
 from dotenv import load_dotenv
 
-# Set NSO environment variables
-NSO_DIR = "/Users/gudeng/NCS-614"
+# Set NSO environment variables - Updated to NSO 6.4.1.3
+NSO_DIR = "/Users/gudeng/NCS-6413"
 os.environ['NCS_DIR'] = NSO_DIR
 os.environ['DYLD_LIBRARY_PATH'] = f'{NSO_DIR}/lib'
 os.environ['PYTHONPATH'] = f'{NSO_DIR}/src/ncs/pyapi'
@@ -4750,6 +4750,75 @@ def connect_device(router_name: str) -> str:
             pass
         return f"Error connecting to device {router_name}: {e}"
 
+def fetch_ssh_host_keys(router_name: str) -> str:
+    """Fetch SSH host keys from a device.
+    
+    This function retrieves SSH host keys from the device and stores them in NSO.
+    This is a critical step when adding new devices to NSO, as it establishes
+    secure communication and must be done before syncing configurations.
+    
+    NSO API Usage:
+        - device.ssh.fetch_host_keys(): Action to fetch SSH host keys
+        - Must be called before sync-from operations for new devices
+    
+    Args:
+        router_name: Name of the router device to fetch SSH keys from
+        
+    Returns:
+        str: Result message showing SSH key fetch status
+        
+    Examples:
+        # Fetch SSH keys before syncing
+        fetch_ssh_host_keys('node-1')
+        
+        # Then sync configuration
+        sync_from_device('node-1')
+        
+    See Also:
+        - connect_device(): Connect to device
+        - sync_from_device(): Sync configuration after fetching keys
+    """
+    try:
+        logger.info(f"🔧 Fetching SSH host keys from device: {router_name}")
+        
+        m = maapi.Maapi()
+        m.start_user_session('cisco', 'test_context_1')
+        t = m.start_write_trans()
+        root = maagic.get_root(t)
+        
+        if router_name not in root.devices.device:
+            m.end_user_session()
+            return f"Error: Device '{router_name}' not found in NSO"
+        
+        device = root.devices.device[router_name]
+        
+        # Check if SSH action is available
+        if not hasattr(device, 'ssh'):
+            m.end_user_session()
+            return f"Error: SSH actions not available for device '{router_name}'. Device may not support SSH."
+        
+        ssh = device.ssh
+        if not hasattr(ssh, 'fetch_host_keys'):
+            m.end_user_session()
+            return f"Error: fetch_host_keys action not available for device '{router_name}'"
+        
+        # Fetch SSH host keys
+        action = ssh.fetch_host_keys
+        result = action()
+        t.apply()
+        m.end_user_session()
+        
+        logger.info(f"✅ Successfully fetched SSH host keys from {router_name}")
+        return f"✅ Successfully fetched SSH host keys from device '{router_name}'\n   SSH keys are now stored in NSO for secure communication."
+        
+    except Exception as e:
+        logger.exception(f"❌ Error fetching SSH host keys from device {router_name}: {e}")
+        try:
+            m.end_user_session()
+        except:
+            pass
+        return f"Error fetching SSH host keys from device {router_name}: {e}"
+
 def disconnect_device(router_name: str) -> str:
     """Disconnect NSO from a device.
     
@@ -6677,6 +6746,7 @@ mcp.tool(clear_stuck_sessions)  # Clear stuck NSO sessions that are holding lock
 
 # Phase 1: Critical Operations - Device Connection Management
 mcp.tool(connect_device)  # Connect NSO to device
+mcp.tool(fetch_ssh_host_keys)  # Fetch SSH host keys from device
 mcp.tool(disconnect_device)  # Disconnect NSO from device
 mcp.tool(ping_device)  # Ping device to check connectivity
 mcp.tool(get_device_connection_status)  # Get device connection status
@@ -6797,9 +6867,9 @@ def nso_health_check(auto_fix: bool = True) -> str:
         
         # Set environment
         env = os.environ.copy()
-        env['NCS_DIR'] = '/Users/gudeng/NCS-614'
-        env['DYLD_LIBRARY_PATH'] = '/Users/gudeng/NCS-614/lib'
-        env['PYTHONPATH'] = '/Users/gudeng/NCS-614/src/ncs/pyapi'
+        env['NCS_DIR'] = '/Users/gudeng/NCS-6413'
+        env['DYLD_LIBRARY_PATH'] = '/Users/gudeng/NCS-6413/lib'
+        env['PYTHONPATH'] = '/Users/gudeng/NCS-6413/src/ncs/pyapi'
         
         # Build command
         cmd = ['python3', script_path]

@@ -12,7 +12,7 @@ cd /Users/gudeng/MCP_Server
 source mcp_venv/bin/activate
 
 # Set NSO environment variables
-export NSO_DIR="/Users/gudeng/NCS-614"
+export NSO_DIR="/Users/gudeng/NCS-6413"
 export NCS_DIR="$NSO_DIR"
 export DYLD_LIBRARY_PATH="$NSO_DIR/lib"
 export PYTHONPATH="$NSO_DIR/src/ncs/pyapi"
