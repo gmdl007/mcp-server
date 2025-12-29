@@ -1,18 +1,23 @@
 # Created by: admin
-# Date: 2025-10-30 16:35:18
+# Date: 2025-12-11 13:53:43
 # Via: cli
 # Type: delta
 # Label: 
 # Comment: 
-# No: 10164
-# TransactionId: 2133
-# Hostname: GUDENG-M-H9KG
+# No: 10022
+# TransactionId: 1119
+# Hostname: GUDENG-M-3PDW
 
-router {
-    delete:
-    ospf 1;
-}
-mpls {
-    delete:
-    ldp;
-}
+interface {
+    GigabitEthernet 0/0/0/1 {
+        description "Link to xr9kv2 (xrv9kv3)";
+        ipv4 {
+            address {
+                delete:
+                mask 255.255.255.0;
+                delete:
+                ip 188.0.0.3;
+            }
+         }
+     }
+ }

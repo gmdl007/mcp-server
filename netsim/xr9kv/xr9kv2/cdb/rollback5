@@ -1,28 +1,20 @@
 # Created by: admin
-# Date: 2025-10-30 16:16:05
+# Date: 2025-12-11 13:43:18
 # Via: cli
 # Type: delta
 # Label: 
 # Comment: 
-# No: 10096
-# TransactionId: 1689
-# Hostname: GUDENG-M-H9KG
+# No: 10010
+# TransactionId: 1044
+# Hostname: GUDENG-M-3PDW
 
 interface {
-    delete:
-    GigabitEthernet 00/0/2;
-}
-router {
-    ospf 1 {
-        area 0 {
-            delete:
-            interface GigabitEthernet00/0/2;
-        }
-    }
-}
-mpls {
-    ldp {
-        delete:
-        interface GigabitEthernet00/0/2;
-    }
+    Loopback 0 {
+        ipv4 {
+            address {
+                mask 255.255.255.255;
+                ip 3.3.3.3;
+            }
+         }
+     }
  }

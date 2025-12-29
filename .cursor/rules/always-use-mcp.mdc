@@ -1,0 +1,4 @@
+---
+alwaysApply: true
+---
+always use MCP tools instead to build and use customized python code when dealing with the network

@@ -1,18 +1,16 @@
 # Created by: admin
-# Date: 2025-10-30 16:34:54
+# Date: 2025-12-11 13:46:02
 # Via: cli
 # Type: delta
 # Label: 
 # Comment: 
-# No: 10123
-# TransactionId: 1922
-# Hostname: GUDENG-M-H9KG
+# No: 10018
+# TransactionId: 1089
+# Hostname: GUDENG-M-3PDW
 
-router {
-    ospf 1 {
-        area 0;
-    }
-}
 mpls {
-    ldp;
+    ldp {
+        router-id 1.1.1.1;
+        interface 0/0/0/0;
+    }
 }

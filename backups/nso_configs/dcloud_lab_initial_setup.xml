@@ -1,0 +1,3240 @@
+devices device node-1
+ address   198.18.1.41
+ port      22
+ ssh host-key ssh-rsa
+  key-data "AAAAB3NzaC1yc2EAAAADAQABAAABAQDIWn3J+iFUzaiU6m/ydR9MdXVaex7dl+s1SqZCluXw\n5oFdMyYXkHMmqlPmAk3kZ7OF97LOIP/piCvelMauzknrPdN6KsYEoscFfWZc6wuaEwKNEptT\nzZVi7TQpknT5g8wGLVXQHi4C+bs0t1zNc5aMeJSPltw2a+aVdZfrFMDbcXtLlzCMcmj2cG+O\nGy/4FnRujthSBKlu3zh3wxRDZ1Ag+/CDIXmZKnKFTZG2F5iLLjKyb0jwKNk7Ju9qyWpB7fnF\npyfuPFS4uc4PYH9HWf+DzqrvmmIkTx24rIWEVQoP5EMiAx9Njed1vf0sAMy0e3EfF6soiPkr\nFfTdo6hyC1hJ"
+ !
+ ssh host-key ssh-ed25519
+  key-data AAAAC3NzaC1lZDI1NTE5AAAAIEEZGw/oVg75tYS9mafJWL4vSYy83nS1mdoHUVGwWCD5
+ !
+ ssh host-key ecdsa-256
+  key-data "AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBHoYbQ3s6AJFi7p51fUS\n+8zKdjPXvL4OC6fxuVQL2eYiV0zLayES+EoXEoyDo/kIofTTerpZl1aXuYvLfcCmsF8="
+ !
+ ssh host-key ecdsa-384
+  key-data "AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzODQAAABhBG9bguz/ghlG89FWHB3t\nxKMKzzzQMcq+wGxHwEUyH2IqlM+3Vj5CI2U6L3NWfpWa2mqZI6I3OUdTpGI+wf4KNHwf/OTE\n5t97OgfN1GXGBBj+NGZbNpqdZAL4Okn86iqsFA=="
+ !
+ ssh host-key ecdsa-521
+  key-data "AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBAEh4KibW2w+gP0F1Ywp\n0ZBJIBxUGgKPHUVssQtUZAOsNFTrnJn+YEJPHktnXqd8bY/LSAdlRPMmigILnHdP+72UuQEu\nXnJbrWTr1s7AIQSll0GtgNHJK8WCw+GpV5Ab2ESAjQLCM7Bs3v7JM/WkR1P063BbLbtfkeNg\nH2TYTK4AeIYrFQ=="
+ !
+ authgroup cisco
+ device-type cli ned-id cisco-iosxr-cli-7.61
+ ned-settings cisco-iosxr read admin-show-running-config false
+ state admin-state unlocked
+ config
+  admin
+   exit-admin-config
+  !
+  hostname node-1
+  banner login $ "\r\n      _____________________________\r\n     | SR/XTC/WAE/NSO dCloud Lab   |\r\n     | Learn, Try, Question        |\r\n     | We are here to help!!       |\r\n     | All actions performed on    |\r\n     | this device are logged.     |\r\n      -----------------------------\r\n\r\n          , ,\ ,'\,'\ ,'\ ,\ ,\r\n    ,  ;\/ \' `'     `   '  /|\r\n    |\/                      |\r\n    :                        |\r\n    :                        |\r\n     |                       |\r\n     |                       |\r\n     :               -.     _|\r\n      :                \     `.\r\n      |         ________:______\\\r\n      :       ,'o       / o    ;\r\n      :       \       ,'-----./\r\n       \_      `--.--'        )\r\n      ,` `.              ,---'|\r\n      : `                     |\r\n       `,-'                   |\r\n       /      ,---.          ,'\r\n    ,-'            `-,------'\r\n   '   `.        ,--'\r\n         `-.____/\r\n -BE AWESOME!-           \\\r\n" $
+  logging trap   informational
+  logging buffered 10000000
+  logging 198.18.1.219 vrf default severity info port 30514
+  logging 198.18.1.220 vrf default severity debugging port 30514
+  logging source-interface Loopback0
+  logging format rfc5424
+  logging console notifications
+  logging hostnameprefix node-1
+  service timestamps debug datetime msec
+  service timestamps log datetime localtime msec show-timezone year
+  netconf agent tty
+  exit
+  netconf-yang agent
+   ssh
+  exit
+  username cisco
+   group cisco-support
+   group root-lr
+   secret 10 $6$9v0FBo7dXYIWBSK2$QrKvZsI/KK0dDdW7hUjVZr74dvGBCm3alkhUjWz4vn8FH41hDDWDKKwVvoWRA88wt5TORxYYa3Lf0dODBx.eJ.
+  exit
+  cdp
+  grpc
+   port           57400
+   no-tls
+   address-family ipv4
+   service-layer
+  exit
+  line console
+   exec-timeout 0 0
+   width            0
+   absolute-timeout 0
+   session-timeout 0
+  exit
+  line default
+   exec-timeout 0 0
+   absolute-timeout 0
+   session-timeout 0
+  exit
+  vty-pool default 0 50
+  ipv4 unnumbered mpls traffic-eng Loopback0
+  xml agent tty
+  exit
+  snmp-server packetsize 4096
+  snmp-server ifindex persist
+  snmp-server host 198.18.1.220 traps version 2c cisco udp-port 31062
+  snmp-server vrf default
+   host 198.18.1.219 traps cisco udp-port 31062
+  exit
+  snmp-server community cisco RO
+  snmp-server trap-source Loopback0
+  snmp-server trap link ietf
+  snmp-server traps snmp linkdown
+  snmp-server traps snmp linkup
+  ssh server netconf vrf default
+  ssh server rate-limit 600
+  ssh server session-limit 110
+  ssh server v2
+  ssh server vrf default
+  performance-measurement
+   interface GigabitEthernet0/0/0/2
+    delay-measurement
+     advertise-delay 1
+    exit
+   exit
+   interface GigabitEthernet0/0/0/6
+    delay-measurement
+     advertise-delay 1
+    exit
+   exit
+  exit
+  lldp
+  exit
+  interface Loopback 0
+   ipv4 address 198.19.1.1 255.255.255.255
+   ipv6 address 2010::1/128
+   no shutdown
+  exit
+  interface Loopback 2
+   ipv4 address 198.19.2.1 255.255.255.255
+   ipv6 address 2011::1/128
+   no shutdown
+  exit
+  interface MgmtEth 0/RP0/CPU0/0
+   ipv4 address 198.18.1.41 255.255.255.0
+   no shutdown
+  exit
+  interface GigabitEthernet 0/0/0/0
+   description   Connection to tra-gen network
+   bandwidth     10000
+   ipv4 address 10.11.12.1 255.255.255.0
+   no shutdown
+   load-interval 30
+  exit
+  interface GigabitEthernet 0/0/0/2
+   description   Connection to device node-2 destination interface 1
+   bandwidth     10000
+   ipv4 address 10.1.2.1 255.255.255.0
+   ipv6 address 2001::1:2:1/112
+   no shutdown
+   load-interval 30
+  exit
+  interface GigabitEthernet 0/0/0/6
+   description   Connection to device node-6 destination interface 1
+   bandwidth     10000
+   ipv4 address 10.1.6.1 255.255.255.0
+   ipv6 address 2001::1:6:1/112
+   no shutdown
+   load-interval 30
+  exit
+  interface GigabitEthernet 0/0/0/9
+   description   Connection to device cpe-21 destination interface 1
+   bandwidth     10000
+   ipv4 address 10.1.21.1 255.255.255.0
+   ipv6 address 2001::1:21:1/112
+   lldp
+   exit
+   no shutdown
+   load-interval 30
+   cdp
+  exit
+  router static
+   address-family ipv4 unicast
+    10.16.0.0/16 198.18.1.1
+    198.18.128.0/18 198.18.1.1
+    11.11.1.0/24 Null0 description TraGenSer
+    13.127.1.0/24 Null0 description TraGenSer
+    45.37.1.0/24 Null0 description TraGenSer
+    53.1.1.0/24 Null0 description TraGenSer
+    72.24.1.0/24 Null0 description TraGenSer
+    87.93.1.0/24 Null0 description TraGenSer
+    99.99.1.0/24 Null0 description TraGenSer
+    103.25.1.0/24 Null0 description TraGenSer
+    112.237.1.0/24 Null0 description TraGenSer
+    125.137.1.0/24 Null0 description TraGenSer
+    128.64.1.0/24 Null0 description TraGenSer
+    151.151.1.0/24 Null0 description TraGenSer
+    169.27.1.0/24 Null0 description TraGenSer
+    202.4.1.0/24 Null0 description TraGenSer
+    210.18.1.0/24 Null0 description TraGenSer
+   exit
+  exit
+  router isis 1
+   affinity-map bottom bit-position 107
+   affinity-map top bit-position 109
+   flex-algo 128
+    metric-type delay
+    advertise-definition
+   exit
+   flex-algo 129
+    advertise-definition
+    affinity exclude-any top
+   exit
+   flex-algo 130
+    advertise-definition
+    affinity exclude-any bottom
+   exit
+   net 49.0010.0100.0001.00
+   distribute link-state
+   address-family ipv4 unicast
+    metric-style wide
+    mpls traffic-eng level-2-only
+    mpls traffic-eng router-id Loopback0
+    router-id 198.19.1.1
+    redistribute static
+    segment-routing mpls sr-prefer
+   exit
+   address-family ipv6 unicast
+    router-id Loopback0
+    segment-routing srv6
+     locator MAIN
+     exit
+    exit
+   exit
+   interface GigabitEthernet0/0/0/2
+    circuit-type   level-2-only
+    point-to-point
+    address-family ipv4 unicast
+     metric 100
+     fast-reroute per-prefix
+     fast-reroute per-prefix ti-lfa
+    exit
+    address-family ipv6 unicast
+     metric 100
+    exit
+   exit
+   interface GigabitEthernet0/0/0/6
+    circuit-type   level-2-only
+    point-to-point
+    affinity flex-algo top
+    address-family ipv4 unicast
+     metric 100
+     fast-reroute per-prefix
+     fast-reroute per-prefix ti-lfa
+    exit
+    address-family ipv6 unicast
+     metric 100
+    exit
+   exit
+   interface Loopback0
+     passive
+    circuit-type level-2-only
+    address-family ipv4 unicast
+     prefix-sid absolute 16001
+     prefix-sid algorithm 128 absolute 17101
+     prefix-sid algorithm 129 absolute 17201
+     prefix-sid algorithm 130 absolute 17301
+     prefix-sid strict-spf absolute 17001
+    exit
+    address-family ipv6 unicast
+    exit
+   exit
+   interface Loopback2
+     passive
+    circuit-type level-2-only
+    address-family ipv4 unicast
+    exit
+    address-family ipv6 unicast
+    exit
+   exit
+  exit
+  router bgp 65000
+   bgp router-id 198.19.1.1
+   address-family vpnv4 unicast
+   exit
+   address-family vpnv6 unicast
+   exit
+   neighbor 198.19.2.11
+    remote-as 65000
+    update-source Loopback0
+    address-family vpnv4 unicast
+    exit
+   exit
+   neighbor 2011::11
+    remote-as 65000
+    update-source Loopback0
+    address-family vpnv6 unicast
+    exit
+   exit
+  exit
+  rsvp
+   interface GigabitEthernet0/0/0/2
+    bandwidth
+   exit
+   interface GigabitEthernet0/0/0/6
+    bandwidth
+   exit
+  exit
+  mpls traffic-eng
+   auto-tunnel pcc
+    tunnel-id min 1000 max 1999
+   exit
+   interface GigabitEthernet0/0/0/2
+    admin-weight 10
+   exit
+   interface GigabitEthernet0/0/0/6
+    attribute-names top
+    admin-weight 10
+   exit
+   pce
+    peer source ipv4 198.19.2.1
+    peer ipv4 198.19.1.11
+     password encrypted 121A0C041104
+    exit
+    stateful-client
+     instantiation
+     report
+    exit
+   exit
+   affinity-map bottom bit-position 23
+   affinity-map top bit-position 24
+  exit
+  mpls ldp
+   interface GigabitEthernet0/0/0/2
+   exit
+   interface GigabitEthernet0/0/0/6
+   exit
+  exit
+  mpls oam
+  exit
+  segment-routing
+   global-block 16000 23999
+   traffic-eng
+    pcc
+     source-address ipv4 198.19.1.1
+     pce address ipv4 198.19.1.11
+      password encrypted 0822455D0A16
+     !
+     report-all
+     profile 1
+      autoroute
+       include ipv4 all
+       force-sr-include
+      !
+     !
+    !
+   !
+   srv6
+    locators
+     locator MAIN
+      micro-segment behavior unode psp-usd
+      prefix fcbb:0:1::/48
+     !
+    !
+   !
+  !
+ !
+!
+devices device node-2
+ address   198.18.1.42
+ port      22
+ ssh host-key ssh-rsa
+  key-data "AAAAB3NzaC1yc2EAAAADAQABAAABAQDEPoPhN+iti/5ZqfPdoE+YVKv/RQMqJ6oM9iSOZdDS\nh7FWJr+Yk+uqMv0kIsq6VqQ9ElUtI6/sBZOo/IM2Dd4P/UvrxZCWXNr/DJQk5PQOa3dRmbK1\nmTeNyx59dJoYPmdHqFv9jf+AWCSOpVSlh+XBSE+bLMDD2jxd374kFNtymXR0k9Ke3HoU7X65\n4aw9qDl4+kiTTazLCiTpyNdGaG94huVl5EKDblTIgMGtZzGGmVyRgyBYKf7s1PvX7PbdCWf1\nctz5WIZFg3DRFfcCNNIaUy+5d20yZ/5h9JwGv+fp1iAjvU//oonohBIgNLP1KnsoJtxBbVrC\nrlzsjk/k7PYH"
+ !
+ ssh host-key ssh-ed25519
+  key-data AAAAC3NzaC1lZDI1NTE5AAAAICvHA2m/VnwRaQ9XuYsoeavTb6ARNu/pnzg7ivOa+xRj
+ !
+ ssh host-key ecdsa-256
+  key-data "AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBGQIr5WVPocrdBx/CCjR\ng/Zf6iwbZVn2lnRf6zFrrXx6qm9IpK2wG021xgQGT80V3dmMCDM1Lgc4zTsMYp2j3dU="
+ !
+ ssh host-key ecdsa-384
+  key-data "AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzODQAAABhBJBIBqWDQGAr2m0++XhD\n37517fxyfsoIy4jPBJyPzDvgUOy708bohaJMXvxB4uXB9t3xFSc+JZ/rx8TdWGkOvMG/Picr\nOhWAcED9zZoN+ckRLWs8nmiicYM49a3UyJj9cQ=="
+ !
+ ssh host-key ecdsa-521
+  key-data "AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBACELf9HBYRSl2ObaL05\nmpxkv8AMo0be+5PGQVf3J30MVEBzI1+pSeQPNvf+e0in1RmGHJhvA/zPJRtugX8EsKowAAAA\nSs5r7B5COz7WqusTLpib0Xdxmf1MBtWtNC5Wnbu49COYaJIbWh3gNabgHxz6wnMTUws+FCeU\nnK7Cvb3lHZrlHg=="
+ !
+ authgroup cisco
+ device-type cli ned-id cisco-iosxr-cli-7.61
+ ned-settings cisco-iosxr read admin-show-running-config false
+ state admin-state unlocked
+ config
+  admin
+   exit-admin-config
+  !
+  hostname node-2
+  banner login $ "\r\n      _____________________________\r\n     | SR/XTC/WAE/NSO dCloud Lab   |\r\n     | Learn, Try, Question        |\r\n     | We are here to help!!       |\r\n     | All actions performed on    |\r\n     | this device are logged.     |\r\n      -----------------------------\r\n\r\n          , ,\ ,'\,'\ ,'\ ,\ ,\r\n    ,  ;\/ \' `'     `   '  /|\r\n    |\/                      |\r\n    :                        |\r\n    :                        |\r\n     |                       |\r\n     |                       |\r\n     :               -.     _|\r\n      :                \     `.\r\n      |         ________:______\\\r\n      :       ,'o       / o    ;\r\n      :       \       ,'-----./\r\n       \_      `--.--'        )\r\n      ,` `.              ,---'|\r\n      : `                     |\r\n       `,-'                   |\r\n       /      ,---.          ,'\r\n    ,-'            `-,------'\r\n   '   `.        ,--'\r\n         `-.____/\r\n -BE AWESOME!-           \\\r\n" $
+  logging trap   informational
+  logging buffered 10000000
+  logging 198.18.1.219 vrf default severity info port 30514
+  logging 198.18.1.220 vrf default severity debugging port 30514
+  logging source-interface Loopback0
+  logging format rfc5424
+  logging console notifications
+  logging hostnameprefix node-2
+  service timestamps debug datetime msec
+  service timestamps log datetime localtime msec show-timezone year
+  netconf agent tty
+  exit
+  netconf-yang agent
+   ssh
+  exit
+  username cisco
+   group cisco-support
+   group root-lr
+   secret 10 $6$pYCvfoPTNRkyDcoL$60jhnRToCZG0AG3QqBDpZ3uleEedfL9s/QQexVLGQ26IFlXMwkxTLKmyAjA2p.C.J5xcfdTcZqw321ieSNbko/
+  exit
+  cdp
+  grpc
+   port           57400
+   no-tls
+   address-family ipv4
+   service-layer
+  exit
+  line console
+   exec-timeout 0 0
+   width            0
+   absolute-timeout 0
+   session-timeout 0
+  exit
+  line default
+   exec-timeout 0 0
+   absolute-timeout 0
+   session-timeout 0
+  exit
+  vty-pool default 0 50
+  ipv4 unnumbered mpls traffic-eng Loopback0
+  xml agent tty
+  exit
+  snmp-server packetsize 4096
+  snmp-server ifindex persist
+  snmp-server host 198.18.1.220 traps version 2c cisco udp-port 31062
+  snmp-server vrf default
+   host 198.18.1.219 traps cisco udp-port 31062
+  exit
+  snmp-server community cisco RO
+  snmp-server trap-source Loopback0
+  snmp-server trap link ietf
+  snmp-server traps snmp linkdown
+  snmp-server traps snmp linkup
+  ssh server netconf vrf default
+  ssh server rate-limit 600
+  ssh server session-limit 110
+  ssh server v2
+  ssh server vrf default
+  performance-measurement
+   interface GigabitEthernet0/0/0/1
+    delay-measurement
+     advertise-delay 1
+    exit
+   exit
+   interface GigabitEthernet0/0/0/6
+    delay-measurement
+     advertise-delay 11
+    exit
+   exit
+   interface GigabitEthernet0/0/0/7
+    delay-measurement
+     advertise-delay 1
+    exit
+   exit
+  exit
+  lldp
+  exit
+  interface Loopback 0
+   ipv4 address 198.19.1.2 255.255.255.255
+   ipv6 address 2010::2/128
+   no shutdown
+  exit
+  interface Loopback 2
+   ipv4 address 198.19.2.2 255.255.255.255
+   ipv6 address 2011::2/128
+   no shutdown
+  exit
+  interface MgmtEth 0/RP0/CPU0/0
+   ipv4 address 198.18.1.42 255.255.255.0
+   no shutdown
+  exit
+  interface GigabitEthernet 0/0/0/0
+   description   Connection to tra-gen network
+   bandwidth     10000
+   ipv4 address 10.11.12.2 255.255.255.0
+   no shutdown
+   load-interval 30
+  exit
+  interface GigabitEthernet 0/0/0/1
+   description   Connection to device node-1 destination interface 2
+   bandwidth     10000
+   ipv4 address 10.1.2.2 255.255.255.0
+   ipv6 address 2001::1:2:2/112
+   no shutdown
+   load-interval 30
+  exit
+  interface GigabitEthernet 0/0/0/6
+   description   Connection to device node-6 destination interface 2
+   bandwidth     10000
+   ipv4 address 10.2.6.2 255.255.255.0
+   ipv6 address 2001::2:6:2/112
+   no shutdown
+   load-interval 30
+  exit
+  interface GigabitEthernet 0/0/0/7
+   description   Connection to device node-7 destination interface 2
+   bandwidth     10000
+   ipv4 address 10.2.7.2 255.255.255.0
+   ipv6 address 2001::2:7:2/112
+   no shutdown
+   load-interval 30
+  exit
+  interface GigabitEthernet 0/0/0/9
+   description   Connection to device cpe-22 destination interface 1
+   bandwidth     10000
+   ipv4 address 10.2.22.2 255.255.255.0
+   ipv6 address 2001::2:22:2/112
+   lldp
+   exit
+   no shutdown
+   load-interval 30
+   cdp
+  exit
+  router static
+   address-family ipv4 unicast
+    10.16.0.0/16 198.18.1.1
+    198.18.128.0/18 198.18.1.1
+    11.11.2.0/24 Null0 description TraGenSer
+    13.127.2.0/24 Null0 description TraGenSer
+    45.37.2.0/24 Null0 description TraGenSer
+    53.1.2.0/24 Null0 description TraGenSer
+    72.24.2.0/24 Null0 description TraGenSer
+    87.93.2.0/24 Null0 description TraGenSer
+    99.99.2.0/24 Null0 description TraGenSer
+    103.25.2.0/24 Null0 description TraGenSer
+    112.237.2.0/24 Null0 description TraGenSer
+    125.137.2.0/24 Null0 description TraGenSer
+    128.64.2.0/24 Null0 description TraGenSer
+    151.151.2.0/24 Null0 description TraGenSer
+    169.27.2.0/24 Null0 description TraGenSer
+    202.4.2.0/24 Null0 description TraGenSer
+    210.18.2.0/24 Null0 description TraGenSer
+   exit
+  exit
+  router isis 1
+   affinity-map bottom bit-position 107
+   affinity-map top bit-position 109
+   flex-algo 128
+    metric-type delay
+    advertise-definition
+   exit
+   flex-algo 129
+    advertise-definition
+    affinity exclude-any top
+   exit
+   flex-algo 130
+    advertise-definition
+    affinity exclude-any bottom
+   exit
+   net 49.0010.0100.0002.00
+   distribute link-state
+   address-family ipv4 unicast
+    metric-style wide
+    mpls traffic-eng level-2-only
+    mpls traffic-eng router-id Loopback0
+    router-id 198.19.1.2
+    redistribute static
+    segment-routing mpls sr-prefer
+   exit
+   address-family ipv6 unicast
+    router-id Loopback0
+    segment-routing srv6
+     locator MAIN
+     exit
+    exit
+   exit
+   interface GigabitEthernet0/0/0/1
+    circuit-type   level-2-only
+    point-to-point
+    address-family ipv4 unicast
+     metric 100
+     fast-reroute per-prefix
+     fast-reroute per-prefix ti-lfa
+    exit
+    address-family ipv6 unicast
+     metric 100
+    exit
+   exit
+   interface GigabitEthernet0/0/0/6
+    circuit-type   level-2-only
+    point-to-point
+    address-family ipv4 unicast
+     metric 10
+     fast-reroute per-prefix
+     fast-reroute per-prefix ti-lfa
+    exit
+    address-family ipv6 unicast
+     metric 10
+    exit
+   exit
+   interface GigabitEthernet0/0/0/7
+    circuit-type   level-2-only
+    point-to-point
+    affinity flex-algo bottom
+    address-family ipv4 unicast
+     metric 100
+     fast-reroute per-prefix
+     fast-reroute per-prefix ti-lfa
+    exit
+    address-family ipv6 unicast
+     metric 100
+    exit
+   exit
+   interface Loopback0
+     passive
+    circuit-type level-2-only
+    address-family ipv4 unicast
+     prefix-sid absolute 16002
+     prefix-sid algorithm 128 absolute 17102
+     prefix-sid algorithm 129 absolute 17202
+     prefix-sid algorithm 130 absolute 17302
+     prefix-sid strict-spf absolute 17002
+    exit
+    address-family ipv6 unicast
+    exit
+   exit
+   interface Loopback2
+     passive
+    circuit-type level-2-only
+    address-family ipv4 unicast
+    exit
+    address-family ipv6 unicast
+    exit
+   exit
+  exit
+  router bgp 65000
+   bgp router-id 198.19.1.2
+   address-family vpnv4 unicast
+   exit
+   address-family vpnv6 unicast
+   exit
+   neighbor 198.19.2.11
+    remote-as 65000
+    update-source Loopback0
+    address-family vpnv4 unicast
+    exit
+   exit
+   neighbor 2011::11
+    remote-as 65000
+    update-source Loopback0
+    address-family vpnv6 unicast
+    exit
+   exit
+  exit
+  rsvp
+   interface GigabitEthernet0/0/0/1
+    bandwidth
+   exit
+   interface GigabitEthernet0/0/0/6
+    bandwidth
+   exit
+   interface GigabitEthernet0/0/0/7
+    bandwidth
+   exit
+  exit
+  mpls traffic-eng
+   auto-tunnel pcc
+    tunnel-id min 1000 max 1999
+   exit
+   interface GigabitEthernet0/0/0/1
+    admin-weight 10
+   exit
+   interface GigabitEthernet0/0/0/6
+    admin-weight 10
+   exit
+   interface GigabitEthernet0/0/0/7
+    attribute-names bottom
+    admin-weight 10
+   exit
+   pce
+    peer source ipv4 198.19.2.2
+    peer ipv4 198.19.1.11
+     password encrypted 1511021F0725
+    exit
+    stateful-client
+     instantiation
+     report
+    exit
+   exit
+   affinity-map bottom bit-position 23
+   affinity-map top bit-position 24
+  exit
+  mpls ldp
+   interface GigabitEthernet0/0/0/1
+   exit
+   interface GigabitEthernet0/0/0/6
+   exit
+   interface GigabitEthernet0/0/0/7
+   exit
+  exit
+  mpls oam
+  exit
+  segment-routing
+   global-block 16000 23999
+   traffic-eng
+    pcc
+     source-address ipv4 198.19.1.2
+     pce address ipv4 198.19.1.11
+      password encrypted 045802150C2E
+     !
+     report-all
+     profile 1
+      autoroute
+       include ipv4 all
+       force-sr-include
+      !
+     !
+    !
+   !
+   srv6
+    locators
+     locator MAIN
+      micro-segment behavior unode psp-usd
+      prefix fcbb:0:2::/48
+     !
+    !
+   !
+  !
+ !
+!
+devices device node-3
+ address   198.18.1.43
+ port      22
+ ssh host-key ssh-rsa
+  key-data "AAAAB3NzaC1yc2EAAAADAQABAAABAQC+d+TMzv9V/WQ2mLv+YjiYPNsnaZV64fEYJ8rU9mbr\nRdaSHMJLbDyaESmheaXsqJUTLOAKrPI2ekGKMfzJ0wDJPpVlaeU3RJuWbstEwMGopA3XywOR\niu28JfC8V08OJDnQxn4joQ/bj2skIMReNP4SGwTm7NENr1X0mC68XvhsDECF4BnbvUohMMHb\nnzXoqQPH71QFbMJ6ExyCc+Tv9XNq9aTEdctW7CGAQhcKNl8qIBaRobge+OyYCanu/8IA95ja\n+YugOU7QFAUbhy043JddnsywazwswBpF3xo/miZ0Z3JZojqj7RiRxLInXEmnMdFwGFnTFfJ7\niilYpQ1fEBR7"
+ !
+ ssh host-key ssh-ed25519
+  key-data AAAAC3NzaC1lZDI1NTE5AAAAINoVTykRuVhJc6AH97C+4iog5jVI75x1OWyNTCZgB92f
+ !
+ ssh host-key ecdsa-256
+  key-data "AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBIoxOz/RsBOcseO1gTPM\ngKCStqlhbtpg/OdTBrmKD4TsvP5eU2NK/3hqF8mkjRqpCT6wXYO7k3uu/elKHxtDBS0="
+ !
+ ssh host-key ecdsa-384
+  key-data "AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzODQAAABhBGu5Cn30CzpPzPFhJo4x\n3wA1NYwgkjWfy0Tc7lyb8ybspWx5ucEIRvkRrw5J0ub2+Vq49dlS+elIM62D3qTxePUfS4lL\nWdVdJX87QTwd+zCQ1K/p5jhv8caOcOnursikeQ=="
+ !
+ ssh host-key ecdsa-521
+  key-data "AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBAE6QyPrFqxQgtLuTKWU\nzp1xOO7x3gcsG83SQY7GEwPxtyVNewSfRGkV+vEb/14UqhZRL3DWMSmAjaf9LN36mDEvbQA/\nIybk8JomghDG10gzwu9t4MF9uAZdX1fj1eiVCnG2iLdfP8+e7hzNy5dN4o+s2e5IBts6jbSo\nKzmR9rAtpeFxNw=="
+ !
+ authgroup cisco
+ device-type cli ned-id cisco-iosxr-cli-7.61
+ ned-settings cisco-iosxr read admin-show-running-config false
+ state admin-state unlocked
+ config
+  admin
+   exit-admin-config
+  !
+  hostname node-3
+  banner login $ "\r\n      _____________________________\r\n     | SR/XTC/WAE/NSO dCloud Lab   |\r\n     | Learn, Try, Question        |\r\n     | We are here to help!!       |\r\n     | All actions performed on    |\r\n     | this device are logged.     |\r\n      -----------------------------\r\n\r\n          , ,\ ,'\,'\ ,'\ ,\ ,\r\n    ,  ;\/ \' `'     `   '  /|\r\n    |\/                      |\r\n    :                        |\r\n    :                        |\r\n     |                       |\r\n     |                       |\r\n     :               -.     _|\r\n      :                \     `.\r\n      |         ________:______\\\r\n      :       ,'o       / o    ;\r\n      :       \       ,'-----./\r\n       \_      `--.--'        )\r\n      ,` `.              ,---'|\r\n      : `                     |\r\n       `,-'                   |\r\n       /      ,---.          ,'\r\n    ,-'            `-,------'\r\n   '   `.        ,--'\r\n         `-.____/\r\n -BE AWESOME!-           \\\r\n" $
+  logging trap   informational
+  logging buffered 10000000
+  logging 198.18.1.219 vrf default severity info port 30514
+  logging 198.18.1.220 vrf default severity debugging port 30514
+  logging source-interface Loopback0
+  logging format rfc5424
+  logging console notifications
+  logging hostnameprefix node-3
+  service timestamps debug datetime msec
+  service timestamps log datetime localtime msec show-timezone year
+  netconf agent tty
+  exit
+  netconf-yang agent
+   ssh
+  exit
+  username cisco
+   group cisco-support
+   group root-lr
+   secret 10 $6$KJ5jP2AybykHOQP0$K7TC8cmIhB4kKXzURq7GtGP9cgqgR/nGyBa3RQurD.RSopm4vBmNmGIqf5KTZTSn1IMogTJnXxafSiYgplrzq1
+  exit
+  cdp
+  grpc
+   port           57400
+   no-tls
+   address-family ipv4
+   service-layer
+  exit
+  line console
+   exec-timeout 0 0
+   width            0
+   absolute-timeout 0
+   session-timeout 0
+  exit
+  line default
+   exec-timeout 0 0
+   absolute-timeout 0
+   session-timeout 0
+  exit
+  vty-pool default 0 50
+  ipv4 unnumbered mpls traffic-eng Loopback0
+  xml agent tty
+  exit
+  snmp-server packetsize 4096
+  snmp-server ifindex persist
+  snmp-server host 198.18.1.220 traps version 2c cisco udp-port 31062
+  snmp-server vrf default
+   host 198.18.1.219 traps cisco udp-port 31062
+  exit
+  snmp-server community cisco RO
+  snmp-server trap-source Loopback0
+  snmp-server trap link ietf
+  snmp-server traps snmp linkdown
+  snmp-server traps snmp linkup
+  ssh server netconf vrf default
+  ssh server rate-limit 600
+  ssh server session-limit 110
+  ssh server v2
+  ssh server vrf default
+  performance-measurement
+   interface GigabitEthernet0/0/0/4
+    delay-measurement
+     advertise-delay 1
+    exit
+   exit
+   interface GigabitEthernet0/0/0/8
+    delay-measurement
+     advertise-delay 1
+    exit
+   exit
+  exit
+  lldp
+  exit
+  interface Loopback 0
+   ipv4 address 198.19.1.3 255.255.255.255
+   ipv6 address 2010::3/128
+   no shutdown
+  exit
+  interface Loopback 2
+   ipv4 address 198.19.2.3 255.255.255.255
+   ipv6 address 2011::3/128
+   no shutdown
+  exit
+  interface MgmtEth 0/RP0/CPU0/0
+   ipv4 address 198.18.1.43 255.255.255.0
+   no shutdown
+  exit
+  interface GigabitEthernet 0/0/0/0
+   description   Connection to tra-gen network
+   bandwidth     10000
+   ipv4 address 10.11.12.3 255.255.255.0
+   no shutdown
+   load-interval 30
+  exit
+  interface GigabitEthernet 0/0/0/4
+   description   Connection to device node-4 destination interface 3
+   bandwidth     10000
+   ipv4 address 10.3.4.3 255.255.255.0
+   ipv6 address 2001::3:4:3/112
+   no shutdown
+   load-interval 30
+  exit
+  interface GigabitEthernet 0/0/0/8
+   description   Connection to device node-8 destination interface 3
+   bandwidth     10000
+   ipv4 address 10.3.8.3 255.255.255.0
+   ipv6 address 2001::3:8:3/112
+   no shutdown
+   load-interval 30
+  exit
+  interface GigabitEthernet 0/0/0/9
+   description   Connection to device cpe-23 destination interface 1
+   bandwidth     10000
+   ipv4 address 10.3.23.3 255.255.255.0
+   ipv6 address 2001::3:23:3/112
+   lldp
+   exit
+   no shutdown
+   load-interval 30
+   cdp
+  exit
+  router static
+   address-family ipv4 unicast
+    10.16.0.0/16 198.18.1.1
+    198.18.128.0/18 198.18.1.1
+    11.11.3.0/24 Null0 description TraGenSer
+    13.127.3.0/24 Null0 description TraGenSer
+    45.37.3.0/24 Null0 description TraGenSer
+    53.1.3.0/24 Null0 description TraGenSer
+    72.24.3.0/24 Null0 description TraGenSer
+    87.93.3.0/24 Null0 description TraGenSer
+    99.99.3.0/24 Null0 description TraGenSer
+    103.25.3.0/24 Null0 description TraGenSer
+    112.237.3.0/24 Null0 description TraGenSer
+    125.137.3.0/24 Null0 description TraGenSer
+    128.64.3.0/24 Null0 description TraGenSer
+    151.151.3.0/24 Null0 description TraGenSer
+    169.27.3.0/24 Null0 description TraGenSer
+    202.4.3.0/24 Null0 description TraGenSer
+    210.18.3.0/24 Null0 description TraGenSer
+   exit
+  exit
+  router isis 1
+   affinity-map bottom bit-position 107
+   affinity-map top bit-position 109
+   flex-algo 128
+    metric-type delay
+    advertise-definition
+   exit
+   flex-algo 129
+    advertise-definition
+    affinity exclude-any top
+   exit
+   flex-algo 130
+    advertise-definition
+    affinity exclude-any bottom
+   exit
+   net 49.0010.0100.0003.00
+   distribute link-state
+   address-family ipv4 unicast
+    metric-style wide
+    mpls traffic-eng level-2-only
+    mpls traffic-eng router-id Loopback0
+    router-id 198.19.1.3
+    redistribute static
+    segment-routing mpls sr-prefer
+   exit
+   address-family ipv6 unicast
+    router-id Loopback0
+    segment-routing srv6
+     locator MAIN
+     exit
+    exit
+   exit
+   interface GigabitEthernet0/0/0/4
+    circuit-type   level-2-only
+    point-to-point
+    address-family ipv4 unicast
+     metric 100
+     fast-reroute per-prefix
+     fast-reroute per-prefix ti-lfa
+    exit
+    address-family ipv6 unicast
+     metric 100
+    exit
+   exit
+   interface GigabitEthernet0/0/0/8
+    circuit-type   level-2-only
+    point-to-point
+    affinity flex-algo bottom
+    address-family ipv4 unicast
+     metric 100
+     fast-reroute per-prefix
+     fast-reroute per-prefix ti-lfa
+    exit
+    address-family ipv6 unicast
+     metric 100
+    exit
+   exit
+   interface Loopback0
+     passive
+    circuit-type level-2-only
+    address-family ipv4 unicast
+     prefix-sid absolute 16003
+     prefix-sid algorithm 128 absolute 17103
+     prefix-sid algorithm 129 absolute 17203
+     prefix-sid algorithm 130 absolute 17303
+     prefix-sid strict-spf absolute 17003
+    exit
+    address-family ipv6 unicast
+    exit
+   exit
+   interface Loopback2
+     passive
+    circuit-type level-2-only
+    address-family ipv4 unicast
+    exit
+    address-family ipv6 unicast
+    exit
+   exit
+  exit
+  router bgp 65000
+   bgp router-id 198.19.1.3
+   address-family vpnv4 unicast
+   exit
+   address-family vpnv6 unicast
+   exit
+   neighbor 198.19.2.11
+    remote-as 65000
+    update-source Loopback0
+    address-family vpnv4 unicast
+    exit
+   exit
+   neighbor 2011::11
+    remote-as 65000
+    update-source Loopback0
+    address-family vpnv6 unicast
+    exit
+   exit
+  exit
+  rsvp
+   interface GigabitEthernet0/0/0/4
+    bandwidth
+   exit
+   interface GigabitEthernet0/0/0/8
+    bandwidth
+   exit
+  exit
+  mpls traffic-eng
+   auto-tunnel pcc
+    tunnel-id min 1000 max 1999
+   exit
+   interface GigabitEthernet0/0/0/4
+    admin-weight 10
+   exit
+   interface GigabitEthernet0/0/0/8
+    attribute-names bottom
+    admin-weight 10
+   exit
+   pce
+    peer source ipv4 198.19.2.3
+    peer ipv4 198.19.1.11
+     password encrypted 070C285F4D06
+    exit
+    stateful-client
+     instantiation
+     report
+    exit
+   exit
+   affinity-map bottom bit-position 23
+   affinity-map top bit-position 24
+  exit
+  mpls ldp
+   interface GigabitEthernet0/0/0/4
+   exit
+   interface GigabitEthernet0/0/0/8
+   exit
+  exit
+  mpls oam
+  exit
+  segment-routing
+   global-block 16000 23999
+   traffic-eng
+    pcc
+     source-address ipv4 198.19.1.3
+     pce address ipv4 198.19.1.11
+      password encrypted 0822455D0A16
+     !
+     report-all
+     profile 1
+      autoroute
+       include ipv4 all
+       force-sr-include
+      !
+     !
+    !
+   !
+   srv6
+    locators
+     locator MAIN
+      micro-segment behavior unode psp-usd
+      prefix fcbb:0:3::/48
+     !
+    !
+   !
+  !
+ !
+!
+devices device node-4
+ address   198.18.1.44
+ port      22
+ ssh host-key ssh-rsa
+  key-data "AAAAB3NzaC1yc2EAAAADAQABAAABAQCyY7dVUIpiJbl0HJC3+1dJ+Y7S+H+FcXLjftjQTvZ0\naaM5Dw1t9nUAj3QlN9nGJJxB16dZPUcVHJr5Ald989xoAOEsavCArX8bRVgdD5ZedOZGSVc2\nJpJEcDdM1c6BDCycLIy/u64+Mjyy3LLbU3uSmvGrhpyU7VK+iYR9iFBs3Hbz/Zh3mxFYVCSq\nm/Xo/tZaURM4Rz94qEbzZUB52Fgvxld0awubyhj8O+yfIkIMOvrjZP2D8s+IMErKBY+wC9J/\nMAaUKGt2MEIc/FPNsIhKGSNax1cctZu7uDVcefiNVuJIjPX/tuQZuSoQnolLGfVybHGoohPv\nUosC5gfapdXn"
+ !
+ ssh host-key ssh-ed25519
+  key-data AAAAC3NzaC1lZDI1NTE5AAAAIKaY2wRYNyLDcnLiKPSTXhDnAIvJvjQ00tFh4TjkZ77U
+ !
+ ssh host-key ecdsa-256
+  key-data "AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBPgirRMgoJJoSH09R73g\n8MQezhY24D2+npQ4141q4c/pLdAAOjvknEl6t0p0P64ehQLcXwPqS5Nw+eSX3/ca3lY="
+ !
+ ssh host-key ecdsa-384
+  key-data "AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzODQAAABhBBoFCrhHbFIm8XcbUWU+\nAKoKTm5dRD0nCKhtQN8kRh2i3yxzu345cCaLsWPGfZwCLg1swKIqymoAvVFIwdaTwRYTNRPx\ny5BC78kjAzA4uy8eKBjIkTtFnhdCPVkUf+UTGw=="
+ !
+ ssh host-key ecdsa-521
+  key-data "AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBAE0ARgG4aItU+SLmQ00\nBydnFyUGI1tqPoI2bd4e5zWXEn67mtGV61Iu3bCZdU5+Mp/Sltu48kXbDEszS7DTTzpZqgFp\nDcl76EShb7pze/myPF3bnfZUpPD3ixU9YF1OcOGKTGUagGLpSD1s1Y7/xRLbrmo4d151/mYJ\n7DlcbmFh+DiLnA=="
+ !
+ authgroup cisco
+ device-type cli ned-id cisco-iosxr-cli-7.61
+ ned-settings cisco-iosxr read admin-show-running-config false
+ state admin-state unlocked
+ config
+  admin
+   exit-admin-config
+  !
+  hostname node-4
+  banner login $ "\r\n      _____________________________\r\n     | SR/XTC/WAE/NSO dCloud Lab   |\r\n     | Learn, Try, Question        |\r\n     | We are here to help!!       |\r\n     | All actions performed on    |\r\n     | this device are logged.     |\r\n      -----------------------------\r\n\r\n          , ,\ ,'\,'\ ,'\ ,\ ,\r\n    ,  ;\/ \' `'     `   '  /|\r\n    |\/                      |\r\n    :                        |\r\n    :                        |\r\n     |                       |\r\n     |                       |\r\n     :               -.     _|\r\n      :                \     `.\r\n      |         ________:______\\\r\n      :       ,'o       / o    ;\r\n      :       \       ,'-----./\r\n       \_      `--.--'        )\r\n      ,` `.              ,---'|\r\n      : `                     |\r\n       `,-'                   |\r\n       /      ,---.          ,'\r\n    ,-'            `-,------'\r\n   '   `.        ,--'\r\n         `-.____/\r\n -BE AWESOME!-           \\\r\n" $
+  logging trap   informational
+  logging buffered 10000000
+  logging 198.18.1.219 vrf default severity info port 30514
+  logging 198.18.1.220 vrf default severity debugging port 30514
+  logging source-interface Loopback0
+  logging format rfc5424
+  logging console notifications
+  logging hostnameprefix node-4
+  service timestamps debug datetime msec
+  service timestamps log datetime localtime msec show-timezone year
+  netconf agent tty
+  exit
+  netconf-yang agent
+   ssh
+  exit
+  username cisco
+   group cisco-support
+   group root-lr
+   secret 10 $6$vTAZk2g1L5k5/wrj$tAjbyP9XBZvDsBQ62PItt.Ek4leHD1rpVrp7Gow.jV6ZvHp2HZu86U2ALm8A8iaS1.c/xb7tjUCg9lG4pBt2d1
+  exit
+  cdp
+  grpc
+   port           57400
+   no-tls
+   address-family ipv4
+   service-layer
+  exit
+  line console
+   exec-timeout 0 0
+   width            0
+   absolute-timeout 0
+   session-timeout 0
+  exit
+  line default
+   exec-timeout 0 0
+   absolute-timeout 0
+   session-timeout 0
+  exit
+  vty-pool default 0 50
+  ipv4 unnumbered mpls traffic-eng Loopback0
+  xml agent tty
+  exit
+  snmp-server packetsize 4096
+  snmp-server ifindex persist
+  snmp-server host 198.18.1.220 traps version 2c cisco udp-port 31062
+  snmp-server vrf default
+   host 198.18.1.219 traps cisco udp-port 31062
+  exit
+  snmp-server community cisco RO
+  snmp-server trap-source Loopback0
+  snmp-server trap link ietf
+  snmp-server traps snmp linkdown
+  snmp-server traps snmp linkup
+  ssh server netconf vrf default
+  ssh server rate-limit 600
+  ssh server session-limit 110
+  ssh server v2
+  ssh server vrf default
+  performance-measurement
+   interface GigabitEthernet0/0/0/3
+    delay-measurement
+     advertise-delay 1
+    exit
+   exit
+   interface GigabitEthernet0/0/0/5
+    delay-measurement
+     advertise-delay 1
+    exit
+   exit
+   interface GigabitEthernet0/0/0/8
+    delay-measurement
+     advertise-delay 11
+    exit
+   exit
+  exit
+  lldp
+  exit
+  interface Loopback 0
+   ipv4 address 198.19.1.4 255.255.255.255
+   ipv6 address 2010::4/128
+   no shutdown
+  exit
+  interface Loopback 2
+   ipv4 address 198.19.2.4 255.255.255.255
+   ipv6 address 2011::4/128
+   no shutdown
+  exit
+  interface MgmtEth 0/RP0/CPU0/0
+   ipv4 address 198.18.1.44 255.255.255.0
+   no shutdown
+  exit
+  interface GigabitEthernet 0/0/0/0
+   description   Connection to tra-gen network
+   bandwidth     10000
+   ipv4 address 10.11.12.4 255.255.255.0
+   no shutdown
+   load-interval 30
+  exit
+  interface GigabitEthernet 0/0/0/3
+   description   Connection to device node-3 destination interface 4
+   bandwidth     10000
+   ipv4 address 10.3.4.4 255.255.255.0
+   ipv6 address 2001::3:4:4/112
+   no shutdown
+   load-interval 30
+  exit
+  interface GigabitEthernet 0/0/0/5
+   description   Connection to device node-5 destination interface 4
+   bandwidth     10000
+   ipv4 address 10.4.5.4 255.255.255.0
+   ipv6 address 2001::4:5:4/112
+   no shutdown
+   load-interval 30
+  exit
+  interface GigabitEthernet 0/0/0/8
+   description   Connection to device node-8 destination interface 4
+   bandwidth     10000
+   ipv4 address 10.4.8.4 255.255.255.0
+   ipv6 address 2001::4:8:4/112
+   no shutdown
+   load-interval 30
+  exit
+  interface GigabitEthernet 0/0/0/9
+   description   Connection to device cpe-24 destination interface 1
+   bandwidth     10000
+   ipv4 address 10.4.24.4 255.255.255.0
+   ipv6 address 2001::4:24:4/112
+   lldp
+   exit
+   no shutdown
+   load-interval 30
+   cdp
+  exit
+  router static
+   address-family ipv4 unicast
+    10.16.0.0/16 198.18.1.1
+    198.18.128.0/18 198.18.1.1
+    11.11.4.0/24 Null0 description TraGenSer
+    13.127.4.0/24 Null0 description TraGenSer
+    45.37.4.0/24 Null0 description TraGenSer
+    53.1.4.0/24 Null0 description TraGenSer
+    72.24.4.0/24 Null0 description TraGenSer
+    87.93.4.0/24 Null0 description TraGenSer
+    99.99.4.0/24 Null0 description TraGenSer
+    103.25.4.0/24 Null0 description TraGenSer
+    112.237.4.0/24 Null0 description TraGenSer
+    125.137.4.0/24 Null0 description TraGenSer
+    128.64.4.0/24 Null0 description TraGenSer
+    151.151.4.0/24 Null0 description TraGenSer
+    169.27.4.0/24 Null0 description TraGenSer
+    202.4.4.0/24 Null0 description TraGenSer
+    210.18.4.0/24 Null0 description TraGenSer
+   exit
+  exit
+  router isis 1
+   affinity-map bottom bit-position 107
+   affinity-map top bit-position 109
+   flex-algo 128
+    metric-type delay
+    advertise-definition
+   exit
+   flex-algo 129
+    advertise-definition
+    affinity exclude-any top
+   exit
+   flex-algo 130
+    advertise-definition
+    affinity exclude-any bottom
+   exit
+   net 49.0010.0100.0004.00
+   distribute link-state
+   address-family ipv4 unicast
+    metric-style wide
+    mpls traffic-eng level-2-only
+    mpls traffic-eng router-id Loopback0
+    router-id 198.19.1.4
+    redistribute static
+    segment-routing mpls sr-prefer
+   exit
+   address-family ipv6 unicast
+    router-id Loopback0
+    segment-routing srv6
+     locator MAIN
+     exit
+    exit
+   exit
+   interface GigabitEthernet0/0/0/3
+    circuit-type   level-2-only
+    point-to-point
+    address-family ipv4 unicast
+     metric 100
+     fast-reroute per-prefix
+     fast-reroute per-prefix ti-lfa
+    exit
+    address-family ipv6 unicast
+     metric 100
+    exit
+   exit
+   interface GigabitEthernet0/0/0/5
+    circuit-type   level-2-only
+    point-to-point
+    affinity flex-algo top
+    address-family ipv4 unicast
+     metric 100
+     fast-reroute per-prefix
+     fast-reroute per-prefix ti-lfa
+    exit
+    address-family ipv6 unicast
+     metric 100
+    exit
+   exit
+   interface GigabitEthernet0/0/0/8
+    circuit-type   level-2-only
+    point-to-point
+    address-family ipv4 unicast
+     metric 10
+     fast-reroute per-prefix
+     fast-reroute per-prefix ti-lfa
+    exit
+    address-family ipv6 unicast
+     metric 10
+    exit
+   exit
+   interface Loopback0
+     passive
+    circuit-type level-2-only
+    address-family ipv4 unicast
+     prefix-sid absolute 16004
+     prefix-sid algorithm 128 absolute 17104
+     prefix-sid algorithm 129 absolute 17204
+     prefix-sid algorithm 130 absolute 17304
+     prefix-sid strict-spf absolute 17004
+    exit
+    address-family ipv6 unicast
+    exit
+   exit
+   interface Loopback2
+     passive
+    circuit-type level-2-only
+    address-family ipv4 unicast
+    exit
+    address-family ipv6 unicast
+    exit
+   exit
+  exit
+  router bgp 65000
+   bgp router-id 198.19.1.4
+   address-family vpnv4 unicast
+   exit
+   address-family vpnv6 unicast
+   exit
+   neighbor 198.19.2.11
+    remote-as 65000
+    update-source Loopback0
+    address-family vpnv4 unicast
+    exit
+   exit
+   neighbor 2011::11
+    remote-as 65000
+    update-source Loopback0
+    address-family vpnv6 unicast
+    exit
+   exit
+  exit
+  rsvp
+   interface GigabitEthernet0/0/0/3
+    bandwidth
+   exit
+   interface GigabitEthernet0/0/0/5
+    bandwidth
+   exit
+   interface GigabitEthernet0/0/0/8
+    bandwidth
+   exit
+  exit
+  mpls traffic-eng
+   auto-tunnel pcc
+    tunnel-id min 1000 max 1999
+   exit
+   interface GigabitEthernet0/0/0/3
+    admin-weight 10
+   exit
+   interface GigabitEthernet0/0/0/5
+    attribute-names top
+    admin-weight 10
+   exit
+   interface GigabitEthernet0/0/0/8
+    admin-weight 10
+   exit
+   pce
+    peer source ipv4 198.19.2.4
+    peer ipv4 198.19.1.11
+     password encrypted 14141B180F0B
+    exit
+    stateful-client
+     instantiation
+     report
+    exit
+   exit
+   affinity-map bottom bit-position 23
+   affinity-map top bit-position 24
+  exit
+  mpls ldp
+   interface GigabitEthernet0/0/0/3
+   exit
+   interface GigabitEthernet0/0/0/5
+   exit
+   interface GigabitEthernet0/0/0/8
+   exit
+  exit
+  mpls oam
+  exit
+  segment-routing
+   global-block 16000 23999
+   traffic-eng
+    pcc
+     source-address ipv4 198.19.1.4
+     pce address ipv4 198.19.1.11
+      password encrypted 13061E010803
+     !
+     report-all
+     profile 1
+      autoroute
+       include ipv4 all
+       force-sr-include
+      !
+     !
+    !
+   !
+   srv6
+    locators
+     locator MAIN
+      micro-segment behavior unode psp-usd
+      prefix fcbb:0:4::/48
+     !
+    !
+   !
+  !
+ !
+!
+devices device node-5
+ address   198.18.1.45
+ port      22
+ ssh host-key ssh-rsa
+  key-data "AAAAB3NzaC1yc2EAAAADAQABAAABAQC+X8jqN86fct7fwnY8RaTcfZ1tNWxdZSeR2cK00TAu\nBzBPXqVUrDVvG5hDEEwwZwR6a+hf4lfK8uXiFSpCjUKZtyqUCQ26bs/nN8XW2sZBVxOx+9tR\nv5O/FfCXRwSFJcCQchISgcxdJntIjRjeZAQAxVC58PqeD7ue7pGf7cQ+A336e098roOaqZCR\nxKX/1cNVRif4gcq5bkKGn0ZDmLq1qinNdK43gfDd9KtAFg1VDlqhFE17yEclETqBfKlfrs7K\nMrFguJLRko5mYzmsG+MSflgUBkIxRZS7Yk/ATdZgHbHiTqVRD/Ngafd+WarLOx7RJspKSOf5\n5X5ltZ4ZF15L"
+ !
+ ssh host-key ssh-ed25519
+  key-data AAAAC3NzaC1lZDI1NTE5AAAAIIMznxC5pf6xU2ZVqa6cgbkRSSwy8LkB6Tlcs4fhQnoY
+ !
+ ssh host-key ecdsa-256
+  key-data "AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBDYz0nUsKqgvVWsg3BjK\n9A00sEHAHQXuiekDXSX+gfQ351/d3HLbeNJF5RXJEmVZEjC0PVK+0bDiHZ8do8A/2e4="
+ !
+ ssh host-key ecdsa-384
+  key-data "AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzODQAAABhBLIIO9uaCFjnCk7ZpA53\noO4sSc4EuHaAou6Ra7DqdWxU/IY6G5IqvlOhLFeXXGIEPQoNHPwB32EYzd/Lv/qunp5IUtBM\n1p23jroasTGQuOI9YI3xGA+Tri9pz5PzogHpeA=="
+ !
+ ssh host-key ecdsa-521
+  key-data "AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBAAhfqtOQQ+fG3LPfGYn\ne3Np9ymGyGMcV3eI1/R63xzg1lSM2PDU8EJWgkL7aKkOP+7WgZ4x+MM7kqjjVW6x//eB5wG+\nLIbZVsYZzSZPsWTpp++NaB0arnIMwS0lWvyTKBiJSG3WZUwFFFHdk02beqRvC631FfNWRVKM\nnl1/1epn++dN2g=="
+ !
+ authgroup cisco
+ device-type cli ned-id cisco-iosxr-cli-7.61
+ ned-settings cisco-iosxr read admin-show-running-config false
+ state admin-state unlocked
+ config
+  admin
+   exit-admin-config
+  !
+  hostname node-5
+  banner login $ "\r\n      _____________________________\r\n     | SR/XTC/WAE/NSO dCloud Lab   |\r\n     | Learn, Try, Question        |\r\n     | We are here to help!!       |\r\n     | All actions performed on    |\r\n     | this device are logged.     |\r\n      -----------------------------\r\n\r\n          , ,\ ,'\,'\ ,'\ ,\ ,\r\n    ,  ;\/ \' `'     `   '  /|\r\n    |\/                      |\r\n    :                        |\r\n    :                        |\r\n     |                       |\r\n     |                       |\r\n     :               -.     _|\r\n      :                \     `.\r\n      |         ________:______\\\r\n      :       ,'o       / o    ;\r\n      :       \       ,'-----./\r\n       \_      `--.--'        )\r\n      ,` `.              ,---'|\r\n      : `                     |\r\n       `,-'                   |\r\n       /      ,---.          ,'\r\n    ,-'            `-,------'\r\n   '   `.        ,--'\r\n         `-.____/\r\n -BE AWESOME!-           \\\r\n" $
+  logging trap   informational
+  logging buffered 10000000
+  logging 198.18.1.219 vrf default severity info port 30514
+  logging 198.18.1.220 vrf default severity debugging port 30514
+  logging source-interface Loopback0
+  logging format rfc5424
+  logging console notifications
+  logging hostnameprefix node-5
+  service timestamps debug datetime msec
+  service timestamps log datetime localtime msec show-timezone year
+  netconf agent tty
+  exit
+  netconf-yang agent
+   ssh
+  exit
+  username cisco
+   group cisco-support
+   group root-lr
+   secret 10 $6$YpCG0nN4Nx.hF8rU$wlpN2d4wZXfdWE2LX.P7Chh1S.Ov8/sDiJlLQEDq.tkCvjM8Zaq/R7z6RfUSUyh3csLqo5b.b8VOrD6cxttUf0
+  exit
+  grpc
+   port           57400
+   no-tls
+   address-family ipv4
+   service-layer
+  exit
+  line console
+   exec-timeout 0 0
+   width            0
+   absolute-timeout 0
+   session-timeout 0
+  exit
+  line default
+   exec-timeout 0 0
+   absolute-timeout 0
+   session-timeout 0
+  exit
+  vty-pool default 0 50
+  ipv4 unnumbered mpls traffic-eng Loopback0
+  xml agent tty
+  exit
+  snmp-server packetsize 4096
+  snmp-server ifindex persist
+  snmp-server host 198.18.1.220 traps version 2c cisco udp-port 31062
+  snmp-server vrf default
+   host 198.18.1.219 traps cisco udp-port 31062
+  exit
+  snmp-server community cisco RO
+  snmp-server trap-source Loopback0
+  snmp-server trap link ietf
+  snmp-server traps snmp linkdown
+  snmp-server traps snmp linkup
+  ssh server netconf vrf default
+  ssh server rate-limit 600
+  ssh server session-limit 110
+  ssh server v2
+  ssh server vrf default
+  performance-measurement
+   interface GigabitEthernet0/0/0/4
+    delay-measurement
+     advertise-delay 1
+    exit
+   exit
+   interface GigabitEthernet0/0/0/6
+    delay-measurement
+     advertise-delay 11
+    exit
+   exit
+   interface GigabitEthernet0/0/0/7
+    delay-measurement
+     advertise-delay 11
+    exit
+   exit
+   interface GigabitEthernet0/0/0/8
+    delay-measurement
+     advertise-delay 11
+    exit
+   exit
+   interface GigabitEthernet0/0/0/9
+    delay-measurement
+     advertise-delay 11
+    exit
+   exit
+  exit
+  interface Loopback 0
+   ipv4 address 198.19.1.5 255.255.255.255
+   ipv6 address 2010::5/128
+   no shutdown
+  exit
+  interface Loopback 2
+   ipv4 address 198.19.2.5 255.255.255.255
+   ipv6 address 2011::5/128
+   no shutdown
+  exit
+  interface MgmtEth 0/RP0/CPU0/0
+   ipv4 address 198.18.1.45 255.255.255.0
+   no shutdown
+  exit
+  interface GigabitEthernet 0/0/0/0
+   description   Connection to tra-gen network
+   bandwidth     10000
+   ipv4 address 10.11.12.5 255.255.255.0
+   no shutdown
+   load-interval 30
+  exit
+  interface GigabitEthernet 0/0/0/4
+   description   Connection to device node-4 destination interface 5
+   bandwidth     10000
+   ipv4 address 10.4.5.5 255.255.255.0
+   ipv6 address 2001::4:5:5/112
+   no shutdown
+   load-interval 30
+  exit
+  interface GigabitEthernet 0/0/0/6
+   description   Connection to device node-6 destination interface 5
+   bandwidth     10000
+   ipv4 address 10.5.6.5 255.255.255.0
+   ipv6 address 2001::5:6:5/112
+   no shutdown
+   load-interval 30
+  exit
+  interface GigabitEthernet 0/0/0/7
+   description   Connection to device node-7 destination interface 5
+   bandwidth     10000
+   ipv4 address 10.5.7.5 255.255.255.0
+   ipv6 address 2001::5:7:5/112
+   no shutdown
+   load-interval 30
+  exit
+  interface GigabitEthernet 0/0/0/8
+   description   Connection to device node-8 destination interface 5
+   bandwidth     10000
+   ipv4 address 10.5.8.5 255.255.255.0
+   ipv6 address 2001::5:8:5/112
+   no shutdown
+   load-interval 30
+  exit
+  interface GigabitEthernet 0/0/0/9
+   description   Connection to device vmx-9 destination interface 5
+   bandwidth     10000
+   ipv4 address 10.5.9.5 255.255.255.0
+   ipv6 address 2001::5:9:5/112
+   no shutdown
+   load-interval 30
+  exit
+  router static
+   address-family ipv4 unicast
+    10.16.0.0/16 198.18.1.1
+    198.18.128.0/18 198.18.1.1
+    11.11.5.0/24 Null0 description TraGenSer
+    13.127.5.0/24 Null0 description TraGenSer
+    45.37.5.0/24 Null0 description TraGenSer
+    53.1.5.0/24 Null0 description TraGenSer
+    72.24.5.0/24 Null0 description TraGenSer
+    87.93.5.0/24 Null0 description TraGenSer
+    99.99.5.0/24 Null0 description TraGenSer
+    103.25.5.0/24 Null0 description TraGenSer
+    112.237.5.0/24 Null0 description TraGenSer
+    125.137.5.0/24 Null0 description TraGenSer
+    128.64.5.0/24 Null0 description TraGenSer
+    151.151.5.0/24 Null0 description TraGenSer
+    169.27.5.0/24 Null0 description TraGenSer
+    202.4.5.0/24 Null0 description TraGenSer
+    210.18.5.0/24 Null0 description TraGenSer
+   exit
+  exit
+  router isis 1
+   affinity-map bottom bit-position 107
+   affinity-map top bit-position 109
+   flex-algo 128
+    metric-type delay
+    advertise-definition
+   exit
+   flex-algo 129
+    advertise-definition
+    affinity exclude-any top
+   exit
+   flex-algo 130
+    advertise-definition
+    affinity exclude-any bottom
+   exit
+   net 49.0010.0100.0005.00
+   distribute link-state
+   address-family ipv4 unicast
+    metric-style wide
+    mpls traffic-eng level-2-only
+    mpls traffic-eng router-id Loopback0
+    router-id 198.19.1.5
+    redistribute static
+    segment-routing mpls sr-prefer
+   exit
+   address-family ipv6 unicast
+    router-id Loopback0
+    segment-routing srv6
+     locator MAIN
+     exit
+    exit
+   exit
+   interface GigabitEthernet0/0/0/4
+    circuit-type   level-2-only
+    point-to-point
+    affinity flex-algo top
+    address-family ipv4 unicast
+     metric 100
+     fast-reroute per-prefix
+     fast-reroute per-prefix ti-lfa
+    exit
+    address-family ipv6 unicast
+     metric 100
+    exit
+   exit
+   interface GigabitEthernet0/0/0/6
+    circuit-type   level-2-only
+    point-to-point
+    affinity flex-algo top
+    address-family ipv4 unicast
+     metric 10
+     fast-reroute per-prefix
+     fast-reroute per-prefix ti-lfa
+    exit
+    address-family ipv6 unicast
+     metric 10
+    exit
+   exit
+   interface GigabitEthernet0/0/0/7
+    circuit-type   level-2-only
+    point-to-point
+    address-family ipv4 unicast
+     metric 10
+     fast-reroute per-prefix
+     fast-reroute per-prefix ti-lfa
+    exit
+    address-family ipv6 unicast
+     metric 10
+    exit
+   exit
+   interface GigabitEthernet0/0/0/8
+    circuit-type   level-2-only
+    point-to-point
+    address-family ipv4 unicast
+     metric 10
+     fast-reroute per-prefix
+     fast-reroute per-prefix ti-lfa
+    exit
+    address-family ipv6 unicast
+     metric 10
+    exit
+   exit
+   interface GigabitEthernet0/0/0/9
+    circuit-type   level-2-only
+    point-to-point
+    address-family ipv4 unicast
+     metric 10
+     fast-reroute per-prefix
+     fast-reroute per-prefix ti-lfa
+    exit
+    address-family ipv6 unicast
+     metric 10
+    exit
+   exit
+   interface Loopback0
+     passive
+    circuit-type level-2-only
+    address-family ipv4 unicast
+     prefix-sid absolute 16005
+     prefix-sid algorithm 128 absolute 17105
+     prefix-sid algorithm 129 absolute 17205
+     prefix-sid algorithm 130 absolute 17305
+     prefix-sid strict-spf absolute 17005
+    exit
+    address-family ipv6 unicast
+    exit
+   exit
+   interface Loopback2
+     passive
+    circuit-type level-2-only
+    address-family ipv4 unicast
+    exit
+    address-family ipv6 unicast
+    exit
+   exit
+  exit
+  rsvp
+   interface GigabitEthernet0/0/0/4
+    bandwidth
+   exit
+   interface GigabitEthernet0/0/0/6
+    bandwidth
+   exit
+   interface GigabitEthernet0/0/0/7
+    bandwidth
+   exit
+   interface GigabitEthernet0/0/0/8
+    bandwidth
+   exit
+   interface GigabitEthernet0/0/0/9
+    bandwidth
+   exit
+  exit
+  mpls traffic-eng
+   auto-tunnel pcc
+    tunnel-id min 1000 max 1999
+   exit
+   interface GigabitEthernet0/0/0/4
+    attribute-names top
+    admin-weight 10
+   exit
+   interface GigabitEthernet0/0/0/6
+    attribute-names top
+    admin-weight 10
+   exit
+   interface GigabitEthernet0/0/0/7
+    admin-weight 5
+   exit
+   interface GigabitEthernet0/0/0/8
+    admin-weight 10
+   exit
+   interface GigabitEthernet0/0/0/9
+    admin-weight 10
+   exit
+   pce
+    peer source ipv4 198.19.2.5
+    peer ipv4 198.19.1.11
+     password encrypted 110A1016141D
+    exit
+    stateful-client
+     instantiation
+     report
+    exit
+   exit
+   affinity-map bottom bit-position 23
+   affinity-map top bit-position 24
+  exit
+  mpls ldp
+   interface GigabitEthernet0/0/0/4
+   exit
+   interface GigabitEthernet0/0/0/6
+   exit
+   interface GigabitEthernet0/0/0/7
+   exit
+   interface GigabitEthernet0/0/0/8
+   exit
+   interface GigabitEthernet0/0/0/9
+   exit
+  exit
+  mpls oam
+  exit
+  segment-routing
+   global-block 16000 23999
+   traffic-eng
+    pcc
+     source-address ipv4 198.19.1.5
+     pce address ipv4 198.19.1.11
+      password encrypted 104D000A0618
+     !
+     report-all
+     profile 1
+      autoroute
+       include ipv4 all
+       force-sr-include
+      !
+     !
+    !
+   !
+   srv6
+    locators
+     locator MAIN
+      micro-segment behavior unode psp-usd
+      prefix fcbb:0:5::/48
+     !
+    !
+   !
+  !
+ !
+!
+devices device node-6
+ address   198.18.1.46
+ port      22
+ ssh host-key ssh-rsa
+  key-data "AAAAB3NzaC1yc2EAAAADAQABAAABAQDnYxD//aHAapqTkhpBm8WZJ7WwkSFxln9nKYy0muiA\nN+Gny0b8qH97UKIOzXv0DdZq4MKaQBY2ZARLV/BD2vY9d/n4zCZblGfkv1koUFWd97OaCIcE\npy5Nb3bn+iWF+QBQvbPp8foA/i1MgMpMAwgFkiWjgxppO7uXZPQEJbXtusG5/46z4NXDbZCL\nzP8anYoRNGNtKnNaPLiG/aEsyDTCPrsYKp1CmRXt65l0HprlYx7ESFa07+z8Sa/efhcOcAWz\nP/AD7Y9NMiBgGKt8OhoSRcJgYENTKvPIa4MYNQjNx++Otuj0lrzUQrJvPPxdBViIt2GtRcSK\nQW0o8/y9jBwP"
+ !
+ ssh host-key ssh-ed25519
+  key-data AAAAC3NzaC1lZDI1NTE5AAAAIB4B/oPpxUqZdm8iMqu2nwmXSKk1RUSr+NmCdPYufYEt
+ !
+ ssh host-key ecdsa-256
+  key-data "AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBBP+dEKw1WYQUxAWKki6\nKFaKr15CL36b6+Z/d9c3ZiOpMlXmauyOgjP9iNpJNBSCSHDqLBl+EBMKFE10dl/CGOA="
+ !
+ ssh host-key ecdsa-384
+  key-data "AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzODQAAABhBJN9UGSf0+AUaZuaPG4/\nAhrQKXIimOGObnoWPYjJmUtRYMnGl6pwIPkYlP33Nbbk2prk4eTvzG+v9zgrLzUx1BMJnfpE\n2GoINgLhSd/SYkRoMaM5+xIDzX4a9wpamqQocQ=="
+ !
+ ssh host-key ecdsa-521
+  key-data "AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBAF40HjxbJlABm5ksytC\n0iSEvj3ml0czX2NLtHdjMNKTv5Wwy8IiEq5/uWNmM52AtpmhCz9kI2AZknTPWi92G3rBDgDp\n4GYpYnSEMUOS0UURzsA+XVx7UBnyQVh2m6LnTgH3+h7SVRIGm2PD6Ur7EBbYVlWkeBJ9vj2D\nKpcBbaofprLOdQ=="
+ !
+ authgroup cisco
+ device-type cli ned-id cisco-iosxr-cli-7.61
+ ned-settings cisco-iosxr read admin-show-running-config false
+ state admin-state unlocked
+ config
+  admin
+   exit-admin-config
+  !
+  hostname node-6
+  banner login $ "\r\n      _____________________________\r\n     | SR/XTC/WAE/NSO dCloud Lab   |\r\n     | Learn, Try, Question        |\r\n     | We are here to help!!       |\r\n     | All actions performed on    |\r\n     | this device are logged.     |\r\n      -----------------------------\r\n\r\n          , ,\ ,'\,'\ ,'\ ,\ ,\r\n    ,  ;\/ \' `'     `   '  /|\r\n    |\/                      |\r\n    :                        |\r\n    :                        |\r\n     |                       |\r\n     |                       |\r\n     :               -.     _|\r\n      :                \     `.\r\n      |         ________:______\\\r\n      :       ,'o       / o    ;\r\n      :       \       ,'-----./\r\n       \_      `--.--'        )\r\n      ,` `.              ,---'|\r\n      : `                     |\r\n       `,-'                   |\r\n       /      ,---.          ,'\r\n    ,-'            `-,------'\r\n   '   `.        ,--'\r\n         `-.____/\r\n -BE AWESOME!-           \\\r\n" $
+  logging trap   informational
+  logging buffered 10000000
+  logging 198.18.1.219 vrf default severity info port 30514
+  logging 198.18.1.220 vrf default severity debugging port 30514
+  logging source-interface Loopback0
+  logging format rfc5424
+  logging console notifications
+  logging hostnameprefix node-6
+  service timestamps debug datetime msec
+  service timestamps log datetime localtime msec show-timezone year
+  netconf agent tty
+  exit
+  netconf-yang agent
+   ssh
+  exit
+  username cisco
+   group cisco-support
+   group root-lr
+   secret 10 $6$Q.IwmOgWxg4sAw5p$I3H3xji8UCvmNt4b3YoUw51mrVL09oNyEViH8WZsk0n3He1mnwC3Ra0Fxfohjr2ZQAtIWQtnSX/C0Ly.VmKng.
+  exit
+  grpc
+   port           57400
+   no-tls
+   address-family ipv4
+   service-layer
+  exit
+  line console
+   exec-timeout 0 0
+   width            0
+   absolute-timeout 0
+   session-timeout 0
+  exit
+  line default
+   exec-timeout 0 0
+   absolute-timeout 0
+   session-timeout 0
+  exit
+  vty-pool default 0 50
+  ipv4 unnumbered mpls traffic-eng Loopback0
+  xml agent tty
+  exit
+  snmp-server packetsize 4096
+  snmp-server ifindex persist
+  snmp-server host 198.18.1.220 traps version 2c cisco udp-port 31062
+  snmp-server vrf default
+   host 198.18.1.219 traps cisco udp-port 31062
+  exit
+  snmp-server community cisco RO
+  snmp-server trap-source Loopback0
+  snmp-server trap link ietf
+  snmp-server traps snmp linkdown
+  snmp-server traps snmp linkup
+  ssh server netconf vrf default
+  ssh server rate-limit 600
+  ssh server session-limit 110
+  ssh server v2
+  ssh server vrf default
+  performance-measurement
+   interface GigabitEthernet0/0/0/1
+    delay-measurement
+     advertise-delay 1
+    exit
+   exit
+   interface GigabitEthernet0/0/0/2
+    delay-measurement
+     advertise-delay 11
+    exit
+   exit
+   interface GigabitEthernet0/0/0/5
+    delay-measurement
+     advertise-delay 11
+    exit
+   exit
+   interface GigabitEthernet0/0/0/7
+    delay-measurement
+     advertise-delay 11
+    exit
+   exit
+  exit
+  interface Loopback 0
+   ipv4 address 198.19.1.6 255.255.255.255
+   ipv6 address 2010::6/128
+   no shutdown
+  exit
+  interface Loopback 2
+   ipv4 address 198.19.2.6 255.255.255.255
+   ipv6 address 2011::6/128
+   no shutdown
+  exit
+  interface MgmtEth 0/RP0/CPU0/0
+   ipv4 address 198.18.1.46 255.255.255.0
+   no shutdown
+  exit
+  interface GigabitEthernet 0/0/0/0
+   description   Connection to tra-gen network
+   bandwidth     10000
+   ipv4 address 10.11.12.6 255.255.255.0
+   no shutdown
+   load-interval 30
+  exit
+  interface GigabitEthernet 0/0/0/1
+   description   Connection to device node-1 destination interface 6
+   bandwidth     10000
+   ipv4 address 10.1.6.6 255.255.255.0
+   ipv6 address 2001::1:6:6/112
+   no shutdown
+   load-interval 30
+  exit
+  interface GigabitEthernet 0/0/0/2
+   description   Connection to device node-2 destination interface 6
+   bandwidth     10000
+   ipv4 address 10.2.6.6 255.255.255.0
+   ipv6 address 2001::2:6:6/112
+   no shutdown
+   load-interval 30
+  exit
+  interface GigabitEthernet 0/0/0/5
+   description   Connection to device node-5 destination interface 6
+   bandwidth     10000
+   ipv4 address 10.5.6.6 255.255.255.0
+   ipv6 address 2001::5:6:6/112
+   no shutdown
+   load-interval 30
+  exit
+  interface GigabitEthernet 0/0/0/7
+   description   Connection to device node-7 destination interface 6
+   bandwidth     10000
+   ipv4 address 10.6.7.6 255.255.255.0
+   ipv6 address 2001::6:7:6/112
+   no shutdown
+   load-interval 30
+  exit
+  router static
+   address-family ipv4 unicast
+    10.16.0.0/16 198.18.1.1
+    198.18.128.0/18 198.18.1.1
+    11.11.6.0/24 Null0 description TraGenSer
+    13.127.6.0/24 Null0 description TraGenSer
+    45.37.6.0/24 Null0 description TraGenSer
+    53.1.6.0/24 Null0 description TraGenSer
+    72.24.6.0/24 Null0 description TraGenSer
+    87.93.6.0/24 Null0 description TraGenSer
+    99.99.6.0/24 Null0 description TraGenSer
+    103.25.6.0/24 Null0 description TraGenSer
+    112.237.6.0/24 Null0 description TraGenSer
+    125.137.6.0/24 Null0 description TraGenSer
+    128.64.6.0/24 Null0 description TraGenSer
+    151.151.6.0/24 Null0 description TraGenSer
+    169.27.6.0/24 Null0 description TraGenSer
+    202.4.6.0/24 Null0 description TraGenSer
+    210.18.6.0/24 Null0 description TraGenSer
+   exit
+  exit
+  router isis 1
+   affinity-map bottom bit-position 107
+   affinity-map top bit-position 109
+   flex-algo 128
+    metric-type delay
+    advertise-definition
+   exit
+   flex-algo 129
+    advertise-definition
+    affinity exclude-any top
+   exit
+   flex-algo 130
+    advertise-definition
+    affinity exclude-any bottom
+   exit
+   net 49.0010.0100.0006.00
+   distribute link-state
+   address-family ipv4 unicast
+    metric-style wide
+    mpls traffic-eng level-2-only
+    mpls traffic-eng router-id Loopback0
+    router-id 198.19.1.6
+    redistribute static
+    segment-routing mpls sr-prefer
+   exit
+   address-family ipv6 unicast
+    router-id Loopback0
+    segment-routing srv6
+     locator MAIN
+     exit
+    exit
+   exit
+   interface GigabitEthernet0/0/0/1
+    circuit-type   level-2-only
+    point-to-point
+    affinity flex-algo top
+    address-family ipv4 unicast
+     metric 100
+     fast-reroute per-prefix
+     fast-reroute per-prefix ti-lfa
+    exit
+    address-family ipv6 unicast
+     metric 100
+    exit
+   exit
+   interface GigabitEthernet0/0/0/2
+    circuit-type   level-2-only
+    point-to-point
+    address-family ipv4 unicast
+     metric 10
+     fast-reroute per-prefix
+     fast-reroute per-prefix ti-lfa
+    exit
+    address-family ipv6 unicast
+     metric 10
+    exit
+   exit
+   interface GigabitEthernet0/0/0/5
+    circuit-type   level-2-only
+    point-to-point
+    affinity flex-algo top
+    address-family ipv4 unicast
+     metric 10
+     fast-reroute per-prefix
+     fast-reroute per-prefix ti-lfa
+    exit
+    address-family ipv6 unicast
+     metric 10
+    exit
+   exit
+   interface GigabitEthernet0/0/0/7
+    circuit-type   level-2-only
+    point-to-point
+    address-family ipv4 unicast
+     metric 10
+     fast-reroute per-prefix
+     fast-reroute per-prefix ti-lfa
+    exit
+    address-family ipv6 unicast
+     metric 10
+    exit
+   exit
+   interface Loopback0
+     passive
+    circuit-type level-2-only
+    address-family ipv4 unicast
+     prefix-sid absolute 16006
+     prefix-sid algorithm 128 absolute 17106
+     prefix-sid algorithm 129 absolute 17206
+     prefix-sid algorithm 130 absolute 17306
+     prefix-sid strict-spf absolute 17006
+    exit
+    address-family ipv6 unicast
+    exit
+   exit
+   interface Loopback2
+     passive
+    circuit-type level-2-only
+    address-family ipv4 unicast
+    exit
+    address-family ipv6 unicast
+    exit
+   exit
+  exit
+  router bgp 65000
+   bgp router-id 198.19.1.6
+   address-family link-state link-state
+   exit
+   neighbor 198.19.2.11
+    remote-as 65000
+    update-source Loopback0
+    address-family link-state link-state
+    exit
+   exit
+   neighbor 2011::11
+    remote-as 65000
+    update-source Loopback0
+   exit
+  exit
+  rsvp
+   interface GigabitEthernet0/0/0/1
+    bandwidth
+   exit
+   interface GigabitEthernet0/0/0/2
+    bandwidth
+   exit
+   interface GigabitEthernet0/0/0/5
+    bandwidth
+   exit
+   interface GigabitEthernet0/0/0/7
+    bandwidth
+   exit
+  exit
+  mpls traffic-eng
+   auto-tunnel pcc
+    tunnel-id min 1000 max 1999
+   exit
+   interface GigabitEthernet0/0/0/1
+    attribute-names top
+    admin-weight 10
+   exit
+   interface GigabitEthernet0/0/0/2
+    admin-weight 10
+   exit
+   interface GigabitEthernet0/0/0/5
+    attribute-names top
+    admin-weight 10
+   exit
+   interface GigabitEthernet0/0/0/7
+    admin-weight 10
+   exit
+   pce
+    peer source ipv4 198.19.2.6
+    peer ipv4 198.19.1.11
+     password encrypted 13061E010803
+    exit
+    stateful-client
+     instantiation
+     report
+    exit
+   exit
+   affinity-map bottom bit-position 23
+   affinity-map top bit-position 24
+  exit
+  mpls ldp
+   interface GigabitEthernet0/0/0/1
+   exit
+   interface GigabitEthernet0/0/0/2
+   exit
+   interface GigabitEthernet0/0/0/5
+   exit
+   interface GigabitEthernet0/0/0/7
+   exit
+  exit
+  mpls oam
+  exit
+  segment-routing
+   global-block 16000 23999
+   traffic-eng
+    pcc
+     source-address ipv4 198.19.1.6
+     pce address ipv4 198.19.1.11
+      password encrypted 121A0C041104
+     !
+     report-all
+     profile 1
+      autoroute
+       include ipv4 all
+       force-sr-include
+      !
+     !
+    !
+   !
+   srv6
+    locators
+     locator MAIN
+      micro-segment behavior unode psp-usd
+      prefix fcbb:0:6::/48
+     !
+    !
+   !
+  !
+ !
+!
+devices device node-7
+ address   198.18.1.47
+ port      22
+ ssh host-key ssh-rsa
+  key-data "AAAAB3NzaC1yc2EAAAADAQABAAABAQChsFCs5TniY4u80EiSdwaaDWKF1m99xclfs2OQhpC9\n6NZl2vwgeY5xINE4ajO2BsMd1BsKhfATodcRgrAnTpISI3jkEgnJNocWmjuixnm/QZwz1xgx\nUxm/qTKtpPj4+XRV/k4lSdZ06lYkaB1MeJ3o52c0yyES9SSFGE9UBrrX/3PMS70o9chBG/71\nyxqruSESUqnVQeMpHukE+GBs0c1WNhNQo4qmrejKmzUlhcHHVqQm2ZgIdo+hl8gAx6EqCNxI\nOihZGgl/GMPoxT1B6ZzkTfL8Kgpy5RoqQ7qSiS66HXGuulTuBfVHeLbWtqgWzDt/EY9lCMwM\nWc2oINDKm5OZ"
+ !
+ ssh host-key ssh-ed25519
+  key-data AAAAC3NzaC1lZDI1NTE5AAAAICSPiHSRmLMfidBKNwrGhcilAcxxBsw2B9pqdpHlw3b8
+ !
+ ssh host-key ecdsa-256
+  key-data "AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBHP+2tjh7fHMIbu81IRh\n77rRwrLDb3gGHf3FCD10L0rOtql2J5kEO8YXJpraDMk8NhloghB/BFqzrPEKOvc9AVk="
+ !
+ ssh host-key ecdsa-384
+  key-data "AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzODQAAABhBCijzdwWg53nxGstgfVy\nVlu3VsLBAnjGwMx++SpvutAsenOXKUMHSChK202OuAQwiNCl8l9Cuw5E5Tv75FfS9rORI4Po\n/lTggNFJpmfgmhlZ7+69f42Okr/HrAmE2iO8MQ=="
+ !
+ ssh host-key ecdsa-521
+  key-data "AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBABqDtBSdBVo6rFvvgKI\njh4yGGKWG4THb001Xho5jYUmzvT3GAnARkEF1rIbr5MwMPKgUgfUSNGP/85QxggM2mJ9awEy\noYVpcTZuOipX1+UWQkjBErwtTSJOgbY1NnC0wubIHFhSCuRHIKLacv723gDpD+OSHA92GgFC\n0/1FXhac4rWhfQ=="
+ !
+ authgroup cisco
+ device-type cli ned-id cisco-iosxr-cli-7.61
+ ned-settings cisco-iosxr read admin-show-running-config false
+ state admin-state unlocked
+ config
+  admin
+   exit-admin-config
+  !
+  hostname node-7
+  banner login $ "\r\n      _____________________________\r\n     | SR/XTC/WAE/NSO dCloud Lab   |\r\n     | Learn, Try, Question        |\r\n     | We are here to help!!       |\r\n     | All actions performed on    |\r\n     | this device are logged.     |\r\n      -----------------------------\r\n\r\n          , ,\ ,'\,'\ ,'\ ,\ ,\r\n    ,  ;\/ \' `'     `   '  /|\r\n    |\/                      |\r\n    :                        |\r\n    :                        |\r\n     |                       |\r\n     |                       |\r\n     :               -.     _|\r\n      :                \     `.\r\n      |         ________:______\\\r\n      :       ,'o       / o    ;\r\n      :       \       ,'-----./\r\n       \_      `--.--'        )\r\n      ,` `.              ,---'|\r\n      : `                     |\r\n       `,-'                   |\r\n       /      ,---.          ,'\r\n    ,-'            `-,------'\r\n   '   `.        ,--'\r\n         `-.____/\r\n -BE AWESOME!-           \\\r\n" $
+  logging trap   informational
+  logging buffered 10000000
+  logging 198.18.1.219 vrf default severity info port 30514
+  logging 198.18.1.220 vrf default severity debugging port 30514
+  logging source-interface Loopback0
+  logging format rfc5424
+  logging console notifications
+  logging hostnameprefix node-7
+  service timestamps debug datetime msec
+  service timestamps log datetime localtime msec show-timezone year
+  netconf agent tty
+  exit
+  netconf-yang agent
+   ssh
+  exit
+  username cisco
+   group cisco-support
+   group root-lr
+   secret 10 $6$Y84VqCnS.h2yp1Li$IZzigUvaajuU4oEKPFnNRP5HU87dFUYlBTBFaTuz1SDR6gzBDvYcbMr/jLKrNL05hvzE6Wly/Hm9tZBWxIg7n.
+  exit
+  grpc
+   port           57400
+   no-tls
+   address-family ipv4
+   service-layer
+  exit
+  line console
+   exec-timeout 0 0
+   width            0
+   absolute-timeout 0
+   session-timeout 0
+  exit
+  line default
+   exec-timeout 0 0
+   absolute-timeout 0
+   session-timeout 0
+  exit
+  vty-pool default 0 50
+  ipv4 unnumbered mpls traffic-eng Loopback0
+  xml agent tty
+  exit
+  snmp-server packetsize 4096
+  snmp-server ifindex persist
+  snmp-server host 198.18.1.220 traps version 2c cisco udp-port 31062
+  snmp-server vrf default
+   host 198.18.1.219 traps cisco udp-port 31062
+  exit
+  snmp-server community cisco RO
+  snmp-server trap-source Loopback0
+  snmp-server trap link ietf
+  snmp-server traps snmp linkdown
+  snmp-server traps snmp linkup
+  ssh server netconf vrf default
+  ssh server rate-limit 600
+  ssh server session-limit 110
+  ssh server v2
+  ssh server vrf default
+  performance-measurement
+   interface GigabitEthernet0/0/0/2
+    delay-measurement
+     advertise-delay 1
+    exit
+   exit
+   interface GigabitEthernet0/0/0/5
+    delay-measurement
+     advertise-delay 11
+    exit
+   exit
+   interface GigabitEthernet0/0/0/6
+    delay-measurement
+     advertise-delay 11
+    exit
+   exit
+   interface GigabitEthernet0/0/0/8
+    delay-measurement
+     advertise-delay 11
+    exit
+   exit
+   interface GigabitEthernet0/0/0/9
+    delay-measurement
+     advertise-delay 1
+    exit
+   exit
+  exit
+  interface Loopback 0
+   ipv4 address 198.19.1.7 255.255.255.255
+   ipv6 address 2010::7/128
+   no shutdown
+  exit
+  interface Loopback 2
+   ipv4 address 198.19.2.7 255.255.255.255
+   ipv6 address 2011::7/128
+   no shutdown
+  exit
+  interface MgmtEth 0/RP0/CPU0/0
+   ipv4 address 198.18.1.47 255.255.255.0
+   no shutdown
+  exit
+  interface GigabitEthernet 0/0/0/0
+   description   Connection to tra-gen network
+   bandwidth     10000
+   ipv4 address 10.11.12.7 255.255.255.0
+   no shutdown
+   load-interval 30
+  exit
+  interface GigabitEthernet 0/0/0/2
+   description   Connection to device node-2 destination interface 7
+   bandwidth     10000
+   ipv4 address 10.2.7.7 255.255.255.0
+   ipv6 address 2001::2:7:7/112
+   no shutdown
+   load-interval 30
+  exit
+  interface GigabitEthernet 0/0/0/5
+   description   Connection to device node-5 destination interface 7
+   bandwidth     10000
+   ipv4 address 10.5.7.7 255.255.255.0
+   ipv6 address 2001::5:7:7/112
+   no shutdown
+   load-interval 30
+  exit
+  interface GigabitEthernet 0/0/0/6
+   description   Connection to device node-6 destination interface 7
+   bandwidth     10000
+   ipv4 address 10.6.7.7 255.255.255.0
+   ipv6 address 2001::6:7:7/112
+   no shutdown
+   load-interval 30
+  exit
+  interface GigabitEthernet 0/0/0/8
+   description   Connection to device node-8 destination interface 7
+   bandwidth     10000
+   ipv4 address 10.7.8.7 255.255.255.0
+   ipv6 address 2001::7:8:7/112
+   no shutdown
+   load-interval 30
+  exit
+  interface GigabitEthernet 0/0/0/9
+   description   Connection to device vmx-9 destination interface 7
+   bandwidth     10000
+   ipv4 address 10.7.9.7 255.255.255.0
+   ipv6 address 2001::7:9:7/112
+   no shutdown
+   load-interval 30
+  exit
+  router static
+   address-family ipv4 unicast
+    10.16.0.0/16 198.18.1.1
+    198.18.128.0/18 198.18.1.1
+    11.11.7.0/24 Null0 description TraGenSer
+    13.127.7.0/24 Null0 description TraGenSer
+    45.37.7.0/24 Null0 description TraGenSer
+    53.1.7.0/24 Null0 description TraGenSer
+    72.24.7.0/24 Null0 description TraGenSer
+    87.93.7.0/24 Null0 description TraGenSer
+    99.99.7.0/24 Null0 description TraGenSer
+    103.25.7.0/24 Null0 description TraGenSer
+    112.237.7.0/24 Null0 description TraGenSer
+    125.137.7.0/24 Null0 description TraGenSer
+    128.64.7.0/24 Null0 description TraGenSer
+    151.151.7.0/24 Null0 description TraGenSer
+    169.27.7.0/24 Null0 description TraGenSer
+    202.4.7.0/24 Null0 description TraGenSer
+    210.18.7.0/24 Null0 description TraGenSer
+   exit
+  exit
+  router isis 1
+   affinity-map bottom bit-position 107
+   affinity-map top bit-position 109
+   flex-algo 128
+    metric-type delay
+    advertise-definition
+   exit
+   flex-algo 129
+    advertise-definition
+    affinity exclude-any top
+   exit
+   flex-algo 130
+    advertise-definition
+    affinity exclude-any bottom
+   exit
+   net 49.0010.0100.0007.00
+   distribute link-state
+   address-family ipv4 unicast
+    metric-style wide
+    mpls traffic-eng level-2-only
+    mpls traffic-eng router-id Loopback0
+    router-id 198.19.1.7
+    redistribute static
+    segment-routing mpls sr-prefer
+   exit
+   address-family ipv6 unicast
+    router-id Loopback0
+    segment-routing srv6
+     locator MAIN
+     exit
+    exit
+   exit
+   interface GigabitEthernet0/0/0/2
+    circuit-type   level-2-only
+    point-to-point
+    affinity flex-algo bottom
+    address-family ipv4 unicast
+     metric 100
+     fast-reroute per-prefix
+     fast-reroute per-prefix ti-lfa
+    exit
+    address-family ipv6 unicast
+     metric 100
+    exit
+   exit
+   interface GigabitEthernet0/0/0/5
+    circuit-type   level-2-only
+    point-to-point
+    address-family ipv4 unicast
+     metric 10
+     fast-reroute per-prefix
+     fast-reroute per-prefix ti-lfa
+    exit
+    address-family ipv6 unicast
+     metric 10
+    exit
+   exit
+   interface GigabitEthernet0/0/0/6
+    circuit-type   level-2-only
+    point-to-point
+    address-family ipv4 unicast
+     metric 10
+     fast-reroute per-prefix
+     fast-reroute per-prefix ti-lfa
+    exit
+    address-family ipv6 unicast
+     metric 10
+    exit
+   exit
+   interface GigabitEthernet0/0/0/8
+    circuit-type   level-2-only
+    point-to-point
+    affinity flex-algo bottom
+    address-family ipv4 unicast
+     metric 10
+     fast-reroute per-prefix
+     fast-reroute per-prefix ti-lfa
+    exit
+    address-family ipv6 unicast
+     metric 10
+    exit
+   exit
+   interface GigabitEthernet0/0/0/9
+    circuit-type   level-2-only
+    point-to-point
+    address-family ipv4 unicast
+     metric 100
+     fast-reroute per-prefix
+     fast-reroute per-prefix ti-lfa
+    exit
+    address-family ipv6 unicast
+     metric 100
+    exit
+   exit
+   interface Loopback0
+     passive
+    circuit-type level-2-only
+    address-family ipv4 unicast
+     prefix-sid absolute 16007
+     prefix-sid algorithm 128 absolute 17107
+     prefix-sid algorithm 129 absolute 17207
+     prefix-sid algorithm 130 absolute 17307
+     prefix-sid strict-spf absolute 17007
+    exit
+    address-family ipv6 unicast
+    exit
+   exit
+   interface Loopback2
+     passive
+    circuit-type level-2-only
+    address-family ipv4 unicast
+    exit
+    address-family ipv6 unicast
+    exit
+   exit
+  exit
+  rsvp
+   interface GigabitEthernet0/0/0/2
+    bandwidth
+   exit
+   interface GigabitEthernet0/0/0/5
+    bandwidth
+   exit
+   interface GigabitEthernet0/0/0/6
+    bandwidth
+   exit
+   interface GigabitEthernet0/0/0/8
+    bandwidth
+   exit
+   interface GigabitEthernet0/0/0/9
+    bandwidth
+   exit
+  exit
+  mpls traffic-eng
+   auto-tunnel pcc
+    tunnel-id min 1000 max 1999
+   exit
+   interface GigabitEthernet0/0/0/2
+    attribute-names bottom
+    admin-weight 10
+   exit
+   interface GigabitEthernet0/0/0/5
+    admin-weight 5
+   exit
+   interface GigabitEthernet0/0/0/6
+    admin-weight 10
+   exit
+   interface GigabitEthernet0/0/0/8
+    attribute-names bottom
+    admin-weight 10
+   exit
+   interface GigabitEthernet0/0/0/9
+    admin-weight 10
+   exit
+   pce
+    peer source ipv4 198.19.2.7
+    peer ipv4 198.19.1.11
+     password encrypted 094F471A1A0A
+    exit
+    stateful-client
+     instantiation
+     report
+    exit
+   exit
+   affinity-map bottom bit-position 23
+   affinity-map top bit-position 24
+  exit
+  mpls ldp
+   interface GigabitEthernet0/0/0/2
+   exit
+   interface GigabitEthernet0/0/0/5
+   exit
+   interface GigabitEthernet0/0/0/6
+   exit
+   interface GigabitEthernet0/0/0/8
+   exit
+   interface GigabitEthernet0/0/0/9
+   exit
+  exit
+  mpls oam
+  exit
+  segment-routing
+   global-block 16000 23999
+   traffic-eng
+    pcc
+     source-address ipv4 198.19.1.7
+     pce address ipv4 198.19.1.11
+      password encrypted 13061E010803
+     !
+     report-all
+     profile 1
+      autoroute
+       include ipv4 all
+       force-sr-include
+      !
+     !
+    !
+   !
+   srv6
+    locators
+     locator MAIN
+      micro-segment behavior unode psp-usd
+      prefix fcbb:0:7::/48
+     !
+    !
+   !
+  !
+ !
+!
+devices device node-8
+ address   198.18.1.48
+ port      22
+ ssh host-key ssh-rsa
+  key-data "AAAAB3NzaC1yc2EAAAADAQABAAABAQDN5eL98eWd1eno/zsxMAtk3scIiFngop25Ulbn/cA6\n16uI/dxIi+2uj8aGp55imuWTsXaOYZwaGGpuv8c+O16cxr9cDrysviE0E6C4XFIQhn0vw+AF\nZvKEvFE06Is7ERcuwwtNqm27PsEOcYpN/9EpMFH31O2Sr+39l3VFDmMGM0oWdxlAn59axLxe\nq0fQMVowxgeIBOkT1x7fMi0hYNkfM9Bv5A5OdBWe4os+JYTrXz177OlpKNoGoOcqqybuI6HA\n0Xg6BW4+jFlyj6eLATcp+Yv75eiQsScAdlZmJjRY1eWgxFOGslOl2M8PwMPO6Y9SoR0jvy5r\nIZLJq1fwNR8l"
+ !
+ ssh host-key ssh-ed25519
+  key-data AAAAC3NzaC1lZDI1NTE5AAAAIEt7WHulY68/opNrGqaEnnSQJ9l2SgSzb2Pa0Z7zUw4F
+ !
+ ssh host-key ecdsa-256
+  key-data "AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBOH37agiz/ALFcbMt2KZ\nWEfdE15gitpAsbrjQOpXP2uWQkkRxabvanhIBWsiv+vt2aSuZ7Z1c7/SFmbfFtrUh/M="
+ !
+ ssh host-key ecdsa-384
+  key-data "AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzODQAAABhBNzHPyjKyRhXaes6+0eq\njRMxJcmQ5UbiVujNLgWUuxOAToAgma9XlBYUBg/mK9tq1bxsrH1EcdLlsEtKBiGoK+9KCAT2\nMXTTWuLiJbEZy5ptjS88zgXaqZDdeOBxt6hPHg=="
+ !
+ ssh host-key ecdsa-521
+  key-data "AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBAC4ov+jw/Hid/XSGYCv\nBPhpzqDX+WSJM7lKZa8iHmWHi6EJE6V6zRzxd+4yOYrAK8qCfxWGS0GGU+8fW1jEGpOiDgBr\njbyExp0Kn5i3UXXx7JFJSJc4mPSC5XYzKjP4ObX7AMFdXTlb4yVvv57OMbA/JFu2yzL4so6e\noM7DTqa3nVwqDA=="
+ !
+ authgroup cisco
+ device-type cli ned-id cisco-iosxr-cli-7.61
+ ned-settings cisco-iosxr read admin-show-running-config false
+ state admin-state unlocked
+ config
+  admin
+   exit-admin-config
+  !
+  hostname node-8
+  banner login $ "\r\n      _____________________________\r\n     | SR/XTC/WAE/NSO dCloud Lab   |\r\n     | Learn, Try, Question        |\r\n     | We are here to help!!       |\r\n     | All actions performed on    |\r\n     | this device are logged.     |\r\n      -----------------------------\r\n\r\n          , ,\ ,'\,'\ ,'\ ,\ ,\r\n    ,  ;\/ \' `'     `   '  /|\r\n    |\/                      |\r\n    :                        |\r\n    :                        |\r\n     |                       |\r\n     |                       |\r\n     :               -.     _|\r\n      :                \     `.\r\n      |         ________:______\\\r\n      :       ,'o       / o    ;\r\n      :       \       ,'-----./\r\n       \_      `--.--'        )\r\n      ,` `.              ,---'|\r\n      : `                     |\r\n       `,-'                   |\r\n       /      ,---.          ,'\r\n    ,-'            `-,------'\r\n   '   `.        ,--'\r\n         `-.____/\r\n -BE AWESOME!-           \\\r\n" $
+  logging trap   informational
+  logging buffered 10000000
+  logging 198.18.1.219 vrf default severity info port 30514
+  logging 198.18.1.220 vrf default severity debugging port 30514
+  logging source-interface Loopback0
+  logging format rfc5424
+  logging console notifications
+  logging hostnameprefix node-8
+  service timestamps debug datetime msec
+  service timestamps log datetime localtime msec show-timezone year
+  netconf agent tty
+  exit
+  netconf-yang agent
+   ssh
+  exit
+  username cisco
+   group cisco-support
+   group root-lr
+   secret 10 $6$tsZrH1QigLfW4zbz$iJ189OhFfjE.CUXyBnz9WrOknQQ91ynUK/HqctiSplMYUEcugijjZGhmF4z8Uf8kmufeODODyyOAs9CH4uIhV/
+  exit
+  grpc
+   port           57400
+   no-tls
+   address-family ipv4
+   service-layer
+  exit
+  line console
+   exec-timeout 0 0
+   width            0
+   absolute-timeout 0
+   session-timeout 0
+  exit
+  line default
+   exec-timeout 0 0
+   absolute-timeout 0
+   session-timeout 0
+  exit
+  vty-pool default 0 50
+  ipv4 unnumbered mpls traffic-eng Loopback0
+  xml agent tty
+  exit
+  snmp-server packetsize 4096
+  snmp-server ifindex persist
+  snmp-server host 198.18.1.220 traps version 2c cisco udp-port 31062
+  snmp-server vrf default
+   host 198.18.1.219 traps cisco udp-port 31062
+  exit
+  snmp-server community cisco RO
+  snmp-server trap-source Loopback0
+  snmp-server trap link ietf
+  snmp-server traps snmp linkdown
+  snmp-server traps snmp linkup
+  ssh server netconf vrf default
+  ssh server rate-limit 600
+  ssh server session-limit 110
+  ssh server v2
+  ssh server vrf default
+  performance-measurement
+   interface GigabitEthernet0/0/0/3
+    delay-measurement
+     advertise-delay 1
+    exit
+   exit
+   interface GigabitEthernet0/0/0/4
+    delay-measurement
+     advertise-delay 11
+    exit
+   exit
+   interface GigabitEthernet0/0/0/5
+    delay-measurement
+     advertise-delay 11
+    exit
+   exit
+   interface GigabitEthernet0/0/0/7
+    delay-measurement
+     advertise-delay 11
+    exit
+   exit
+  exit
+  interface Loopback 0
+   ipv4 address 198.19.1.8 255.255.255.255
+   ipv6 address 2010::8/128
+   no shutdown
+  exit
+  interface Loopback 2
+   ipv4 address 198.19.2.8 255.255.255.255
+   ipv6 address 2011::8/128
+   no shutdown
+  exit
+  interface MgmtEth 0/RP0/CPU0/0
+   ipv4 address 198.18.1.48 255.255.255.0
+   no shutdown
+  exit
+  interface GigabitEthernet 0/0/0/0
+   description   Connection to tra-gen network
+   bandwidth     10000
+   ipv4 address 10.11.12.8 255.255.255.0
+   no shutdown
+   load-interval 30
+  exit
+  interface GigabitEthernet 0/0/0/11
+   description   Connection to device pce-11 destination interface 8
+   bandwidth     10000
+   ipv4 address 10.8.11.8 255.255.255.0
+   ipv6 address 2001::8:11:8/112
+   no shutdown
+   load-interval 30
+  exit
+  interface GigabitEthernet 0/0/0/3
+   description   Connection to device node-3 destination interface 8
+   bandwidth     10000
+   ipv4 address 10.3.8.8 255.255.255.0
+   ipv6 address 2001::3:8:8/112
+   no shutdown
+   load-interval 30
+  exit
+  interface GigabitEthernet 0/0/0/4
+   description   Connection to device node-4 destination interface 8
+   bandwidth     10000
+   ipv4 address 10.4.8.8 255.255.255.0
+   ipv6 address 2001::4:8:8/112
+   no shutdown
+   load-interval 30
+  exit
+  interface GigabitEthernet 0/0/0/5
+   description   Connection to device node-5 destination interface 8
+   bandwidth     10000
+   ipv4 address 10.5.8.8 255.255.255.0
+   ipv6 address 2001::5:8:8/112
+   no shutdown
+   load-interval 30
+  exit
+  interface GigabitEthernet 0/0/0/7
+   description   Connection to device node-7 destination interface 8
+   bandwidth     10000
+   ipv4 address 10.7.8.8 255.255.255.0
+   ipv6 address 2001::7:8:8/112
+   no shutdown
+   load-interval 30
+  exit
+  prefix-set node-8-uplinks
+   10.8.11.0/24
+   end-set
+  !
+  route-policy redistribute-uplinks
+    "  if destination in node-8-uplinks then\r\n    pass\r\n  endif\r\n"
+   end-policy
+  !
+  router static
+   address-family ipv4 unicast
+    10.16.0.0/16 198.18.1.1
+    198.18.128.0/18 198.18.1.1
+    198.19.1.11/32 10.8.11.11
+    198.19.2.11/32 10.8.11.11
+    11.11.8.0/24 Null0 description TraGenSer
+    13.127.8.0/24 Null0 description TraGenSer
+    45.37.8.0/24 Null0 description TraGenSer
+    53.1.8.0/24 Null0 description TraGenSer
+    72.24.8.0/24 Null0 description TraGenSer
+    87.93.8.0/24 Null0 description TraGenSer
+    99.99.8.0/24 Null0 description TraGenSer
+    103.25.8.0/24 Null0 description TraGenSer
+    112.237.8.0/24 Null0 description TraGenSer
+    125.137.8.0/24 Null0 description TraGenSer
+    128.64.8.0/24 Null0 description TraGenSer
+    151.151.8.0/24 Null0 description TraGenSer
+    169.27.8.0/24 Null0 description TraGenSer
+    202.4.8.0/24 Null0 description TraGenSer
+    210.18.8.0/24 Null0 description TraGenSer
+   exit
+   address-family ipv6 unicast
+    2010::11/128 2001::8:11:11
+    2011::11/128 2001::8:11:11
+   exit
+  exit
+  router isis 1
+   affinity-map bottom bit-position 107
+   affinity-map top bit-position 109
+   flex-algo 128
+    metric-type delay
+    advertise-definition
+   exit
+   flex-algo 129
+    advertise-definition
+    affinity exclude-any top
+   exit
+   flex-algo 130
+    advertise-definition
+    affinity exclude-any bottom
+   exit
+   net 49.0010.0100.0008.00
+   distribute link-state
+   address-family ipv4 unicast
+    metric-style wide
+    mpls traffic-eng level-2-only
+    mpls traffic-eng router-id Loopback0
+    router-id 198.19.1.8
+    redistribute connected route-policy redistribute-uplinks
+    redistribute static
+    segment-routing mpls sr-prefer
+   exit
+   address-family ipv6 unicast
+    router-id Loopback0
+    redistribute connected route-policy redistribute-uplinks
+    redistribute static
+    segment-routing srv6
+     locator MAIN
+     exit
+    exit
+   exit
+   interface GigabitEthernet0/0/0/3
+    circuit-type   level-2-only
+    point-to-point
+    affinity flex-algo bottom
+    address-family ipv4 unicast
+     metric 100
+     fast-reroute per-prefix
+     fast-reroute per-prefix ti-lfa
+    exit
+    address-family ipv6 unicast
+     metric 100
+    exit
+   exit
+   interface GigabitEthernet0/0/0/4
+    circuit-type   level-2-only
+    point-to-point
+    address-family ipv4 unicast
+     metric 10
+     fast-reroute per-prefix
+     fast-reroute per-prefix ti-lfa
+    exit
+    address-family ipv6 unicast
+     metric 10
+    exit
+   exit
+   interface GigabitEthernet0/0/0/5
+    circuit-type   level-2-only
+    point-to-point
+    address-family ipv4 unicast
+     metric 10
+     fast-reroute per-prefix
+     fast-reroute per-prefix ti-lfa
+    exit
+    address-family ipv6 unicast
+     metric 10
+    exit
+   exit
+   interface GigabitEthernet0/0/0/7
+    circuit-type   level-2-only
+    point-to-point
+    affinity flex-algo bottom
+    address-family ipv4 unicast
+     metric 10
+     fast-reroute per-prefix
+     fast-reroute per-prefix ti-lfa
+    exit
+    address-family ipv6 unicast
+     metric 10
+    exit
+   exit
+   interface Loopback0
+     passive
+    circuit-type level-2-only
+    address-family ipv4 unicast
+     prefix-sid absolute 16008
+     prefix-sid algorithm 128 absolute 17108
+     prefix-sid algorithm 129 absolute 17208
+     prefix-sid algorithm 130 absolute 17308
+     prefix-sid strict-spf absolute 17008
+    exit
+    address-family ipv6 unicast
+    exit
+   exit
+   interface Loopback2
+     passive
+    circuit-type level-2-only
+    address-family ipv4 unicast
+    exit
+    address-family ipv6 unicast
+    exit
+   exit
+  exit
+  router bgp 65000
+   bgp router-id 198.19.1.8
+   address-family link-state link-state
+   exit
+   neighbor 198.19.2.11
+    remote-as 65000
+    update-source Loopback0
+    address-family link-state link-state
+    exit
+   exit
+   neighbor 2011::11
+    remote-as 65000
+    update-source Loopback0
+   exit
+  exit
+  rsvp
+   interface GigabitEthernet0/0/0/3
+    bandwidth
+   exit
+   interface GigabitEthernet0/0/0/4
+    bandwidth
+   exit
+   interface GigabitEthernet0/0/0/5
+    bandwidth
+   exit
+   interface GigabitEthernet0/0/0/7
+    bandwidth
+   exit
+  exit
+  mpls traffic-eng
+   auto-tunnel pcc
+    tunnel-id min 1000 max 1999
+   exit
+   interface GigabitEthernet0/0/0/3
+    attribute-names bottom
+    admin-weight 10
+   exit
+   interface GigabitEthernet0/0/0/4
+    admin-weight 10
+   exit
+   interface GigabitEthernet0/0/0/5
+    admin-weight 10
+   exit
+   interface GigabitEthernet0/0/0/7
+    attribute-names bottom
+    admin-weight 10
+   exit
+   pce
+    peer source ipv4 198.19.2.8
+    peer ipv4 198.19.1.11
+     password encrypted 13061E010803
+    exit
+    stateful-client
+     instantiation
+     report
+    exit
+   exit
+   affinity-map bottom bit-position 23
+   affinity-map top bit-position 24
+  exit
+  mpls ldp
+   interface GigabitEthernet0/0/0/3
+   exit
+   interface GigabitEthernet0/0/0/4
+   exit
+   interface GigabitEthernet0/0/0/5
+   exit
+   interface GigabitEthernet0/0/0/7
+   exit
+  exit
+  mpls oam
+  exit
+  segment-routing
+   global-block 16000 23999
+   traffic-eng
+    pcc
+     source-address ipv4 198.19.1.8
+     pce address ipv4 198.19.1.11
+      password encrypted 1511021F0725
+     !
+     report-all
+     profile 1
+      autoroute
+       include ipv4 all
+       force-sr-include
+      !
+     !
+    !
+   !
+   srv6
+    locators
+     locator MAIN
+      micro-segment behavior unode psp-usd
+      prefix fcbb:0:8::/48
+     !
+    !
+   !
+  !
+ !
+!
+devices device pce-11
+ address   198.18.1.51
+ port      22
+ ssh host-key ssh-rsa
+  key-data "AAAAB3NzaC1yc2EAAAADAQABAAABAQDCt1QnGEFHoko+6Tt3SXab1SDS0bI7EdcISjdLJ6ol\n3pEkgNWiuNRge3I7b6Iq8JsDJMsojwDQkLm6STv/G1ECTPS+8+er9LA/trVO5DkNeBBgy5gS\nFc8qgE4GzS9ctBEnRaKt9mi5cRzIdrBtf9Gb/4Btx6H6nKvlnFv69fKYFtkxUmpaCfe52j8T\n+amfPguLi9HVy9PCPSRO89tDQrbxix95eSoUhNuwSGQ1BYbpD1vrX8Jbd+GkgMl3IeUBvYgR\nZxRAIEJ6SLbLo0A9/lQgOGuoUv2+fL9qMH65ArCRMZK6ZwpPwBLor2xWq5VBLBiNt6kXovQk\nvhhDjczAUDIH"
+ !
+ ssh host-key ssh-ed25519
+  key-data AAAAC3NzaC1lZDI1NTE5AAAAIAf4rYe7ZAXm3C8LUE28lhFfru+EUUTCGifrdbz8frxL
+ !
+ ssh host-key ecdsa-256
+  key-data "AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBDjDW+gF0cTYsIvfVfGp\nB3NKxQqJrYIz+3ZQb73PKa8msvLqaW5MUSPc2t0mnpCiFqY7gbH40/eK2FxPnRtFetg="
+ !
+ ssh host-key ecdsa-384
+  key-data "AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzODQAAABhBCzyO63ZvHhmk05tmqi2\n2MyNwd52QuLlSqVzwt36xIVLxAeJRCWa+mLudNr9cD25FQ2gDD1/TkqeXt9HBJ0WnrYOiJrN\njS3ZyevOpcoKPLHdhIY6A5yRw4RGNJEsOTC8qw=="
+ !
+ ssh host-key ecdsa-521
+  key-data "AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBADG3LvhgsKlNciKMces\n4ytXJN40Ac+VB33cx5r44y4DclBjfkagLml4TWKCmQFrkShQZfq31gdhKr6c4D/SDpTADAAZ\nD4C1/Cmxv/YgGiy5jWp4Jd9IhoPlwypEoq96i/L4YeYSSmNQWN94vQ9fhLZXsw8S1051FJ55\nlT0SKhV/xGyCdQ=="
+ !
+ authgroup cisco
+ device-type cli ned-id cisco-iosxr-cli-7.61
+ ned-settings cisco-iosxr read admin-show-running-config false
+ state admin-state unlocked
+ config
+  admin
+   exit-admin-config
+  !
+  hostname pce-11
+  banner login $ "\r\n      _____________________________\r\n     | SR/XTC/WAE/NSO dCloud Lab   |\r\n     | Learn, Try, Question        |\r\n     | We are here to help!!       |\r\n     | All actions performed on    |\r\n     | this device are logged.     |\r\n      -----------------------------\r\n\r\n          , ,\ ,'\,'\ ,'\ ,\ ,\r\n    ,  ;\/ \' `'     `   '  /|\r\n    |\/                      |\r\n    :                        |\r\n    :                        |\r\n     |                       |\r\n     |                       |\r\n     :               -.     _|\r\n      :                \     `.\r\n      |         ________:______\\\r\n      :       ,'o       / o    ;\r\n      :       \       ,'-----./\r\n       \_      `--.--'        )\r\n      ,` `.              ,---'|\r\n      : `                     |\r\n       `,-'                   |\r\n       /      ,---.          ,'\r\n    ,-'            `-,------'\r\n   '   `.        ,--'\r\n         `-.____/\r\n -BE AWESOME!-           \\\r\n" $
+  pce
+   address ipv4 198.19.1.11
+   password encrypted 02050D480809
+   segment-routing
+    traffic-eng
+    exit
+    strict-sid-only
+   exit
+   api
+    user cisco
+     password encrypted 14141B180F0B
+    exit
+   exit
+  exit
+  logging trap   informational
+  logging buffered 10000000
+  logging 198.18.1.220 vrf default severity debugging port 30514
+  logging source-interface Loopback0
+  logging format rfc5424
+  logging console notifications
+  logging hostnameprefix pce-11
+  service timestamps debug datetime msec
+  service timestamps log datetime localtime msec show-timezone year
+  netconf agent tty
+  exit
+  netconf-yang agent
+   ssh
+  exit
+  username cisco
+   group cisco-support
+   group root-lr
+   secret 10 $6$bAtX.zmSPszsCAaq$Xc8SIQn.AlmwSIhCJVP.stLOS8VAHHE.AKv9OmYwMDwVCX397uetzwZFGxaSrToQ6JBm2OwubLNkE9H2EVgH11
+  exit
+  grpc
+   port           57400
+   no-tls
+   address-family ipv4
+   service-layer
+  exit
+  line console
+   exec-timeout 0 0
+   width            0
+   absolute-timeout 0
+   session-timeout 0
+  exit
+  line default
+   exec-timeout 0 0
+   absolute-timeout 0
+   session-timeout 0
+  exit
+  vty-pool default 0 50
+  xml agent tty
+  exit
+  snmp-server packetsize 4096
+  snmp-server ifindex persist
+  snmp-server host 198.18.1.220 traps version 2c cisco udp-port 31062
+  snmp-server community cisco RO
+  snmp-server trap-source Loopback0
+  snmp-server trap link ietf
+  snmp-server traps snmp linkdown
+  snmp-server traps snmp linkup
+  ssh server netconf vrf default
+  ssh server rate-limit 600
+  ssh server session-limit 110
+  ssh server v2
+  ssh server vrf default
+  interface Loopback 0
+   ipv4 address 198.19.1.11 255.255.255.255
+   ipv6 address 2010::11/128
+   no shutdown
+  exit
+  interface Loopback 2
+   ipv4 address 198.19.2.11 255.255.255.255
+   ipv6 address 2011::11/128
+   no shutdown
+  exit
+  interface MgmtEth 0/RP0/CPU0/0
+   ipv4 address 198.18.1.51 255.255.255.0
+   no shutdown
+  exit
+  interface GigabitEthernet 0/0/0/8
+   description   Connection to device node-8 destination interface 11
+   bandwidth     10000
+   ipv4 address 10.8.11.11 255.255.255.0
+   ipv6 address 2001::8:11:11/112
+   no shutdown
+   load-interval 30
+  exit
+  router static
+   address-family ipv4 unicast
+    10.0.0.0/8 10.8.11.8
+    10.16.0.0/16 198.18.1.1
+    198.18.128.0/18 198.18.1.1
+    198.19.1.0/24 10.8.11.8
+    198.19.2.0/24 10.8.11.8
+   exit
+   address-family ipv6 unicast
+    2001::/16 2001::8:11:8
+    2010::/112 2001::8:11:8
+    2011::/112 2001::8:11:8
+   exit
+  exit
+  router bgp 65000
+   bgp router-id 198.19.2.11
+   address-family vpnv4 unicast
+   exit
+   address-family vpnv6 unicast
+   exit
+   address-family link-state link-state
+   exit
+   neighbor 198.19.1.1
+    remote-as 65000
+    update-source Loopback2
+    address-family vpnv4 unicast
+     route-reflector-client
+    exit
+   exit
+   neighbor 198.19.1.2
+    remote-as 65000
+    update-source Loopback2
+    address-family vpnv4 unicast
+     route-reflector-client
+    exit
+   exit
+   neighbor 198.19.1.3
+    remote-as 65000
+    update-source Loopback2
+    address-family vpnv4 unicast
+     route-reflector-client
+    exit
+   exit
+   neighbor 198.19.1.4
+    remote-as 65000
+    update-source Loopback2
+    address-family vpnv4 unicast
+     route-reflector-client
+    exit
+   exit
+   neighbor 198.19.1.6
+    remote-as 65000
+    update-source Loopback2
+    address-family link-state link-state
+     route-reflector-client
+    exit
+   exit
+   neighbor 198.19.1.8
+    remote-as 65000
+    update-source Loopback2
+    address-family link-state link-state
+     route-reflector-client
+    exit
+   exit
+   neighbor 198.19.1.9
+    remote-as 65000
+    update-source Loopback2
+    address-family vpnv4 unicast
+     route-reflector-client
+    exit
+   exit
+   neighbor 2010::1
+    remote-as 65000
+    update-source Loopback2
+    address-family vpnv6 unicast
+     route-reflector-client
+    exit
+   exit
+   neighbor 2010::2
+    remote-as 65000
+    update-source Loopback2
+    address-family vpnv6 unicast
+     route-reflector-client
+    exit
+   exit
+   neighbor 2010::3
+    remote-as 65000
+    update-source Loopback2
+    address-family vpnv6 unicast
+     route-reflector-client
+    exit
+   exit
+   neighbor 2010::4
+    remote-as 65000
+    update-source Loopback2
+    address-family vpnv6 unicast
+     route-reflector-client
+    exit
+   exit
+   neighbor 2010::6
+    remote-as 65000
+    update-source Loopback2
+   exit
+   neighbor 2010::8
+    remote-as 65000
+    update-source Loopback2
+   exit
+   neighbor 2010::9
+    remote-as 65000
+    update-source Loopback2
+    address-family vpnv6 unicast
+     route-reflector-client
+    exit
+   exit
+  exit
+ !
+!

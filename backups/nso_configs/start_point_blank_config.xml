@@ -1,0 +1,4586 @@
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <ibgp xmlns="http://com/example/ibgp">
+    <name>ibgp-node1-node2</name>
+    <as-number>65001</as-number>
+    <router1>node-1</router1>
+    <router1-lo0-ip>198.19.1.1</router1-lo0-ip>
+    <router1-router-id>198.19.1.1</router1-router-id>
+    <router2>node-2</router2>
+    <router2-lo0-ip>198.19.1.2</router2-lo0-ip>
+    <router2-router-id>198.19.1.2</router2-router-id>
+  </ibgp>
+  <ibgp xmlns="http://com/example/ibgp">
+    <name>ibgp-node1-node3</name>
+    <as-number>65001</as-number>
+    <router1>node-1</router1>
+    <router1-lo0-ip>198.19.1.1</router1-lo0-ip>
+    <router1-router-id>198.19.1.1</router1-router-id>
+    <router2>node-3</router2>
+    <router2-lo0-ip>198.19.1.3</router2-lo0-ip>
+    <router2-router-id>198.19.1.3</router2-router-id>
+  </ibgp>
+  <ibgp xmlns="http://com/example/ibgp">
+    <name>ibgp-node1-node4</name>
+    <as-number>65001</as-number>
+    <router1>node-1</router1>
+    <router1-lo0-ip>198.19.1.1</router1-lo0-ip>
+    <router1-router-id>198.19.1.1</router1-router-id>
+    <router2>node-4</router2>
+    <router2-lo0-ip>198.19.1.4</router2-lo0-ip>
+    <router2-router-id>198.19.1.4</router2-router-id>
+  </ibgp>
+  <ibgp xmlns="http://com/example/ibgp">
+    <name>ibgp-node2-node3</name>
+    <as-number>65001</as-number>
+    <router1>node-2</router1>
+    <router1-lo0-ip>198.19.1.2</router1-lo0-ip>
+    <router1-router-id>198.19.1.2</router1-router-id>
+    <router2>node-3</router2>
+    <router2-lo0-ip>198.19.1.3</router2-lo0-ip>
+    <router2-router-id>198.19.1.3</router2-router-id>
+  </ibgp>
+  <ibgp xmlns="http://com/example/ibgp">
+    <name>ibgp-node2-node4</name>
+    <as-number>65001</as-number>
+    <router1>node-2</router1>
+    <router1-lo0-ip>198.19.1.2</router1-lo0-ip>
+    <router1-router-id>198.19.1.2</router1-router-id>
+    <router2>node-4</router2>
+    <router2-lo0-ip>198.19.1.4</router2-lo0-ip>
+    <router2-router-id>198.19.1.4</router2-router-id>
+  </ibgp>
+  <ibgp xmlns="http://com/example/ibgp">
+    <name>ibgp-node3-node4</name>
+    <as-number>65001</as-number>
+    <router1>node-3</router1>
+    <router1-lo0-ip>198.19.1.3</router1-lo0-ip>
+    <router1-router-id>198.19.1.3</router1-router-id>
+    <router2>node-4</router2>
+    <router2-lo0-ip>198.19.1.4</router2-lo0-ip>
+    <router2-router-id>198.19.1.4</router2-router-id>
+  </ibgp>
+  <ibgp xmlns="http://com/example/ibgp">
+    <name>ibgp-xrv9kv1-xrv9kv3</name>
+    <as-number>65000</as-number>
+    <router1>xr9kv0</router1>
+    <router1-lo0-ip>1.1.1.1</router1-lo0-ip>
+    <router1-router-id>1.1.1.1</router1-router-id>
+    <router2>xr9kv2</router2>
+    <router2-lo0-ip>3.3.3.3</router2-lo0-ip>
+    <router2-router-id>3.3.3.3</router2-router-id>
+  </ibgp>
+  <ospf xmlns="http://com/example/ospf">
+    <base>
+      <device>node-1</device>
+      <router-id>198.19.1.1</router-id>
+      <area>0</area>
+    </base>
+    <base>
+      <device>node-2</device>
+      <router-id>198.19.1.2</router-id>
+      <area>0</area>
+    </base>
+    <base>
+      <device>node-3</device>
+      <router-id>198.19.1.3</router-id>
+      <area>0</area>
+    </base>
+    <base>
+      <device>node-4</device>
+      <router-id>198.19.1.4</router-id>
+      <area>0</area>
+    </base>
+    <base>
+      <device>node-5</device>
+      <router-id>198.19.1.5</router-id>
+      <area>0</area>
+    </base>
+    <base>
+      <device>node-6</device>
+      <router-id>198.19.1.6</router-id>
+      <area>0</area>
+    </base>
+    <base>
+      <device>node-7</device>
+      <router-id>198.19.1.7</router-id>
+      <area>0</area>
+    </base>
+    <base>
+      <device>node-8</device>
+      <router-id>198.19.1.8</router-id>
+      <area>0</area>
+    </base>
+    <base>
+      <device>xr9kv0</device>
+      <router-id>1.1.1.1</router-id>
+      <area>0</area>
+      <neighbor>
+        <device>xr9kv1</device>
+        <local-interface>0/0/0/0</local-interface>
+        <local-ip>10.1.2.1</local-ip>
+        <remote-ip>10.1.2.2</remote-ip>
+      </neighbor>
+    </base>
+    <base>
+      <device>xr9kv1</device>
+      <router-id>2.2.2.2</router-id>
+      <area>0</area>
+      <neighbor>
+        <device>xr9kv2</device>
+        <local-interface>0/0/0/1</local-interface>
+        <local-ip>10.2.3.2</local-ip>
+        <remote-ip>10.2.3.3</remote-ip>
+      </neighbor>
+    </base>
+    <base>
+      <device>xr9kv2</device>
+      <router-id>3.3.3.3</router-id>
+      <area>0</area>
+    </base>
+    <link>
+      <name>xr9kv0::xr9kv1</name>
+      <area>0</area>
+      <device>
+        <name>xr9kv0</name>
+        <interface>0/0/0/0</interface>
+        <ip>10.1.2.1</ip>
+      </device>
+      <device>
+        <name>xr9kv1</name>
+        <ip>10.1.2.2</ip>
+        <description>To xr9kv0 GigabitEthernet0/0/0/0</description>
+      </device>
+    </link>
+    <link>
+      <name>xr9kv1::xr9kv2</name>
+      <area>0</area>
+      <device>
+        <name>xr9kv1</name>
+        <interface>0/0/0/1</interface>
+        <ip>10.2.3.2</ip>
+      </device>
+      <device>
+        <name>xr9kv2</name>
+        <ip>10.2.3.3</ip>
+        <description>To xr9kv1 GigabitEthernet0/0/0/1</description>
+      </device>
+    </link>
+  </ospf>
+  <aaa xmlns="http://tail-f.com/ns/aaa/1.1">
+    <authentication>
+      <users>
+        <user>
+          <name>admin</name>
+          <uid>65534</uid>
+          <gid>65534</gid>
+          <password>$6$s8kXQwAndOCRPa/Z$bLUaSIOpfmY3s8bhvDzn2m/FfGYQUxd7NCuYUAhTqw7KgoacngAO4AVMBXD1/vv9Rz4hEjCnJkoYUklKsIOPu.</password>
+          <ssh_keydir>/var/ncs/homes/admin/.ssh</ssh_keydir>
+          <homedir>/var/ncs/homes/admin</homedir>
+        </user>
+        <user>
+          <name>oper</name>
+          <uid>65534</uid>
+          <gid>65534</gid>
+          <password>$6$fwpzBZBI0Bl6wsjd$WhWpSVnt/l1zgAbEhZGYXYAVrimAGXXVyeScMiqmk7rqxn9t3PRAlvI0LIFaxdcdvpc4MhNJh5g1rHeOiOYZ40</password>
+          <ssh_keydir>/var/ncs/homes/oper/.ssh</ssh_keydir>
+          <homedir>/var/ncs/homes/oper</homedir>
+        </user>
+        <user>
+          <name>private</name>
+          <uid>65534</uid>
+          <gid>65534</gid>
+          <password>$6$</password>
+          <ssh_keydir>/var/ncs/homes/private/.ssh</ssh_keydir>
+          <homedir>/var/ncs/homes/private</homedir>
+        </user>
+        <user>
+          <name>public</name>
+          <uid>65534</uid>
+          <gid>65534</gid>
+          <password>$6$</password>
+          <ssh_keydir>/var/ncs/homes/public/.ssh</ssh_keydir>
+          <homedir>/var/ncs/homes/public</homedir>
+        </user>
+      </users>
+    </authentication>
+  </aaa>
+  <cluster xmlns="http://tail-f.com/ns/ncs">
+    <authgroup>
+      <name>default</name>
+      <default-map>
+        <same-user/>
+        <same-pass/>
+      </default-map>
+      <umap>
+        <local-user>admin</local-user>
+        <same-user/>
+        <remote-password>$9$Z5QQVMvuFJppJ+nyAONLoy6VWGiDK7FTOb7ptGQkCmA=</remote-password>
+      </umap>
+      <umap>
+        <local-user>oper</local-user>
+        <same-user/>
+        <remote-password>$9$bZi+0zq9rkoKf6Vibt25l8FRe+xRiLC9FJ3Bk/ZiLaE=</remote-password>
+      </umap>
+    </authgroup>
+  </cluster>
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <global-settings>
+      <trace-dir>./logs</trace-dir>
+    </global-settings>
+    <authgroups>
+      <group>
+        <name>cisco</name>
+        <default-map>
+          <remote-name>cisco</remote-name>
+          <remote-password>$9$hocRx2rZQWKm+k4/aGpU6RgtawJXNBP56vMuVami0sI=</remote-password>
+        </default-map>
+        <umap>
+          <local-user>cisco</local-user>
+          <remote-name>cisco</remote-name>
+          <remote-password>$9$eoDpLBp2MhneMUgfXjQINxQ89o7VypKOxHea/R00qHg=</remote-password>
+        </umap>
+        <umap>
+          <local-user>netsim</local-user>
+          <remote-name>admin</remote-name>
+          <remote-password>$9$5SFZDie7z6HsLy9gcftDL4Rt6bpkTPODPvQ4sFa18OA=</remote-password>
+        </umap>
+      </group>
+      <group>
+        <name>default</name>
+        <umap>
+          <local-user>admin</local-user>
+          <remote-name>admin</remote-name>
+          <remote-password>$9$flCE4f9D0x3omvjDtNhFxnfBo+I10H0wVd3hhQdxUok=</remote-password>
+        </umap>
+        <umap>
+          <local-user>oper</local-user>
+          <remote-name>oper</remote-name>
+          <remote-password>$9$n9DU4mU5cmjPQWKk5a8Qax5W0divQdEg1dJRzX5htc4=</remote-password>
+        </umap>
+      </group>
+      <group>
+        <name>netsim</name>
+        <default-map>
+          <remote-name>admin</remote-name>
+          <remote-password>$9$v04tv44GdEF1mpumrQfP1irUr8dfHiorR0fz8EyE+b4=</remote-password>
+        </default-map>
+        <umap>
+          <local-user>default</local-user>
+          <remote-name>admin</remote-name>
+          <remote-password>$9$gfTOkNTUiMQwDfbAkMB14HAdf3oW7lFa22KHcLv1qhs=</remote-password>
+        </umap>
+      </group>
+      <snmp-group>
+        <name>default</name>
+        <default-map>
+          <community-name>public</community-name>
+        </default-map>
+        <umap>
+          <local-user>admin</local-user>
+          <usm>
+            <remote-name>admin</remote-name>
+            <security-level>auth-priv</security-level>
+            <auth>
+              <sha>
+                <remote-password>$9$h0yAdvrD/xSn6V/BxOQprEN0oEM84ae4uoCVfbXHXBE=</remote-password>
+              </sha>
+            </auth>
+            <priv>
+              <aes>
+                <remote-password>$9$xFBNO2DcYQmxier4nj8DuUHh0z8TEi6SqVjYCGE2QNs=</remote-password>
+              </aes>
+            </priv>
+          </usm>
+        </umap>
+      </snmp-group>
+    </authgroups>
+    <mib-group>
+      <name>snmp</name>
+      <mib-module>SNMP*</mib-module>
+    </mib-group>
+    <device>
+      <name>node-1</name>
+      <address>198.18.1.41</address>
+      <port>22</port>
+      <ssh>
+        <host-key>
+          <algorithm>ssh-rsa</algorithm>
+          <key-data>AAAAB3NzaC1yc2EAAAADAQABAAABAQCwtytlyLClbvX00Lzf/IMGSvcsCAdOnrv+krxbi6dN
+1mS2zrYQ8ARfi1S2Nit5RT9GJ7jHuHa1xbuciu/0NL2j66fozW/UbgrCjevfOZRTqkdBqBJ2
+PeNmpWQ42XskfUK58ROvXJR3PLwdGswr8/0oBYYEk49Lxq6zJty7NJ5e7ZXSQnzCXdkMgf4K
+ifLDI/nYNNydkzJBKtPI1w+pTzK/Kl4Lf5d8/9IwyafeCskecyIRBmDZY9PyeI3H0dv2zbMZ
+4aDdEY6RnXsjSkjxmQTaAVP6ktFN9Vnx2gxLb7dL066aRFOvhHOT6Ij6rUtXc2ev8sanXsoA
+eRq5IV5MhltL</key-data>
+        </host-key>
+        <host-key>
+          <algorithm>ssh-ed25519</algorithm>
+          <key-data>AAAAC3NzaC1lZDI1NTE5AAAAIDajsVpfUoeuOM/wTBzrlRg61loKymBMDCmIKWmtKsi9</key-data>
+        </host-key>
+        <host-key>
+          <algorithm>ecdsa-256</algorithm>
+          <key-data>AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBMF8CyexjV3O7yHSODyB
+Y9LpjAw0Z50qYEKgdwJM+oKCVcZBCmhSnTLWCFGBSjOj9z8A2ydv7PY4G83dqS0f0UU=</key-data>
+        </host-key>
+        <host-key>
+          <algorithm>ecdsa-384</algorithm>
+          <key-data>AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzODQAAABhBBuDACrURMYlatPRv9Oo
+1qwi6ZwsFZ4fgjTwSlI5qsnP2o73Q2bdAH3PekoXvOqCmG12MGbyGTWsQ4M0wx0ClrGr8dxO
+pXADsWb0pwu08wGsFhrDque9xyINaR4aUFxJtw==</key-data>
+        </host-key>
+        <host-key>
+          <algorithm>ecdsa-521</algorithm>
+          <key-data>AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBAAhzFyIHVaXFmneyTAb
+rOYXqE++CkBTOTB4KPiwZ8/rRY9jV+NwkpYmql8kQQz9yDdzxKkD4HEQVjj2QWlclZJoTQEN
+7wG3P4/ITsigtk4FbRs8edhok9k7m6yFqeJk7SVuoA3NjINvE3a3T8sdmoMbeYHj/KBHWhEz
+1uujP1MaWzjYNg==</key-data>
+        </host-key>
+      </ssh>
+      <authgroup>cisco</authgroup>
+      <device-type>
+        <cli>
+          <ned-id xmlns:cisco-iosxr-cli-7.61="http://tail-f.com/ns/ned-id/cisco-iosxr-cli-7.61">cisco-iosxr-cli-7.61:cisco-iosxr-cli-7.61</ned-id>
+        </cli>
+      </device-type>
+      <ned-settings>
+        <cisco-iosxr xmlns="http://tail-f.com/ned/cisco-iosxr/meta">
+          <read>
+            <admin-show-running-config>false</admin-show-running-config>
+          </read>
+        </cisco-iosxr>
+      </ned-settings>
+      <state>
+        <admin-state>unlocked</admin-state>
+      </state>
+      <config>
+        <hostname xmlns="http://tail-f.com/ned/cisco-ios-xr">node-1</hostname>
+        <banner xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <login>
+            <start-marker>$</start-marker>
+            <message>&#13;
+      _____________________________&#13;
+     | SR/XTC/WAE/NSO dCloud Lab   |&#13;
+     | Learn, Try, Question        |&#13;
+     | We are here to help!!       |&#13;
+     | All actions performed on    |&#13;
+     | this device are logged.     |&#13;
+      -----------------------------&#13;
+&#13;
+          , ,\ ,'\,'\ ,'\ ,\ ,&#13;
+    ,  ;\/ \' `'     `   '  /|&#13;
+    |\/                      |&#13;
+    :                        |&#13;
+    :                        |&#13;
+     |                       |&#13;
+     |                       |&#13;
+     :               -.     _|&#13;
+      :                \     `.&#13;
+      |         ________:______\&#13;
+      :       ,'o       / o    ;&#13;
+      :       \       ,'-----./&#13;
+       \_      `--.--'        )&#13;
+      ,` `.              ,---'|&#13;
+      : `                     |&#13;
+       `,-'                   |&#13;
+       /      ,---.          ,'&#13;
+    ,-'            `-,------'&#13;
+   '   `.        ,--'&#13;
+         `-.____/&#13;
+ -BE AWESOME!-           \&#13;
+</message>
+            <end-marker>$</end-marker>
+          </login>
+        </banner>
+        <logging xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <trap>informational</trap>
+          <events>
+            <level>informational</level>
+            <link-status>software-interfaces</link-status>
+          </events>
+          <buffered>
+            <size>10000000</size>
+          </buffered>
+          <host>
+            <address>198.18.1.220</address>
+            <vrf>default</vrf>
+            <severity>debugging</severity>
+            <port>30514</port>
+          </host>
+          <source-interface>
+            <Loopback>0</Loopback>
+          </source-interface>
+          <format>
+            <rfc5424/>
+          </format>
+          <console>notifications</console>
+          <hostnameprefix>node-1</hostnameprefix>
+        </logging>
+        <service xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <timestamps>
+            <debug>
+              <datetime>
+                <msec/>
+              </datetime>
+            </debug>
+            <log>
+              <datetime>
+                <localtime/>
+                <msec/>
+                <show-timezone/>
+                <year/>
+              </datetime>
+            </log>
+          </timestamps>
+        </service>
+        <xnetconf xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <agent>
+            <tty/>
+          </agent>
+        </xnetconf>
+        <netconf-yang xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <agent>
+            <ssh/>
+          </agent>
+        </netconf-yang>
+        <ntp xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <server>
+            <server-list>
+              <name>198.18.128.1</name>
+            </server-list>
+          </server>
+        </ntp>
+        <telnet xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <vrf>
+            <name>default</name>
+            <telnet-server-list>
+              <af>ipv4</af>
+              <server>
+                <max-servers>10</max-servers>
+              </server>
+            </telnet-server-list>
+          </vrf>
+        </telnet>
+        <username xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <name>cisco</name>
+          <group>
+            <name>cisco-support</name>
+          </group>
+          <group>
+            <name>root-lr</name>
+          </group>
+          <secret>
+            <encryption>10</encryption>
+            <password>$6$KIqWA4n8CeqxQHPv$W10h4StBavc/.zfztwczxUpuAtD7UjbyqgxfXtr2kZmi/OtXhRJ0mWCVYQ2XPz1AoXqSlapinN8r/SaQ1N1y21</password>
+          </secret>
+        </username>
+        <cdp xmlns="http://tail-f.com/ned/cisco-ios-xr"/>
+        <grpc xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <port>57400</port>
+          <no-tls/>
+          <address-family>ipv4</address-family>
+          <service-layer/>
+        </grpc>
+        <line xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <console>
+            <exec-timeout>
+              <minutes>0</minutes>
+              <seconds>0</seconds>
+            </exec-timeout>
+            <width>0</width>
+            <absolute-timeout>0</absolute-timeout>
+            <session-timeout>
+              <minutes>0</minutes>
+            </session-timeout>
+          </console>
+          <default>
+            <exec-timeout>
+              <minutes>0</minutes>
+              <seconds>0</seconds>
+            </exec-timeout>
+            <absolute-timeout>0</absolute-timeout>
+            <session-timeout>
+              <minutes>0</minutes>
+            </session-timeout>
+          </default>
+        </line>
+        <vty-pool xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <default>
+            <first-vty>0</first-vty>
+            <last-vty>50</last-vty>
+          </default>
+        </vty-pool>
+        <xxml xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <tty-agent>
+            <agent>
+              <tty/>
+            </agent>
+          </tty-agent>
+        </xxml>
+        <snmp-server xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <packetsize>4096</packetsize>
+          <ifindex>persist</ifindex>
+          <host>
+            <address>198.18.1.220</address>
+            <type>traps</type>
+            <community-string>cisco</community-string>
+            <version>2c</version>
+            <udp-port>31062</udp-port>
+          </host>
+          <community>
+            <name>cisco</name>
+            <RO/>
+          </community>
+          <trap-source>
+            <Loopback>0</Loopback>
+          </trap-source>
+          <trap>
+            <link>ietf</link>
+          </trap>
+          <traps>
+            <traps-list>
+              <name>snmp linkdown</name>
+            </traps-list>
+            <traps-list>
+              <name>snmp linkup</name>
+            </traps-list>
+          </traps>
+        </snmp-server>
+        <ssh xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <server>
+            <netconf>
+              <vrf>
+                <name>default</name>
+              </vrf>
+            </netconf>
+            <rate-limit>600</rate-limit>
+            <session-limit>110</session-limit>
+            <v2/>
+            <vrf>
+              <name>default</name>
+            </vrf>
+          </server>
+        </ssh>
+        <lldp xmlns="http://tail-f.com/ned/cisco-ios-xr"/>
+        <interface xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <Loopback>
+            <id>0</id>
+            <ipv4>
+              <address>
+                <ip>198.19.1.1</ip>
+                <mask>255.255.255.255</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2010::1/128</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+          </Loopback>
+          <Loopback>
+            <id>2</id>
+            <ipv4>
+              <address>
+                <ip>198.19.2.1</ip>
+                <mask>255.255.255.255</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2011::1/128</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+          </Loopback>
+          <MgmtEth>
+            <id>0/RP0/CPU0/0</id>
+            <ipv4>
+              <address>
+                <ip>198.18.1.41</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+          </MgmtEth>
+          <GigabitEthernet>
+            <id>0/0/0/0</id>
+            <description>Connection to tra-gen network</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.11.12.1</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <load-interval>30</load-interval>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/1</id>
+            <shutdown/>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/10</id>
+            <shutdown/>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/11</id>
+            <shutdown/>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/2</id>
+            <description>Connection to device node-2 destination interface 1</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.1.2.1</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2001::1:2:1/112</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+            <load-interval>30</load-interval>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/3</id>
+            <shutdown/>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/4</id>
+            <shutdown/>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/5</id>
+            <shutdown/>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/6</id>
+            <description>Connection to device node-6 destination interface 1</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.1.6.1</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2001::1:6:1/112</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+            <load-interval>30</load-interval>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/7</id>
+            <shutdown/>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/8</id>
+            <shutdown/>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/9</id>
+            <description>Connection to device cpe-21 destination interface 1</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.1.21.1</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2001::1:21:1/112</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+            <lldp/>
+            <load-interval>30</load-interval>
+            <cdp/>
+          </GigabitEthernet>
+        </interface>
+        <xyzroot xmlns="http://tail-f.com/ned/cisco-ios-xr">0</xyzroot>
+      </config>
+    </device>
+    <device>
+      <name>node-2</name>
+      <address>198.18.1.42</address>
+      <port>22</port>
+      <ssh>
+        <host-key>
+          <algorithm>ssh-rsa</algorithm>
+          <key-data>AAAAB3NzaC1yc2EAAAADAQABAAABAQDEQ4W9KlTTlkRf5PJQ3hFTfXmnnEiPAjAK0Jg/nLse
+PDqqz3T3gAn6hS+QTTal83AM3974ZIgUPVuVG4O+66HEsO5Cfmhzc3ny219G/MDHcxqEW5nv
+bxwX3IkoXvJABYy5JovrZFSky+ZE3DElSURpH8RAjV1NMnYxBfiDuoLXXlfZZOrQ2HwbEQCZ
+IuOLH/Avs5C1qizCtJ8w5JFj6oSRhIqXLMX3jt4hj2U+7Mx3cp+iBiTNKsNLegQtdKlP5Dkm
+oEf+rxtGE4KkpuslKe0ke2RnqGy9a2zUVWp5hlYi35lJduGYaTsJX2qt55tqxcnvXcy/h0mf
+htB/u7xn1kyl</key-data>
+        </host-key>
+        <host-key>
+          <algorithm>ssh-ed25519</algorithm>
+          <key-data>AAAAC3NzaC1lZDI1NTE5AAAAIHQXGc1c2sLboO4QL23Mhas++RWtgBXLuPuQzy5HylPD</key-data>
+        </host-key>
+        <host-key>
+          <algorithm>ecdsa-256</algorithm>
+          <key-data>AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBGLJ+fKpHQcCJ3d84ylQ
+FO+hRp4zsYM1nMQdWEhdPSEjxjtd0Byaf277aobxcqROPH9O9Ao70BA6tn7OWoGU20M=</key-data>
+        </host-key>
+        <host-key>
+          <algorithm>ecdsa-384</algorithm>
+          <key-data>AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzODQAAABhBNxl9g6b+wvmFZ763d1B
+jqnKSX10R7xcvHpMS0WYXvj7XLvxzmbDBdh/HYZZzJhmajmDtL3ej6q/066d08lPpYJJ0Guv
+2/fdWmml6mEaNLFcSlWz2qbdJmnGyktAtyNSVg==</key-data>
+        </host-key>
+        <host-key>
+          <algorithm>ecdsa-521</algorithm>
+          <key-data>AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBACK4Rs4SWIhv9xAFtyo
+buPYL3nJy+iE5ivp2CY7xghEYo+jXPK2I1OA7ZKZA850eEegdCJVbwmDS28h6E/1YKd5PgG/
+WnMBpNmA2qH+blD3rSbR9qsMRuIZnbmg5KB9cvo4S5j8ijrexw5rwbvyf7VnihRtuB349ivQ
+7cbm3zjcIsu9eg==</key-data>
+        </host-key>
+      </ssh>
+      <authgroup>cisco</authgroup>
+      <device-type>
+        <cli>
+          <ned-id xmlns:cisco-iosxr-cli-7.61="http://tail-f.com/ns/ned-id/cisco-iosxr-cli-7.61">cisco-iosxr-cli-7.61:cisco-iosxr-cli-7.61</ned-id>
+        </cli>
+      </device-type>
+      <ned-settings>
+        <cisco-iosxr xmlns="http://tail-f.com/ned/cisco-iosxr/meta">
+          <read>
+            <admin-show-running-config>false</admin-show-running-config>
+          </read>
+        </cisco-iosxr>
+      </ned-settings>
+      <state>
+        <admin-state>unlocked</admin-state>
+      </state>
+      <config>
+        <hostname xmlns="http://tail-f.com/ned/cisco-ios-xr">node-2</hostname>
+        <banner xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <login>
+            <start-marker>$</start-marker>
+            <message>&#13;
+      _____________________________&#13;
+     | SR/XTC/WAE/NSO dCloud Lab   |&#13;
+     | Learn, Try, Question        |&#13;
+     | We are here to help!!       |&#13;
+     | All actions performed on    |&#13;
+     | this device are logged.     |&#13;
+      -----------------------------&#13;
+&#13;
+          , ,\ ,'\,'\ ,'\ ,\ ,&#13;
+    ,  ;\/ \' `'     `   '  /|&#13;
+    |\/                      |&#13;
+    :                        |&#13;
+    :                        |&#13;
+     |                       |&#13;
+     |                       |&#13;
+     :               -.     _|&#13;
+      :                \     `.&#13;
+      |         ________:______\&#13;
+      :       ,'o       / o    ;&#13;
+      :       \       ,'-----./&#13;
+       \_      `--.--'        )&#13;
+      ,` `.              ,---'|&#13;
+      : `                     |&#13;
+       `,-'                   |&#13;
+       /      ,---.          ,'&#13;
+    ,-'            `-,------'&#13;
+   '   `.        ,--'&#13;
+         `-.____/&#13;
+ -BE AWESOME!-           \&#13;
+</message>
+            <end-marker>$</end-marker>
+          </login>
+        </banner>
+        <logging xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <trap>informational</trap>
+          <events>
+            <level>informational</level>
+            <link-status>software-interfaces</link-status>
+          </events>
+          <buffered>
+            <size>10000000</size>
+          </buffered>
+          <host>
+            <address>198.18.1.220</address>
+            <vrf>default</vrf>
+            <severity>debugging</severity>
+            <port>30514</port>
+          </host>
+          <source-interface>
+            <Loopback>0</Loopback>
+          </source-interface>
+          <format>
+            <rfc5424/>
+          </format>
+          <console>notifications</console>
+          <hostnameprefix>node-2</hostnameprefix>
+        </logging>
+        <service xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <timestamps>
+            <debug>
+              <datetime>
+                <msec/>
+              </datetime>
+            </debug>
+            <log>
+              <datetime>
+                <localtime/>
+                <msec/>
+                <show-timezone/>
+                <year/>
+              </datetime>
+            </log>
+          </timestamps>
+        </service>
+        <xnetconf xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <agent>
+            <tty/>
+          </agent>
+        </xnetconf>
+        <netconf-yang xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <agent>
+            <ssh/>
+          </agent>
+        </netconf-yang>
+        <ntp xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <server>
+            <server-list>
+              <name>198.18.128.1</name>
+            </server-list>
+          </server>
+        </ntp>
+        <telnet xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <vrf>
+            <name>default</name>
+            <telnet-server-list>
+              <af>ipv4</af>
+              <server>
+                <max-servers>10</max-servers>
+              </server>
+            </telnet-server-list>
+          </vrf>
+        </telnet>
+        <username xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <name>cisco</name>
+          <group>
+            <name>cisco-support</name>
+          </group>
+          <group>
+            <name>root-lr</name>
+          </group>
+          <secret>
+            <encryption>10</encryption>
+            <password>$6$E9VVVW6X.oIBfboL$sSwSWulfYBmv8IVz2UkW3vcpTVe6Xd18MLlEUyz0hx9Kfz6RwV24A7/vnkwCQHM3Aj.8QEhGWKbeYHbZfe25i/</password>
+          </secret>
+        </username>
+        <cdp xmlns="http://tail-f.com/ned/cisco-ios-xr"/>
+        <grpc xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <port>57400</port>
+          <no-tls/>
+          <address-family>ipv4</address-family>
+          <service-layer/>
+        </grpc>
+        <line xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <console>
+            <exec-timeout>
+              <minutes>0</minutes>
+              <seconds>0</seconds>
+            </exec-timeout>
+            <width>0</width>
+            <absolute-timeout>0</absolute-timeout>
+            <session-timeout>
+              <minutes>0</minutes>
+            </session-timeout>
+          </console>
+          <default>
+            <exec-timeout>
+              <minutes>0</minutes>
+              <seconds>0</seconds>
+            </exec-timeout>
+            <absolute-timeout>0</absolute-timeout>
+            <session-timeout>
+              <minutes>0</minutes>
+            </session-timeout>
+          </default>
+        </line>
+        <vty-pool xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <default>
+            <first-vty>0</first-vty>
+            <last-vty>50</last-vty>
+          </default>
+        </vty-pool>
+        <xxml xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <tty-agent>
+            <agent>
+              <tty/>
+            </agent>
+          </tty-agent>
+        </xxml>
+        <snmp-server xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <packetsize>4096</packetsize>
+          <ifindex>persist</ifindex>
+          <host>
+            <address>198.18.1.220</address>
+            <type>traps</type>
+            <community-string>cisco</community-string>
+            <version>2c</version>
+            <udp-port>31062</udp-port>
+          </host>
+          <community>
+            <name>cisco</name>
+            <RO/>
+          </community>
+          <trap-source>
+            <Loopback>0</Loopback>
+          </trap-source>
+          <trap>
+            <link>ietf</link>
+          </trap>
+          <traps>
+            <traps-list>
+              <name>snmp linkdown</name>
+            </traps-list>
+            <traps-list>
+              <name>snmp linkup</name>
+            </traps-list>
+          </traps>
+        </snmp-server>
+        <ssh xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <server>
+            <netconf>
+              <vrf>
+                <name>default</name>
+              </vrf>
+            </netconf>
+            <rate-limit>600</rate-limit>
+            <session-limit>110</session-limit>
+            <v2/>
+            <vrf>
+              <name>default</name>
+            </vrf>
+          </server>
+        </ssh>
+        <lldp xmlns="http://tail-f.com/ned/cisco-ios-xr"/>
+        <interface xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <Loopback>
+            <id>0</id>
+            <ipv4>
+              <address>
+                <ip>198.19.1.2</ip>
+                <mask>255.255.255.255</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2010::2/128</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+          </Loopback>
+          <Loopback>
+            <id>2</id>
+            <ipv4>
+              <address>
+                <ip>198.19.2.2</ip>
+                <mask>255.255.255.255</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2011::2/128</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+          </Loopback>
+          <MgmtEth>
+            <id>0/RP0/CPU0/0</id>
+            <ipv4>
+              <address>
+                <ip>198.18.1.42</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+          </MgmtEth>
+          <GigabitEthernet>
+            <id>0/0/0/0</id>
+            <description>Connection to tra-gen network</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.11.12.2</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <load-interval>30</load-interval>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/1</id>
+            <description>Connection to device node-1 destination interface 2</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.1.2.2</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2001::1:2:2/112</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+            <load-interval>30</load-interval>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/10</id>
+            <shutdown/>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/11</id>
+            <shutdown/>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/2</id>
+            <shutdown/>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/3</id>
+            <shutdown/>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/4</id>
+            <shutdown/>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/5</id>
+            <shutdown/>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/6</id>
+            <description>Connection to device node-6 destination interface 2</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.2.6.2</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2001::2:6:2/112</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+            <load-interval>30</load-interval>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/7</id>
+            <description>Connection to device node-7 destination interface 2</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.2.7.2</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2001::2:7:2/112</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+            <load-interval>30</load-interval>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/8</id>
+            <shutdown/>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/9</id>
+            <description>Connection to device cpe-22 destination interface 1</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.2.22.2</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2001::2:22:2/112</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+            <lldp/>
+            <load-interval>30</load-interval>
+            <cdp/>
+          </GigabitEthernet>
+        </interface>
+        <xyzroot xmlns="http://tail-f.com/ned/cisco-ios-xr">0</xyzroot>
+      </config>
+    </device>
+    <device>
+      <name>node-3</name>
+      <address>198.18.1.43</address>
+      <port>22</port>
+      <ssh>
+        <host-key>
+          <algorithm>ssh-rsa</algorithm>
+          <key-data>AAAAB3NzaC1yc2EAAAADAQABAAABAQDHRLoAUdLZ7cAA9BPmjb9m2vpA1mbWcYoRpA5M7LIu
+yhlj2L8KHnqhC7iJ8Bkr+8zRQrrNaANGMV/npehXJMw4ZfThExzefSgY7vbsLmKC5h+GWErB
+ijJXh0IVP5xDaLKiwl0ZU0CHiRqZ5WgqkmODBgyhP2mdHznb8OvyRbOkKncVpr2aW1Ky4spo
+C46cAbs4uZjsBilv/cscRnQLpZC49g+CZit4vW3eLjSt4ZQYOp+hKDwcpvYKIcShVctJR652
+ClQ+wglArI7enwyUPJE/P71ifoVl3yiTcB9xwTtfFL+gG0EvThLq3wHG5WRNscu8jL06XJOA
+4MU4CDWo9bcP</key-data>
+        </host-key>
+        <host-key>
+          <algorithm>ssh-ed25519</algorithm>
+          <key-data>AAAAC3NzaC1lZDI1NTE5AAAAIPESiDf/h35p0ltXvTe7saasQxOprXwtOqBC06oEAWSN</key-data>
+        </host-key>
+        <host-key>
+          <algorithm>ecdsa-256</algorithm>
+          <key-data>AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBE1YOr4Kbz0WpW16p6En
+pBWM73GF4IXMf3dqkj4YfIu/A9z+navhriMb35vsZXMlOgEXSivOxIVMX/2qnBLEyEc=</key-data>
+        </host-key>
+        <host-key>
+          <algorithm>ecdsa-384</algorithm>
+          <key-data>AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzODQAAABhBFaLowmZDGHsDaT3230w
+wCEnJToan3WYluzr/UFFYDPQQwGIFsX3OAEpzOfIguhi7tv/9kq/3ebQgkaBQln/KrvzYXaD
+T4lRqkFdqOwbXyezBHuezwFt372ONfJZS41D7A==</key-data>
+        </host-key>
+        <host-key>
+          <algorithm>ecdsa-521</algorithm>
+          <key-data>AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBAE8nDZrFXT5GidI2Yws
+mRyk3HZZRv98wIeFUgAbjYV7QbA0GozmKDc2hhw5KCQH2DKPoVVkVTiV2YGN+qx78KieRABv
+0Jzxjjpg1V0ZsSqti0SMz/nnjxXuivc39iVj90fSB/Lbxu1ghyMtrQLomvsdCyxo+wKhMdf5
+fTj5D04aOmi3pQ==</key-data>
+        </host-key>
+      </ssh>
+      <authgroup>cisco</authgroup>
+      <device-type>
+        <cli>
+          <ned-id xmlns:cisco-iosxr-cli-7.61="http://tail-f.com/ns/ned-id/cisco-iosxr-cli-7.61">cisco-iosxr-cli-7.61:cisco-iosxr-cli-7.61</ned-id>
+        </cli>
+      </device-type>
+      <ned-settings>
+        <cisco-iosxr xmlns="http://tail-f.com/ned/cisco-iosxr/meta">
+          <read>
+            <admin-show-running-config>false</admin-show-running-config>
+          </read>
+        </cisco-iosxr>
+      </ned-settings>
+      <state>
+        <admin-state>unlocked</admin-state>
+      </state>
+      <config>
+        <hostname xmlns="http://tail-f.com/ned/cisco-ios-xr">node-3</hostname>
+        <banner xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <login>
+            <start-marker>$</start-marker>
+            <message>&#13;
+      _____________________________&#13;
+     | SR/XTC/WAE/NSO dCloud Lab   |&#13;
+     | Learn, Try, Question        |&#13;
+     | We are here to help!!       |&#13;
+     | All actions performed on    |&#13;
+     | this device are logged.     |&#13;
+      -----------------------------&#13;
+&#13;
+          , ,\ ,'\,'\ ,'\ ,\ ,&#13;
+    ,  ;\/ \' `'     `   '  /|&#13;
+    |\/                      |&#13;
+    :                        |&#13;
+    :                        |&#13;
+     |                       |&#13;
+     |                       |&#13;
+     :               -.     _|&#13;
+      :                \     `.&#13;
+      |         ________:______\&#13;
+      :       ,'o       / o    ;&#13;
+      :       \       ,'-----./&#13;
+       \_      `--.--'        )&#13;
+      ,` `.              ,---'|&#13;
+      : `                     |&#13;
+       `,-'                   |&#13;
+       /      ,---.          ,'&#13;
+    ,-'            `-,------'&#13;
+   '   `.        ,--'&#13;
+         `-.____/&#13;
+ -BE AWESOME!-           \&#13;
+</message>
+            <end-marker>$</end-marker>
+          </login>
+        </banner>
+        <logging xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <trap>informational</trap>
+          <events>
+            <level>informational</level>
+            <link-status>software-interfaces</link-status>
+          </events>
+          <buffered>
+            <size>10000000</size>
+          </buffered>
+          <host>
+            <address>198.18.1.220</address>
+            <vrf>default</vrf>
+            <severity>debugging</severity>
+            <port>30514</port>
+          </host>
+          <source-interface>
+            <Loopback>0</Loopback>
+          </source-interface>
+          <format>
+            <rfc5424/>
+          </format>
+          <console>notifications</console>
+          <hostnameprefix>node-3</hostnameprefix>
+        </logging>
+        <service xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <timestamps>
+            <debug>
+              <datetime>
+                <msec/>
+              </datetime>
+            </debug>
+            <log>
+              <datetime>
+                <localtime/>
+                <msec/>
+                <show-timezone/>
+                <year/>
+              </datetime>
+            </log>
+          </timestamps>
+        </service>
+        <xnetconf xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <agent>
+            <tty/>
+          </agent>
+        </xnetconf>
+        <netconf-yang xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <agent>
+            <ssh/>
+          </agent>
+        </netconf-yang>
+        <ntp xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <server>
+            <server-list>
+              <name>198.18.128.1</name>
+            </server-list>
+          </server>
+        </ntp>
+        <telnet xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <vrf>
+            <name>default</name>
+            <telnet-server-list>
+              <af>ipv4</af>
+              <server>
+                <max-servers>10</max-servers>
+              </server>
+            </telnet-server-list>
+          </vrf>
+        </telnet>
+        <username xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <name>cisco</name>
+          <group>
+            <name>cisco-support</name>
+          </group>
+          <group>
+            <name>root-lr</name>
+          </group>
+          <secret>
+            <encryption>10</encryption>
+            <password>$6$3c0aaWWNgn0RWx33$yxCqEGWDUevICHkWwyO9D91SYQfO6cpc6MskN/V2H0IoifLx44lnxEr68g584LLUhVrPywBpHOrgn8i7X/uf11</password>
+          </secret>
+        </username>
+        <cdp xmlns="http://tail-f.com/ned/cisco-ios-xr"/>
+        <grpc xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <port>57400</port>
+          <no-tls/>
+          <address-family>ipv4</address-family>
+          <service-layer/>
+        </grpc>
+        <line xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <console>
+            <exec-timeout>
+              <minutes>0</minutes>
+              <seconds>0</seconds>
+            </exec-timeout>
+            <width>0</width>
+            <absolute-timeout>0</absolute-timeout>
+            <session-timeout>
+              <minutes>0</minutes>
+            </session-timeout>
+          </console>
+          <default>
+            <exec-timeout>
+              <minutes>0</minutes>
+              <seconds>0</seconds>
+            </exec-timeout>
+            <absolute-timeout>0</absolute-timeout>
+            <session-timeout>
+              <minutes>0</minutes>
+            </session-timeout>
+          </default>
+        </line>
+        <vty-pool xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <default>
+            <first-vty>0</first-vty>
+            <last-vty>50</last-vty>
+          </default>
+        </vty-pool>
+        <xxml xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <tty-agent>
+            <agent>
+              <tty/>
+            </agent>
+          </tty-agent>
+        </xxml>
+        <snmp-server xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <packetsize>4096</packetsize>
+          <ifindex>persist</ifindex>
+          <host>
+            <address>198.18.1.220</address>
+            <type>traps</type>
+            <community-string>cisco</community-string>
+            <version>2c</version>
+            <udp-port>31062</udp-port>
+          </host>
+          <community>
+            <name>cisco</name>
+            <RO/>
+          </community>
+          <trap-source>
+            <Loopback>0</Loopback>
+          </trap-source>
+          <trap>
+            <link>ietf</link>
+          </trap>
+          <traps>
+            <traps-list>
+              <name>snmp linkdown</name>
+            </traps-list>
+            <traps-list>
+              <name>snmp linkup</name>
+            </traps-list>
+          </traps>
+        </snmp-server>
+        <ssh xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <server>
+            <netconf>
+              <vrf>
+                <name>default</name>
+              </vrf>
+            </netconf>
+            <rate-limit>600</rate-limit>
+            <session-limit>110</session-limit>
+            <v2/>
+            <vrf>
+              <name>default</name>
+            </vrf>
+          </server>
+        </ssh>
+        <lldp xmlns="http://tail-f.com/ned/cisco-ios-xr"/>
+        <interface xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <Loopback>
+            <id>0</id>
+            <ipv4>
+              <address>
+                <ip>198.19.1.3</ip>
+                <mask>255.255.255.255</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2010::3/128</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+          </Loopback>
+          <Loopback>
+            <id>2</id>
+            <ipv4>
+              <address>
+                <ip>198.19.2.3</ip>
+                <mask>255.255.255.255</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2011::3/128</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+          </Loopback>
+          <MgmtEth>
+            <id>0/RP0/CPU0/0</id>
+            <ipv4>
+              <address>
+                <ip>198.18.1.43</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+          </MgmtEth>
+          <GigabitEthernet>
+            <id>0/0/0/0</id>
+            <description>Connection to tra-gen network</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.11.12.3</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <load-interval>30</load-interval>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/1</id>
+            <shutdown/>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/10</id>
+            <shutdown/>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/11</id>
+            <shutdown/>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/2</id>
+            <shutdown/>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/3</id>
+            <shutdown/>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/4</id>
+            <description>Connection to device node-4 destination interface 3</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.3.4.3</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2001::3:4:3/112</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+            <load-interval>30</load-interval>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/5</id>
+            <shutdown/>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/6</id>
+            <shutdown/>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/7</id>
+            <shutdown/>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/8</id>
+            <description>Connection to device node-8 destination interface 3</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.3.8.3</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2001::3:8:3/112</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+            <load-interval>30</load-interval>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/9</id>
+            <description>Connection to device cpe-23 destination interface 1</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.3.23.3</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2001::3:23:3/112</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+            <lldp/>
+            <load-interval>30</load-interval>
+            <cdp/>
+          </GigabitEthernet>
+        </interface>
+        <xyzroot xmlns="http://tail-f.com/ned/cisco-ios-xr">0</xyzroot>
+      </config>
+    </device>
+    <device>
+      <name>node-4</name>
+      <address>198.18.1.44</address>
+      <port>22</port>
+      <ssh>
+        <host-key>
+          <algorithm>ssh-rsa</algorithm>
+          <key-data>AAAAB3NzaC1yc2EAAAADAQABAAABAQDoEq0tFZi+Fw6TL6h+gT8edeWgWN7BWlHhRWPHUnu2
+RLyu8L6AeDULmWn6FBX7EadV+akmBNyPsQjDCyKX7RAnqAMPcRqlY9r+HZYU2eDRdzzQ81z1
+YATJjNZdwu3rGRsk5h7oDnowvuUf1Hg5znmqZtvgOmYcBtpIFi/WExYkgeXU2lXq+7pDKX0/
+774qblduwbc8/EPy9HeZyQ7IDp0JTnLFL986tiOO8pyvMLpp8GgoimksXx5njXVnFsdQgN2h
+wfS8NdFE+uBEca6Qtjid5YOJvaRDF6bKpa5SS3QjmGdKG7V2254Im7E4qe07FiU8J5uBDqEo
+IoCw8BdMZFcZ</key-data>
+        </host-key>
+        <host-key>
+          <algorithm>ssh-ed25519</algorithm>
+          <key-data>AAAAC3NzaC1lZDI1NTE5AAAAINDyks3C48dni8Ck+TRAyqYXc/zwvQKp7yLRFH35Qm3A</key-data>
+        </host-key>
+        <host-key>
+          <algorithm>ecdsa-256</algorithm>
+          <key-data>AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBFIgebaGkwzF02mtlSoy
+B9xyq7BGXx4EJxJy+7pWIhWAoywXhuGxFgshYUWDgslgevtvcFTfO2eoUQwC2lJwiyQ=</key-data>
+        </host-key>
+        <host-key>
+          <algorithm>ecdsa-384</algorithm>
+          <key-data>AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzODQAAABhBAlz7VVEywZHqFSwGppP
+EGi95W0NW2czQW6/NuLQo85l+ScgEjeSz6QK2lLo5ax5B99S20hR96zp7RmqEpWocXO2hVD7
+Rs6H5pHU8QLneFmqwgY0RNrIj0Z03rjbqsc/Yw==</key-data>
+        </host-key>
+        <host-key>
+          <algorithm>ecdsa-521</algorithm>
+          <key-data>AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBAA276YhgMS0XBtrCAmQ
+s/PPJ7ax4TImWrdpVYETkeJ86p7c5wgilqppvrqAbxTr8m3iSifm1ywymN6OdXmOV+TBTABH
+M0aAHRKsNcVo7bg6NMmSMIssbUicVgYkKRe6DYlkQfrfcjrmP4A7rFjutMw7Sml7v/u3q1cV
+MOsvbStoV9hD+A==</key-data>
+        </host-key>
+      </ssh>
+      <authgroup>cisco</authgroup>
+      <device-type>
+        <cli>
+          <ned-id xmlns:cisco-iosxr-cli-7.61="http://tail-f.com/ns/ned-id/cisco-iosxr-cli-7.61">cisco-iosxr-cli-7.61:cisco-iosxr-cli-7.61</ned-id>
+        </cli>
+      </device-type>
+      <ned-settings>
+        <cisco-iosxr xmlns="http://tail-f.com/ned/cisco-iosxr/meta">
+          <read>
+            <admin-show-running-config>false</admin-show-running-config>
+          </read>
+        </cisco-iosxr>
+      </ned-settings>
+      <state>
+        <admin-state>unlocked</admin-state>
+      </state>
+      <config>
+        <hostname xmlns="http://tail-f.com/ned/cisco-ios-xr">node-4</hostname>
+        <banner xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <login>
+            <start-marker>$</start-marker>
+            <message>&#13;
+      _____________________________&#13;
+     | SR/XTC/WAE/NSO dCloud Lab   |&#13;
+     | Learn, Try, Question        |&#13;
+     | We are here to help!!       |&#13;
+     | All actions performed on    |&#13;
+     | this device are logged.     |&#13;
+      -----------------------------&#13;
+&#13;
+          , ,\ ,'\,'\ ,'\ ,\ ,&#13;
+    ,  ;\/ \' `'     `   '  /|&#13;
+    |\/                      |&#13;
+    :                        |&#13;
+    :                        |&#13;
+     |                       |&#13;
+     |                       |&#13;
+     :               -.     _|&#13;
+      :                \     `.&#13;
+      |         ________:______\&#13;
+      :       ,'o       / o    ;&#13;
+      :       \       ,'-----./&#13;
+       \_      `--.--'        )&#13;
+      ,` `.              ,---'|&#13;
+      : `                     |&#13;
+       `,-'                   |&#13;
+       /      ,---.          ,'&#13;
+    ,-'            `-,------'&#13;
+   '   `.        ,--'&#13;
+         `-.____/&#13;
+ -BE AWESOME!-           \&#13;
+</message>
+            <end-marker>$</end-marker>
+          </login>
+        </banner>
+        <logging xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <trap>informational</trap>
+          <events>
+            <level>informational</level>
+            <link-status>software-interfaces</link-status>
+          </events>
+          <buffered>
+            <size>10000000</size>
+          </buffered>
+          <host>
+            <address>198.18.1.220</address>
+            <vrf>default</vrf>
+            <severity>debugging</severity>
+            <port>30514</port>
+          </host>
+          <source-interface>
+            <Loopback>0</Loopback>
+          </source-interface>
+          <format>
+            <rfc5424/>
+          </format>
+          <console>notifications</console>
+          <hostnameprefix>node-4</hostnameprefix>
+        </logging>
+        <service xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <timestamps>
+            <debug>
+              <datetime>
+                <msec/>
+              </datetime>
+            </debug>
+            <log>
+              <datetime>
+                <localtime/>
+                <msec/>
+                <show-timezone/>
+                <year/>
+              </datetime>
+            </log>
+          </timestamps>
+        </service>
+        <xnetconf xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <agent>
+            <tty/>
+          </agent>
+        </xnetconf>
+        <netconf-yang xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <agent>
+            <ssh/>
+          </agent>
+        </netconf-yang>
+        <ntp xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <server>
+            <server-list>
+              <name>198.18.128.1</name>
+            </server-list>
+          </server>
+        </ntp>
+        <telnet xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <vrf>
+            <name>default</name>
+            <telnet-server-list>
+              <af>ipv4</af>
+              <server>
+                <max-servers>10</max-servers>
+              </server>
+            </telnet-server-list>
+          </vrf>
+        </telnet>
+        <username xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <name>cisco</name>
+          <group>
+            <name>cisco-support</name>
+          </group>
+          <group>
+            <name>root-lr</name>
+          </group>
+          <secret>
+            <encryption>10</encryption>
+            <password>$6$wZzomLtz3W0L2wYn$IWHVkOdQphxbShmZDlN0r08SRYrxXXlghzVZ.qX6sfC08Rg2b0TnlIkXXwJPtCTGNtstVGiuSFcHPATBRB2p60</password>
+          </secret>
+        </username>
+        <cdp xmlns="http://tail-f.com/ned/cisco-ios-xr"/>
+        <grpc xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <port>57400</port>
+          <no-tls/>
+          <address-family>ipv4</address-family>
+          <service-layer/>
+        </grpc>
+        <line xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <console>
+            <exec-timeout>
+              <minutes>0</minutes>
+              <seconds>0</seconds>
+            </exec-timeout>
+            <width>0</width>
+            <absolute-timeout>0</absolute-timeout>
+            <session-timeout>
+              <minutes>0</minutes>
+            </session-timeout>
+          </console>
+          <default>
+            <exec-timeout>
+              <minutes>0</minutes>
+              <seconds>0</seconds>
+            </exec-timeout>
+            <absolute-timeout>0</absolute-timeout>
+            <session-timeout>
+              <minutes>0</minutes>
+            </session-timeout>
+          </default>
+        </line>
+        <vty-pool xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <default>
+            <first-vty>0</first-vty>
+            <last-vty>50</last-vty>
+          </default>
+        </vty-pool>
+        <xxml xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <tty-agent>
+            <agent>
+              <tty/>
+            </agent>
+          </tty-agent>
+        </xxml>
+        <snmp-server xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <packetsize>4096</packetsize>
+          <ifindex>persist</ifindex>
+          <host>
+            <address>198.18.1.220</address>
+            <type>traps</type>
+            <community-string>cisco</community-string>
+            <version>2c</version>
+            <udp-port>31062</udp-port>
+          </host>
+          <community>
+            <name>cisco</name>
+            <RO/>
+          </community>
+          <trap-source>
+            <Loopback>0</Loopback>
+          </trap-source>
+          <trap>
+            <link>ietf</link>
+          </trap>
+          <traps>
+            <traps-list>
+              <name>snmp linkdown</name>
+            </traps-list>
+            <traps-list>
+              <name>snmp linkup</name>
+            </traps-list>
+          </traps>
+        </snmp-server>
+        <ssh xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <server>
+            <netconf>
+              <vrf>
+                <name>default</name>
+              </vrf>
+            </netconf>
+            <rate-limit>600</rate-limit>
+            <session-limit>110</session-limit>
+            <v2/>
+            <vrf>
+              <name>default</name>
+            </vrf>
+          </server>
+        </ssh>
+        <lldp xmlns="http://tail-f.com/ned/cisco-ios-xr"/>
+        <interface xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <Loopback>
+            <id>0</id>
+            <ipv4>
+              <address>
+                <ip>198.19.1.4</ip>
+                <mask>255.255.255.255</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2010::4/128</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+          </Loopback>
+          <Loopback>
+            <id>2</id>
+            <ipv4>
+              <address>
+                <ip>198.19.2.4</ip>
+                <mask>255.255.255.255</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2011::4/128</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+          </Loopback>
+          <MgmtEth>
+            <id>0/RP0/CPU0/0</id>
+            <ipv4>
+              <address>
+                <ip>198.18.1.44</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+          </MgmtEth>
+          <GigabitEthernet>
+            <id>0/0/0/0</id>
+            <description>Connection to tra-gen network</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.11.12.4</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <load-interval>30</load-interval>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/1</id>
+            <shutdown/>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/10</id>
+            <shutdown/>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/11</id>
+            <shutdown/>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/2</id>
+            <shutdown/>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/3</id>
+            <description>Connection to device node-3 destination interface 4</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.3.4.4</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2001::3:4:4/112</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+            <load-interval>30</load-interval>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/4</id>
+            <shutdown/>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/5</id>
+            <description>Connection to device node-5 destination interface 4</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.4.5.4</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2001::4:5:4/112</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+            <load-interval>30</load-interval>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/6</id>
+            <shutdown/>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/7</id>
+            <shutdown/>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/8</id>
+            <description>Connection to device node-8 destination interface 4</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.4.8.4</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2001::4:8:4/112</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+            <load-interval>30</load-interval>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/9</id>
+            <description>Connection to device cpe-24 destination interface 1</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.4.24.4</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2001::4:24:4/112</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+            <lldp/>
+            <load-interval>30</load-interval>
+            <cdp/>
+          </GigabitEthernet>
+        </interface>
+        <xyzroot xmlns="http://tail-f.com/ned/cisco-ios-xr">0</xyzroot>
+      </config>
+    </device>
+    <device>
+      <name>node-5</name>
+      <address>198.18.1.45</address>
+      <port>22</port>
+      <ssh>
+        <host-key>
+          <algorithm>ssh-rsa</algorithm>
+          <key-data>AAAAB3NzaC1yc2EAAAADAQABAAABAQDAgKacBfBU48gP76NC6x5ZA6WVgwKyrLXK37D8/qSy
+Ozvd88HqJ3SCfv/FZB2Lf7+Z3K+RM3jFLw1bpE50mZOAcW4+7r+UfG5s2DH11ucKTypz8nRw
+iiNrJ/6SZZBqiTtnFXLE5Gce7/3HTdzgyZ/XI7pPvaJsjyrfxoB9+ZjnE3xiGfQ7+FToynGh
+MvPClFoggt4i9NQegPLMpKmQ00ODAoWcY+GXgcjTnZo7yEn4ec/100Ftz4EgQzLxWAa2dH2X
+hvIlnc9E9m2RO9miy29W1GJdb+CAiDwZn2z3U5+E8ypDz6wuf7iP55BBIWN48Lrk6YSpzQbV
+rUdEGfffhIZR</key-data>
+        </host-key>
+        <host-key>
+          <algorithm>ssh-ed25519</algorithm>
+          <key-data>AAAAC3NzaC1lZDI1NTE5AAAAIBfc+E9aLCO80U9JR3iuUG+QiuyayMNU0hYABZVqzwRN</key-data>
+        </host-key>
+        <host-key>
+          <algorithm>ecdsa-256</algorithm>
+          <key-data>AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBNJTT35bOoP+NXykMXZ1
+UJ97/YvKHkQ+i7zGdxZ0cK5up31LyFx33XUfD1TXdsmfS8+ijeL9uiUt9WDTRe2NUA8=</key-data>
+        </host-key>
+        <host-key>
+          <algorithm>ecdsa-384</algorithm>
+          <key-data>AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzODQAAABhBPSf+9jxF1sCljyqxhJx
+FmEMRZf/wnfj3agrFNDOzYL1vrAzHE9GDD3X0wTNsDj1pA499+d/rMRI3FDVk+YMYomgOTZx
+H+4K6Chs69zPWlMe1Lejqo72r+thnd9uImfuEA==</key-data>
+        </host-key>
+        <host-key>
+          <algorithm>ecdsa-521</algorithm>
+          <key-data>AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBAEhMdDVQI0CMC7z6Ibz
+2YztgXxlg7zTjdws7rJHAnaeBlzheCBVK6Z61q4mnkjKMc5H4UaH2Hu+CZ5Jdn7LHNl7NACg
+n7Ltnlo2KSpgvAOHTmkX2qb8bX9DwsrjVvOcKF9Jp90uLMoQ/AHg66CsyZBtv4Me9R449vKV
+4JVTKlwDyyKPPw==</key-data>
+        </host-key>
+      </ssh>
+      <authgroup>cisco</authgroup>
+      <device-type>
+        <cli>
+          <ned-id xmlns:cisco-iosxr-cli-7.61="http://tail-f.com/ns/ned-id/cisco-iosxr-cli-7.61">cisco-iosxr-cli-7.61:cisco-iosxr-cli-7.61</ned-id>
+        </cli>
+      </device-type>
+      <ned-settings>
+        <cisco-iosxr xmlns="http://tail-f.com/ned/cisco-iosxr/meta">
+          <read>
+            <admin-show-running-config>false</admin-show-running-config>
+          </read>
+        </cisco-iosxr>
+      </ned-settings>
+      <state>
+        <admin-state>unlocked</admin-state>
+      </state>
+      <config>
+        <hostname xmlns="http://tail-f.com/ned/cisco-ios-xr">node-5</hostname>
+        <banner xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <login>
+            <start-marker>$</start-marker>
+            <message>&#13;
+      _____________________________&#13;
+     | SR/XTC/WAE/NSO dCloud Lab   |&#13;
+     | Learn, Try, Question        |&#13;
+     | We are here to help!!       |&#13;
+     | All actions performed on    |&#13;
+     | this device are logged.     |&#13;
+      -----------------------------&#13;
+&#13;
+          , ,\ ,'\,'\ ,'\ ,\ ,&#13;
+    ,  ;\/ \' `'     `   '  /|&#13;
+    |\/                      |&#13;
+    :                        |&#13;
+    :                        |&#13;
+     |                       |&#13;
+     |                       |&#13;
+     :               -.     _|&#13;
+      :                \     `.&#13;
+      |         ________:______\&#13;
+      :       ,'o       / o    ;&#13;
+      :       \       ,'-----./&#13;
+       \_      `--.--'        )&#13;
+      ,` `.              ,---'|&#13;
+      : `                     |&#13;
+       `,-'                   |&#13;
+       /      ,---.          ,'&#13;
+    ,-'            `-,------'&#13;
+   '   `.        ,--'&#13;
+         `-.____/&#13;
+ -BE AWESOME!-           \&#13;
+</message>
+            <end-marker>$</end-marker>
+          </login>
+        </banner>
+        <logging xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <trap>informational</trap>
+          <buffered>
+            <size>10000000</size>
+          </buffered>
+          <host>
+            <address>198.18.1.220</address>
+            <vrf>default</vrf>
+            <severity>debugging</severity>
+            <port>30514</port>
+          </host>
+          <source-interface>
+            <Loopback>0</Loopback>
+          </source-interface>
+          <format>
+            <rfc5424/>
+          </format>
+          <console>notifications</console>
+          <hostnameprefix>node-5</hostnameprefix>
+        </logging>
+        <service xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <timestamps>
+            <debug>
+              <datetime>
+                <msec/>
+              </datetime>
+            </debug>
+            <log>
+              <datetime>
+                <localtime/>
+                <msec/>
+                <show-timezone/>
+                <year/>
+              </datetime>
+            </log>
+          </timestamps>
+        </service>
+        <xnetconf xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <agent>
+            <tty/>
+          </agent>
+        </xnetconf>
+        <netconf-yang xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <agent>
+            <ssh/>
+          </agent>
+        </netconf-yang>
+        <username xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <name>cisco</name>
+          <group>
+            <name>cisco-support</name>
+          </group>
+          <group>
+            <name>root-lr</name>
+          </group>
+          <secret>
+            <encryption>10</encryption>
+            <password>$6$I.tNpdMRcsAD0uJr$HcyMEVQdDFZYA0P7onx/N9IZ0Srt3ffwNUEw8v5pvjPCCxDfTQAhHwKZmr/zqe7WFJS0qmxOEnq2DZ47PoNq2/</password>
+          </secret>
+        </username>
+        <cdp xmlns="http://tail-f.com/ned/cisco-ios-xr"/>
+        <grpc xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <port>57400</port>
+          <no-tls/>
+          <address-family>ipv4</address-family>
+          <service-layer/>
+        </grpc>
+        <line xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <console>
+            <exec-timeout>
+              <minutes>0</minutes>
+              <seconds>0</seconds>
+            </exec-timeout>
+            <width>0</width>
+            <absolute-timeout>0</absolute-timeout>
+            <session-timeout>
+              <minutes>0</minutes>
+            </session-timeout>
+          </console>
+          <default>
+            <exec-timeout>
+              <minutes>0</minutes>
+              <seconds>0</seconds>
+            </exec-timeout>
+            <absolute-timeout>0</absolute-timeout>
+            <session-timeout>
+              <minutes>0</minutes>
+            </session-timeout>
+          </default>
+        </line>
+        <vty-pool xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <default>
+            <first-vty>0</first-vty>
+            <last-vty>50</last-vty>
+          </default>
+        </vty-pool>
+        <xxml xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <tty-agent>
+            <agent>
+              <tty/>
+            </agent>
+          </tty-agent>
+        </xxml>
+        <snmp-server xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <packetsize>4096</packetsize>
+          <ifindex>persist</ifindex>
+          <host>
+            <address>198.18.1.220</address>
+            <type>traps</type>
+            <community-string>cisco</community-string>
+            <version>2c</version>
+            <udp-port>31062</udp-port>
+          </host>
+          <community>
+            <name>cisco</name>
+            <RO/>
+          </community>
+          <trap-source>
+            <Loopback>0</Loopback>
+          </trap-source>
+          <trap>
+            <link>ietf</link>
+          </trap>
+          <traps>
+            <traps-list>
+              <name>snmp linkdown</name>
+            </traps-list>
+            <traps-list>
+              <name>snmp linkup</name>
+            </traps-list>
+          </traps>
+        </snmp-server>
+        <ssh xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <server>
+            <netconf>
+              <vrf>
+                <name>default</name>
+              </vrf>
+            </netconf>
+            <rate-limit>600</rate-limit>
+            <session-limit>110</session-limit>
+            <v2/>
+            <vrf>
+              <name>default</name>
+            </vrf>
+          </server>
+        </ssh>
+        <lldp xmlns="http://tail-f.com/ned/cisco-ios-xr"/>
+        <interface xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <Loopback>
+            <id>0</id>
+            <ipv4>
+              <address>
+                <ip>198.19.1.5</ip>
+                <mask>255.255.255.255</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2010::5/128</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+          </Loopback>
+          <Loopback>
+            <id>2</id>
+            <ipv4>
+              <address>
+                <ip>198.19.2.5</ip>
+                <mask>255.255.255.255</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2011::5/128</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+          </Loopback>
+          <MgmtEth>
+            <id>0/RP0/CPU0/0</id>
+            <ipv4>
+              <address>
+                <ip>198.18.1.45</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+          </MgmtEth>
+          <GigabitEthernet>
+            <id>0/0/0/0</id>
+            <description>Connection to tra-gen network</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.11.12.5</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <load-interval>30</load-interval>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/4</id>
+            <description>Connection to device node-4 destination interface 5</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.4.5.5</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2001::4:5:5/112</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+            <load-interval>30</load-interval>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/6</id>
+            <description>Connection to device node-6 destination interface 5</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.5.6.5</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2001::5:6:5/112</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+            <load-interval>30</load-interval>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/7</id>
+            <description>Connection to device node-7 destination interface 5</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.5.7.5</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2001::5:7:5/112</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+            <load-interval>30</load-interval>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/8</id>
+            <description>Connection to device node-8 destination interface 5</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.5.8.5</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2001::5:8:5/112</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+            <load-interval>30</load-interval>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/9</id>
+            <description>Connection to device vmx-9 destination interface 5</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.5.9.5</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2001::5:9:5/112</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+            <load-interval>30</load-interval>
+            <cdp/>
+          </GigabitEthernet>
+        </interface>
+        <xyzroot xmlns="http://tail-f.com/ned/cisco-ios-xr">0</xyzroot>
+      </config>
+    </device>
+    <device>
+      <name>node-6</name>
+      <address>198.18.1.46</address>
+      <port>22</port>
+      <ssh>
+        <host-key>
+          <algorithm>ssh-rsa</algorithm>
+          <key-data>AAAAB3NzaC1yc2EAAAADAQABAAABAQC5uMGQGEyxfMGaG6MMX+asTycb7R3tmVoNsI97yGIj
+BRLiSmGsJQ/BCFGaajK1QzRcUZ9tx5GmDY+YL4TG3XoiZN+vdXwI827oux3f5E5yyHx8i1LZ
+Pub68AX1IPrVXCw5tczN0bLbZBR3E5D5mAwc6IwgAfpJXduuLRjg1tAnyKtfOKAmRXBoSJ05
+gcGsqJNoMO0gNJ35NFvRyhFEcawaDNkEdSIsVjVhu02PRkLGM2WVSoYl697r34/d77M1JW5l
+sqiNH3mP2pPXjdSYo0JIzjSfvNCnxWlLDHA0ySeOfXdm88uppxgAXotT7C3J2Rsyf8RRnVuD
+gcs0uowq8PI9</key-data>
+        </host-key>
+        <host-key>
+          <algorithm>ssh-ed25519</algorithm>
+          <key-data>AAAAC3NzaC1lZDI1NTE5AAAAIM34aV6qCTK3/3MmDhjT2DqnJDL+6ZMsz3R3S7KJ7fJf</key-data>
+        </host-key>
+        <host-key>
+          <algorithm>ecdsa-256</algorithm>
+          <key-data>AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBF4XyNJ9TTpJh4Eozf1v
+ch3bmGsKH+LDEtghZYasP+br8h0u5R0xxtlJePhwWtu+ne1nH6/OLUfuFUSjXV/JEVQ=</key-data>
+        </host-key>
+        <host-key>
+          <algorithm>ecdsa-384</algorithm>
+          <key-data>AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzODQAAABhBDWQxVp62QGszKxJQL4X
+PdjDs2Of2tKQUr7z4CJa0iu8qxf6sYd3ySWrUWSE1nzRvjUXFCGVLCpopYhGrFR3wLMIgUnj
+rTGGhdnFlBG1C+v/VqcazGqxgFRRyaFe3HVwxQ==</key-data>
+        </host-key>
+        <host-key>
+          <algorithm>ecdsa-521</algorithm>
+          <key-data>AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBAFI2DxXS5t+xQWI0Q8M
+0pDAxR6jY0FlPqt8SxpTMMo7gdrjC+mHtX0snqIr/NJx5K53oLyITHBxJZwBpyRPA2yu0QAY
+Hbf4aA4ditr2j7+CSlumGzzH7qS3IKGukD1mVE2UjpqPxMYxau2uKQ17lcN5eD8KtHvjfozX
+vGZOsFfrbAS1Jw==</key-data>
+        </host-key>
+      </ssh>
+      <authgroup>cisco</authgroup>
+      <device-type>
+        <cli>
+          <ned-id xmlns:cisco-iosxr-cli-7.61="http://tail-f.com/ns/ned-id/cisco-iosxr-cli-7.61">cisco-iosxr-cli-7.61:cisco-iosxr-cli-7.61</ned-id>
+        </cli>
+      </device-type>
+      <ned-settings>
+        <cisco-iosxr xmlns="http://tail-f.com/ned/cisco-iosxr/meta">
+          <read>
+            <admin-show-running-config>false</admin-show-running-config>
+          </read>
+        </cisco-iosxr>
+      </ned-settings>
+      <state>
+        <admin-state>unlocked</admin-state>
+      </state>
+      <config>
+        <hostname xmlns="http://tail-f.com/ned/cisco-ios-xr">node-6</hostname>
+        <banner xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <login>
+            <start-marker>$</start-marker>
+            <message>&#13;
+      _____________________________&#13;
+     | SR/XTC/WAE/NSO dCloud Lab   |&#13;
+     | Learn, Try, Question        |&#13;
+     | We are here to help!!       |&#13;
+     | All actions performed on    |&#13;
+     | this device are logged.     |&#13;
+      -----------------------------&#13;
+&#13;
+          , ,\ ,'\,'\ ,'\ ,\ ,&#13;
+    ,  ;\/ \' `'     `   '  /|&#13;
+    |\/                      |&#13;
+    :                        |&#13;
+    :                        |&#13;
+     |                       |&#13;
+     |                       |&#13;
+     :               -.     _|&#13;
+      :                \     `.&#13;
+      |         ________:______\&#13;
+      :       ,'o       / o    ;&#13;
+      :       \       ,'-----./&#13;
+       \_      `--.--'        )&#13;
+      ,` `.              ,---'|&#13;
+      : `                     |&#13;
+       `,-'                   |&#13;
+       /      ,---.          ,'&#13;
+    ,-'            `-,------'&#13;
+   '   `.        ,--'&#13;
+         `-.____/&#13;
+ -BE AWESOME!-           \&#13;
+</message>
+            <end-marker>$</end-marker>
+          </login>
+        </banner>
+        <logging xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <trap>informational</trap>
+          <buffered>
+            <size>10000000</size>
+          </buffered>
+          <host>
+            <address>198.18.1.220</address>
+            <vrf>default</vrf>
+            <severity>debugging</severity>
+            <port>30514</port>
+          </host>
+          <source-interface>
+            <Loopback>0</Loopback>
+          </source-interface>
+          <format>
+            <rfc5424/>
+          </format>
+          <console>notifications</console>
+          <hostnameprefix>node-6</hostnameprefix>
+        </logging>
+        <service xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <timestamps>
+            <debug>
+              <datetime>
+                <msec/>
+              </datetime>
+            </debug>
+            <log>
+              <datetime>
+                <localtime/>
+                <msec/>
+                <show-timezone/>
+                <year/>
+              </datetime>
+            </log>
+          </timestamps>
+        </service>
+        <xnetconf xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <agent>
+            <tty/>
+          </agent>
+        </xnetconf>
+        <netconf-yang xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <agent>
+            <ssh/>
+          </agent>
+        </netconf-yang>
+        <username xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <name>cisco</name>
+          <group>
+            <name>cisco-support</name>
+          </group>
+          <group>
+            <name>root-lr</name>
+          </group>
+          <secret>
+            <encryption>10</encryption>
+            <password>$6$24R2d2izGPKYkeOR$w.j3BbENk/C7lpEsBd.UUGM8Y/cbDYoTzBeQMm1gdLt3BOcIED1T3AX/ZfXBPsYO.aqdlaKsxI79xqnWrW.7O0</password>
+          </secret>
+        </username>
+        <cdp xmlns="http://tail-f.com/ned/cisco-ios-xr"/>
+        <grpc xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <port>57400</port>
+          <no-tls/>
+          <address-family>ipv4</address-family>
+          <service-layer/>
+        </grpc>
+        <line xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <console>
+            <exec-timeout>
+              <minutes>0</minutes>
+              <seconds>0</seconds>
+            </exec-timeout>
+            <width>0</width>
+            <absolute-timeout>0</absolute-timeout>
+            <session-timeout>
+              <minutes>0</minutes>
+            </session-timeout>
+          </console>
+          <default>
+            <exec-timeout>
+              <minutes>0</minutes>
+              <seconds>0</seconds>
+            </exec-timeout>
+            <absolute-timeout>0</absolute-timeout>
+            <session-timeout>
+              <minutes>0</minutes>
+            </session-timeout>
+          </default>
+        </line>
+        <vty-pool xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <default>
+            <first-vty>0</first-vty>
+            <last-vty>50</last-vty>
+          </default>
+        </vty-pool>
+        <xxml xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <tty-agent>
+            <agent>
+              <tty/>
+            </agent>
+          </tty-agent>
+        </xxml>
+        <snmp-server xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <packetsize>4096</packetsize>
+          <ifindex>persist</ifindex>
+          <host>
+            <address>198.18.1.220</address>
+            <type>traps</type>
+            <community-string>cisco</community-string>
+            <version>2c</version>
+            <udp-port>31062</udp-port>
+          </host>
+          <community>
+            <name>cisco</name>
+            <RO/>
+          </community>
+          <trap-source>
+            <Loopback>0</Loopback>
+          </trap-source>
+          <trap>
+            <link>ietf</link>
+          </trap>
+          <traps>
+            <traps-list>
+              <name>snmp linkdown</name>
+            </traps-list>
+            <traps-list>
+              <name>snmp linkup</name>
+            </traps-list>
+          </traps>
+        </snmp-server>
+        <ssh xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <server>
+            <netconf>
+              <vrf>
+                <name>default</name>
+              </vrf>
+            </netconf>
+            <rate-limit>600</rate-limit>
+            <session-limit>110</session-limit>
+            <v2/>
+            <vrf>
+              <name>default</name>
+            </vrf>
+          </server>
+        </ssh>
+        <lldp xmlns="http://tail-f.com/ned/cisco-ios-xr"/>
+        <interface xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <Loopback>
+            <id>0</id>
+            <ipv4>
+              <address>
+                <ip>198.19.1.6</ip>
+                <mask>255.255.255.255</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2010::6/128</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+          </Loopback>
+          <Loopback>
+            <id>2</id>
+            <ipv4>
+              <address>
+                <ip>198.19.2.6</ip>
+                <mask>255.255.255.255</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2011::6/128</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+          </Loopback>
+          <MgmtEth>
+            <id>0/RP0/CPU0/0</id>
+            <ipv4>
+              <address>
+                <ip>198.18.1.46</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+          </MgmtEth>
+          <GigabitEthernet>
+            <id>0/0/0/0</id>
+            <description>Connection to tra-gen network</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.11.12.6</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <load-interval>30</load-interval>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/1</id>
+            <description>Connection to device node-1 destination interface 6</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.1.6.6</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2001::1:6:6/112</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+            <load-interval>30</load-interval>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/2</id>
+            <description>Connection to device node-2 destination interface 6</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.2.6.6</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2001::2:6:6/112</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+            <load-interval>30</load-interval>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/5</id>
+            <description>Connection to device node-5 destination interface 6</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.5.6.6</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2001::5:6:6/112</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+            <load-interval>30</load-interval>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/7</id>
+            <description>Connection to device node-7 destination interface 6</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.6.7.6</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2001::6:7:6/112</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+            <load-interval>30</load-interval>
+            <cdp/>
+          </GigabitEthernet>
+        </interface>
+        <xyzroot xmlns="http://tail-f.com/ned/cisco-ios-xr">0</xyzroot>
+      </config>
+    </device>
+    <device>
+      <name>node-7</name>
+      <address>198.18.1.47</address>
+      <port>22</port>
+      <ssh>
+        <host-key>
+          <algorithm>ssh-rsa</algorithm>
+          <key-data>AAAAB3NzaC1yc2EAAAADAQABAAABAQC3MTuEj67fPDbhVTnsodLWS/LJN9pHRgfWPV4NhlLW
+nMyCq1dn91+BKx/hri6M1rFRHvxg7vK0nmVNeLk6dPVxXmR9zHRhAQx/Rf0tYlCDxF+95qA1
+oD0q87K2tjVsgN1JzujAduwGHNFkfTISr9Z2+2UjAw//zMMIe4zRu9sMDTP6KOJsfNezDNrx
+vzPJQNex9BZMdDzIP7oDDsmLg3DCV1DPvdxFysyQ3JxVA1gM6K8Tjl4ZcnyI15MYA8MDgUa0
+WxJd8LY4bqTNltQIMcVrw7Wmf8tAF0vH3zwVD7JSF3eY+czg7YHXOVKT+c1V9njR6sJdTySL
+A98Nl5gSvcFJ</key-data>
+        </host-key>
+        <host-key>
+          <algorithm>ssh-ed25519</algorithm>
+          <key-data>AAAAC3NzaC1lZDI1NTE5AAAAIM2d4h78163ilZR1Et0xKhM+lCRNVBsK3ybLELzcEMNh</key-data>
+        </host-key>
+        <host-key>
+          <algorithm>ecdsa-256</algorithm>
+          <key-data>AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBFrmppMlyLUvuB8aDvCx
+lPW9W3oJMIDtIG/QS9Qvz3xwk0Q+Rm3PbQKkGNIJY1dAxguOkIuUxZYbiSWjJQ1BJJw=</key-data>
+        </host-key>
+        <host-key>
+          <algorithm>ecdsa-384</algorithm>
+          <key-data>AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzODQAAABhBE/NL+kHdwvRoaCabIXz
+tRsirtrXrYTpRGDDGW9aQZ5czyMDjRn8NELoMRFT2PuVt4zzPoCKL1yM6LBqPiP5iffReQT4
+sAY9p6/MiMHLxJQf4AgZr7/WVCZVbT7nGTNorA==</key-data>
+        </host-key>
+        <host-key>
+          <algorithm>ecdsa-521</algorithm>
+          <key-data>AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBADda9fheSkgPCGF9W1u
+iWKIly0Gt4FpZKPKcffutg+69vJJ78ggtO5UXaoZc3HvaHps2Keg3Nr+HRCxAQuaBUHtQwCp
+tmz7QIPY2UiUKUg16W8yBFNSBUAEB71V5ZsbK3rklvzGwboFUgYSnzKcakaHxmLiWaoslr8t
+DUSTZV2K7vRnGQ==</key-data>
+        </host-key>
+      </ssh>
+      <authgroup>cisco</authgroup>
+      <device-type>
+        <cli>
+          <ned-id xmlns:cisco-iosxr-cli-7.61="http://tail-f.com/ns/ned-id/cisco-iosxr-cli-7.61">cisco-iosxr-cli-7.61:cisco-iosxr-cli-7.61</ned-id>
+        </cli>
+      </device-type>
+      <ned-settings>
+        <cisco-iosxr xmlns="http://tail-f.com/ned/cisco-iosxr/meta">
+          <read>
+            <admin-show-running-config>false</admin-show-running-config>
+          </read>
+        </cisco-iosxr>
+      </ned-settings>
+      <state>
+        <admin-state>unlocked</admin-state>
+      </state>
+      <config>
+        <hostname xmlns="http://tail-f.com/ned/cisco-ios-xr">node-7</hostname>
+        <banner xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <login>
+            <start-marker>$</start-marker>
+            <message>&#13;
+      _____________________________&#13;
+     | SR/XTC/WAE/NSO dCloud Lab   |&#13;
+     | Learn, Try, Question        |&#13;
+     | We are here to help!!       |&#13;
+     | All actions performed on    |&#13;
+     | this device are logged.     |&#13;
+      -----------------------------&#13;
+&#13;
+          , ,\ ,'\,'\ ,'\ ,\ ,&#13;
+    ,  ;\/ \' `'     `   '  /|&#13;
+    |\/                      |&#13;
+    :                        |&#13;
+    :                        |&#13;
+     |                       |&#13;
+     |                       |&#13;
+     :               -.     _|&#13;
+      :                \     `.&#13;
+      |         ________:______\&#13;
+      :       ,'o       / o    ;&#13;
+      :       \       ,'-----./&#13;
+       \_      `--.--'        )&#13;
+      ,` `.              ,---'|&#13;
+      : `                     |&#13;
+       `,-'                   |&#13;
+       /      ,---.          ,'&#13;
+    ,-'            `-,------'&#13;
+   '   `.        ,--'&#13;
+         `-.____/&#13;
+ -BE AWESOME!-           \&#13;
+</message>
+            <end-marker>$</end-marker>
+          </login>
+        </banner>
+        <logging xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <trap>informational</trap>
+          <buffered>
+            <size>10000000</size>
+          </buffered>
+          <host>
+            <address>198.18.1.220</address>
+            <vrf>default</vrf>
+            <severity>debugging</severity>
+            <port>30514</port>
+          </host>
+          <source-interface>
+            <Loopback>0</Loopback>
+          </source-interface>
+          <format>
+            <rfc5424/>
+          </format>
+          <console>notifications</console>
+          <hostnameprefix>node-7</hostnameprefix>
+        </logging>
+        <service xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <timestamps>
+            <debug>
+              <datetime>
+                <msec/>
+              </datetime>
+            </debug>
+            <log>
+              <datetime>
+                <localtime/>
+                <msec/>
+                <show-timezone/>
+                <year/>
+              </datetime>
+            </log>
+          </timestamps>
+        </service>
+        <xnetconf xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <agent>
+            <tty/>
+          </agent>
+        </xnetconf>
+        <netconf-yang xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <agent>
+            <ssh/>
+          </agent>
+        </netconf-yang>
+        <username xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <name>cisco</name>
+          <group>
+            <name>cisco-support</name>
+          </group>
+          <group>
+            <name>root-lr</name>
+          </group>
+          <secret>
+            <encryption>10</encryption>
+            <password>$6$QIJvlDPR4mFaOnAS$iYQsK3Zds0pXNeXOAF3XayAvYzK72U0kbXO51mGcdgmbXS2yl/z.H3THT8YgzpgUDyysQoiY.OUC2Uof6JTMQ1</password>
+          </secret>
+        </username>
+        <cdp xmlns="http://tail-f.com/ned/cisco-ios-xr"/>
+        <grpc xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <port>57400</port>
+          <no-tls/>
+          <address-family>ipv4</address-family>
+          <service-layer/>
+        </grpc>
+        <line xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <console>
+            <exec-timeout>
+              <minutes>0</minutes>
+              <seconds>0</seconds>
+            </exec-timeout>
+            <width>0</width>
+            <absolute-timeout>0</absolute-timeout>
+            <session-timeout>
+              <minutes>0</minutes>
+            </session-timeout>
+          </console>
+          <default>
+            <exec-timeout>
+              <minutes>0</minutes>
+              <seconds>0</seconds>
+            </exec-timeout>
+            <absolute-timeout>0</absolute-timeout>
+            <session-timeout>
+              <minutes>0</minutes>
+            </session-timeout>
+          </default>
+        </line>
+        <vty-pool xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <default>
+            <first-vty>0</first-vty>
+            <last-vty>50</last-vty>
+          </default>
+        </vty-pool>
+        <xxml xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <tty-agent>
+            <agent>
+              <tty/>
+            </agent>
+          </tty-agent>
+        </xxml>
+        <snmp-server xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <packetsize>4096</packetsize>
+          <ifindex>persist</ifindex>
+          <host>
+            <address>198.18.1.220</address>
+            <type>traps</type>
+            <community-string>cisco</community-string>
+            <version>2c</version>
+            <udp-port>31062</udp-port>
+          </host>
+          <community>
+            <name>cisco</name>
+            <RO/>
+          </community>
+          <trap-source>
+            <Loopback>0</Loopback>
+          </trap-source>
+          <trap>
+            <link>ietf</link>
+          </trap>
+          <traps>
+            <traps-list>
+              <name>snmp linkdown</name>
+            </traps-list>
+            <traps-list>
+              <name>snmp linkup</name>
+            </traps-list>
+          </traps>
+        </snmp-server>
+        <ssh xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <server>
+            <netconf>
+              <vrf>
+                <name>default</name>
+              </vrf>
+            </netconf>
+            <rate-limit>600</rate-limit>
+            <session-limit>110</session-limit>
+            <v2/>
+            <vrf>
+              <name>default</name>
+            </vrf>
+          </server>
+        </ssh>
+        <lldp xmlns="http://tail-f.com/ned/cisco-ios-xr"/>
+        <interface xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <Loopback>
+            <id>0</id>
+            <ipv4>
+              <address>
+                <ip>198.19.1.7</ip>
+                <mask>255.255.255.255</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2010::7/128</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+          </Loopback>
+          <Loopback>
+            <id>2</id>
+            <ipv4>
+              <address>
+                <ip>198.19.2.7</ip>
+                <mask>255.255.255.255</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2011::7/128</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+          </Loopback>
+          <MgmtEth>
+            <id>0/RP0/CPU0/0</id>
+            <ipv4>
+              <address>
+                <ip>198.18.1.47</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+          </MgmtEth>
+          <GigabitEthernet>
+            <id>0/0/0/0</id>
+            <description>Connection to tra-gen network</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.11.12.7</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <load-interval>30</load-interval>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/2</id>
+            <description>Connection to device node-2 destination interface 7</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.2.7.7</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2001::2:7:7/112</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+            <load-interval>30</load-interval>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/5</id>
+            <description>Connection to device node-5 destination interface 7</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.5.7.7</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2001::5:7:7/112</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+            <load-interval>30</load-interval>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/6</id>
+            <description>Connection to device node-6 destination interface 7</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.6.7.7</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2001::6:7:7/112</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+            <load-interval>30</load-interval>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/8</id>
+            <description>Connection to device node-8 destination interface 7</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.7.8.7</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2001::7:8:7/112</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+            <load-interval>30</load-interval>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/9</id>
+            <description>Connection to device vmx-9 destination interface 7</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.7.9.7</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2001::7:9:7/112</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+            <load-interval>30</load-interval>
+            <cdp/>
+          </GigabitEthernet>
+        </interface>
+        <xyzroot xmlns="http://tail-f.com/ned/cisco-ios-xr">0</xyzroot>
+      </config>
+    </device>
+    <device>
+      <name>node-8</name>
+      <address>198.18.1.48</address>
+      <port>22</port>
+      <ssh>
+        <host-key>
+          <algorithm>ssh-rsa</algorithm>
+          <key-data>AAAAB3NzaC1yc2EAAAADAQABAAABAQCqpLYK53HK6fW5oL2anrV1V9cn5mADBtOzodxIytZU
+cnd650yX4zUeKk787utvp7hdkApmS0YoTw4q6aH/vjpTmTiieBRObPT3Ru8LoOG5TXocD9sb
+9u9FStb20L9ejI5TW6T3TKSKXMTiD46A2/t05s+0pIku3YUOSmteZmJ/odurTvJFP87msquL
+Jq85z3YWHDB9IikHzXHYUdnvfA9NN/RdWFtjcah6bz0Q3esowAt3Ery+SguZWsCn9Bd7gkqP
+ceB7X17e6GDcmjBHjTyuRx2l5wa5CnAz6ZbBoxW9nCeZddLL5ks3Md81JYGCOs9Lq7cQdYjL
+GFyaxnDBUOen</key-data>
+        </host-key>
+        <host-key>
+          <algorithm>ssh-ed25519</algorithm>
+          <key-data>AAAAC3NzaC1lZDI1NTE5AAAAINdSIAyrlct0pZoqMwSlFsxQsQl9jEQQp+LdhVtIU7tK</key-data>
+        </host-key>
+        <host-key>
+          <algorithm>ecdsa-256</algorithm>
+          <key-data>AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBD9GkV/w6sVnUaz1StAo
+fQL0VI9IgH2qd7wRcOlLoyDLZAmr1QViDCuz0vKbO/jzVrYcNvSKeF2y35GB7HiclGY=</key-data>
+        </host-key>
+        <host-key>
+          <algorithm>ecdsa-384</algorithm>
+          <key-data>AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzODQAAABhBPeWGH1gW+oyeeSrZUmV
+w0/6PLZMGdB7xMqYUEA+vwoeyj6LmUi4yZ9QdYEhysaw+sRN8EwTXY4syvJDFBamclwYUZIt
+aWgMLToWHsl9T3njjvaj0I9H7AtFlXBm8u/BAQ==</key-data>
+        </host-key>
+        <host-key>
+          <algorithm>ecdsa-521</algorithm>
+          <key-data>AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBAD4kMDeOTZX/BzfyU7W
+phmZGLBy64hpTJwiDPXUKUUS5myCJT9gPIErQbyY+0xEPNWkWGusDLDN1ve8WtUsc/CSNgH1
+Ej8yjIscg+PSlr167vasgITHKTAhdoVMKpgd7ZeccNPSfVwSCJUg+JoS83XSdC5TknT/V45n
+B37yCnkajfhpUQ==</key-data>
+        </host-key>
+      </ssh>
+      <authgroup>cisco</authgroup>
+      <device-type>
+        <cli>
+          <ned-id xmlns:cisco-iosxr-cli-7.61="http://tail-f.com/ns/ned-id/cisco-iosxr-cli-7.61">cisco-iosxr-cli-7.61:cisco-iosxr-cli-7.61</ned-id>
+        </cli>
+      </device-type>
+      <ned-settings>
+        <cisco-iosxr xmlns="http://tail-f.com/ned/cisco-iosxr/meta">
+          <read>
+            <admin-show-running-config>false</admin-show-running-config>
+          </read>
+        </cisco-iosxr>
+      </ned-settings>
+      <state>
+        <admin-state>unlocked</admin-state>
+      </state>
+      <config>
+        <hostname xmlns="http://tail-f.com/ned/cisco-ios-xr">node-8</hostname>
+        <banner xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <login>
+            <start-marker>$</start-marker>
+            <message>&#13;
+      _____________________________&#13;
+     | SR/XTC/WAE/NSO dCloud Lab   |&#13;
+     | Learn, Try, Question        |&#13;
+     | We are here to help!!       |&#13;
+     | All actions performed on    |&#13;
+     | this device are logged.     |&#13;
+      -----------------------------&#13;
+&#13;
+          , ,\ ,'\,'\ ,'\ ,\ ,&#13;
+    ,  ;\/ \' `'     `   '  /|&#13;
+    |\/                      |&#13;
+    :                        |&#13;
+    :                        |&#13;
+     |                       |&#13;
+     |                       |&#13;
+     :               -.     _|&#13;
+      :                \     `.&#13;
+      |         ________:______\&#13;
+      :       ,'o       / o    ;&#13;
+      :       \       ,'-----./&#13;
+       \_      `--.--'        )&#13;
+      ,` `.              ,---'|&#13;
+      : `                     |&#13;
+       `,-'                   |&#13;
+       /      ,---.          ,'&#13;
+    ,-'            `-,------'&#13;
+   '   `.        ,--'&#13;
+         `-.____/&#13;
+ -BE AWESOME!-           \&#13;
+</message>
+            <end-marker>$</end-marker>
+          </login>
+        </banner>
+        <logging xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <trap>informational</trap>
+          <buffered>
+            <size>10000000</size>
+          </buffered>
+          <host>
+            <address>198.18.1.220</address>
+            <vrf>default</vrf>
+            <severity>debugging</severity>
+            <port>30514</port>
+          </host>
+          <source-interface>
+            <Loopback>0</Loopback>
+          </source-interface>
+          <format>
+            <rfc5424/>
+          </format>
+          <console>notifications</console>
+          <hostnameprefix>node-8</hostnameprefix>
+        </logging>
+        <service xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <timestamps>
+            <debug>
+              <datetime>
+                <msec/>
+              </datetime>
+            </debug>
+            <log>
+              <datetime>
+                <localtime/>
+                <msec/>
+                <show-timezone/>
+                <year/>
+              </datetime>
+            </log>
+          </timestamps>
+        </service>
+        <xnetconf xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <agent>
+            <tty/>
+          </agent>
+        </xnetconf>
+        <netconf-yang xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <agent>
+            <ssh/>
+          </agent>
+        </netconf-yang>
+        <username xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <name>cisco</name>
+          <group>
+            <name>cisco-support</name>
+          </group>
+          <group>
+            <name>root-lr</name>
+          </group>
+          <secret>
+            <encryption>10</encryption>
+            <password>$6$YvTihAanEw54hNvX$t4BIepfeAKS2h9AdFw620OREB/ZtmfvcC2sRaTRWon5RHrc3a6axWAhx49JnWEthJgXQTop7MFedOvl9AfxIy0</password>
+          </secret>
+        </username>
+        <cdp xmlns="http://tail-f.com/ned/cisco-ios-xr"/>
+        <grpc xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <port>57400</port>
+          <no-tls/>
+          <address-family>ipv4</address-family>
+          <service-layer/>
+        </grpc>
+        <line xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <console>
+            <exec-timeout>
+              <minutes>0</minutes>
+              <seconds>0</seconds>
+            </exec-timeout>
+            <width>0</width>
+            <absolute-timeout>0</absolute-timeout>
+            <session-timeout>
+              <minutes>0</minutes>
+            </session-timeout>
+          </console>
+          <default>
+            <exec-timeout>
+              <minutes>0</minutes>
+              <seconds>0</seconds>
+            </exec-timeout>
+            <absolute-timeout>0</absolute-timeout>
+            <session-timeout>
+              <minutes>0</minutes>
+            </session-timeout>
+          </default>
+        </line>
+        <vty-pool xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <default>
+            <first-vty>0</first-vty>
+            <last-vty>50</last-vty>
+          </default>
+        </vty-pool>
+        <xxml xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <tty-agent>
+            <agent>
+              <tty/>
+            </agent>
+          </tty-agent>
+        </xxml>
+        <snmp-server xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <packetsize>4096</packetsize>
+          <ifindex>persist</ifindex>
+          <host>
+            <address>198.18.1.220</address>
+            <type>traps</type>
+            <community-string>cisco</community-string>
+            <version>2c</version>
+            <udp-port>31062</udp-port>
+          </host>
+          <community>
+            <name>cisco</name>
+            <RO/>
+          </community>
+          <trap-source>
+            <Loopback>0</Loopback>
+          </trap-source>
+          <trap>
+            <link>ietf</link>
+          </trap>
+          <traps>
+            <traps-list>
+              <name>snmp linkdown</name>
+            </traps-list>
+            <traps-list>
+              <name>snmp linkup</name>
+            </traps-list>
+          </traps>
+        </snmp-server>
+        <ssh xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <server>
+            <netconf>
+              <vrf>
+                <name>default</name>
+              </vrf>
+            </netconf>
+            <rate-limit>600</rate-limit>
+            <session-limit>110</session-limit>
+            <v2/>
+            <vrf>
+              <name>default</name>
+            </vrf>
+          </server>
+        </ssh>
+        <lldp xmlns="http://tail-f.com/ned/cisco-ios-xr"/>
+        <interface xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <Loopback>
+            <id>0</id>
+            <ipv4>
+              <address>
+                <ip>198.19.1.8</ip>
+                <mask>255.255.255.255</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2010::8/128</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+          </Loopback>
+          <Loopback>
+            <id>2</id>
+            <ipv4>
+              <address>
+                <ip>198.19.2.8</ip>
+                <mask>255.255.255.255</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2011::8/128</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+          </Loopback>
+          <MgmtEth>
+            <id>0/RP0/CPU0/0</id>
+            <ipv4>
+              <address>
+                <ip>198.18.1.48</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+          </MgmtEth>
+          <GigabitEthernet>
+            <id>0/0/0/0</id>
+            <description>Connection to tra-gen network</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.11.12.8</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <load-interval>30</load-interval>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/11</id>
+            <description>Connection to device pce-11 destination interface 8</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.8.11.8</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2001::8:11:8/112</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+            <load-interval>30</load-interval>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/3</id>
+            <description>Connection to device node-3 destination interface 8</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.3.8.8</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2001::3:8:8/112</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+            <load-interval>30</load-interval>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/4</id>
+            <description>Connection to device node-4 destination interface 8</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.4.8.8</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2001::4:8:8/112</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+            <load-interval>30</load-interval>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/5</id>
+            <description>Connection to device node-5 destination interface 8</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.5.8.8</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2001::5:8:8/112</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+            <load-interval>30</load-interval>
+            <cdp/>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/7</id>
+            <description>Connection to device node-7 destination interface 8</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.7.8.8</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2001::7:8:8/112</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+            <load-interval>30</load-interval>
+            <cdp/>
+          </GigabitEthernet>
+        </interface>
+        <prefix-set xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <name>node-8-uplinks</name>
+          <set>
+            <value>10.8.11.0/24</value>
+          </set>
+        </prefix-set>
+        <route-policy xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <name>redistribute-uplinks</name>
+          <value>  if destination in node-8-uplinks then&#13;
+    pass&#13;
+  endif&#13;
+</value>
+        </route-policy>
+        <xyzroot xmlns="http://tail-f.com/ned/cisco-ios-xr">0</xyzroot>
+      </config>
+    </device>
+    <device>
+      <name>pce-11</name>
+      <address>198.18.1.51</address>
+      <port>22</port>
+      <ssh>
+        <host-key>
+          <algorithm>ssh-rsa</algorithm>
+          <key-data>AAAAB3NzaC1yc2EAAAADAQABAAABAQDKJLvjuhfaQfCU6Yti3CE0QmRoXF2Q5DYBo27TUOcF
+sNsimMykNzuK45OfDIcu5ATHzvB3v/sYZQuFEqOGu3555rF4TG12e60tD5m+mYUtFUpvize7
+RJMC5Y9PmYyXaCvj7jcRptK4xEhXxCDrbrCVl7IYbgAs/CEBCHEWNPQQaU5lQqrPug5+n/lD
++Y6zLzhYhDefEimTvarMXp0QNoxRg9FoUp+QmldHiuTeO4noySaPnzT9Tmw2jMqV4TdxH96r
+SSsolag3UqIO/1LngQpHDxCXtZmnKzF//kscBGL3j8YGH+nkOIir4hbUABqHI/MPY3QxyM1R
+ZaoiCEJIE5P7</key-data>
+        </host-key>
+        <host-key>
+          <algorithm>ssh-ed25519</algorithm>
+          <key-data>AAAAC3NzaC1lZDI1NTE5AAAAIPS8d5zsgc71tc6zStBp3Tr66+QoCBR+DNZOPrG3H+5e</key-data>
+        </host-key>
+        <host-key>
+          <algorithm>ecdsa-256</algorithm>
+          <key-data>AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBBUS3liJwox7PAnaMbRL
+8X1QJ1BkCWW04DvYM7GzRVksFZIibO5MeypQ8Lz38XI1gJrOXQzG7D8+TarrgvL9i7U=</key-data>
+        </host-key>
+        <host-key>
+          <algorithm>ecdsa-384</algorithm>
+          <key-data>AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzODQAAABhBD9ruoA+5IX32MeFCCtz
+IVeowdCAMK/gdfodZEy1g/KTD0uh6+GfomCaFFLA7Iy6ZmoZGp5KFFRRH//5HwPhi1FcuINX
+NE2OrIXUAFKE/n6galrfBawiTxfOjJXNeynYEg==</key-data>
+        </host-key>
+        <host-key>
+          <algorithm>ecdsa-521</algorithm>
+          <key-data>AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBACqhlls6mJVb624eU9p
+OcyG0N+xOcmkp6dxmBrLB5GzY87HL0KJ+S20VBogClD7TG5EArtpG87bYqw0G81JPzbXmQA7
+WL21rippuMsbInQjq9ulwaVO9H0jFoZ2HMRpZW+Qa+q68irkEeQDxuBYhyxzWlceHb830bgi
+vxWuH/y0m8Qivg==</key-data>
+        </host-key>
+      </ssh>
+      <authgroup>cisco</authgroup>
+      <device-type>
+        <cli>
+          <ned-id xmlns:cisco-iosxr-cli-7.61="http://tail-f.com/ns/ned-id/cisco-iosxr-cli-7.61">cisco-iosxr-cli-7.61:cisco-iosxr-cli-7.61</ned-id>
+        </cli>
+      </device-type>
+      <ned-settings>
+        <cisco-iosxr xmlns="http://tail-f.com/ned/cisco-iosxr/meta">
+          <read>
+            <admin-show-running-config>false</admin-show-running-config>
+          </read>
+        </cisco-iosxr>
+      </ned-settings>
+      <state>
+        <admin-state>unlocked</admin-state>
+      </state>
+      <config>
+        <hostname xmlns="http://tail-f.com/ned/cisco-ios-xr">pce-11</hostname>
+        <banner xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <login>
+            <start-marker>$</start-marker>
+            <message>&#13;
+      _____________________________&#13;
+     | SR/XTC/WAE/NSO dCloud Lab   |&#13;
+     | Learn, Try, Question        |&#13;
+     | We are here to help!!       |&#13;
+     | All actions performed on    |&#13;
+     | this device are logged.     |&#13;
+      -----------------------------&#13;
+&#13;
+          , ,\ ,'\,'\ ,'\ ,\ ,&#13;
+    ,  ;\/ \' `'     `   '  /|&#13;
+    |\/                      |&#13;
+    :                        |&#13;
+    :                        |&#13;
+     |                       |&#13;
+     |                       |&#13;
+     :               -.     _|&#13;
+      :                \     `.&#13;
+      |         ________:______\&#13;
+      :       ,'o       / o    ;&#13;
+      :       \       ,'-----./&#13;
+       \_      `--.--'        )&#13;
+      ,` `.              ,---'|&#13;
+      : `                     |&#13;
+       `,-'                   |&#13;
+       /      ,---.          ,'&#13;
+    ,-'            `-,------'&#13;
+   '   `.        ,--'&#13;
+         `-.____/&#13;
+ -BE AWESOME!-           \&#13;
+</message>
+            <end-marker>$</end-marker>
+          </login>
+        </banner>
+        <pce xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <address>
+            <ipv4>198.19.1.11</ipv4>
+          </address>
+          <password>
+            <type>encrypted</type>
+            <secret>030752180500</secret>
+          </password>
+          <segment-routing>
+            <traffic-eng/>
+            <strict-sid-only/>
+          </segment-routing>
+          <api>
+            <user>
+              <name>cisco</name>
+              <password>
+                <type>encrypted</type>
+                <secret>030752180500</secret>
+              </password>
+            </user>
+          </api>
+        </pce>
+        <logging xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <trap>informational</trap>
+          <buffered>
+            <size>10000000</size>
+          </buffered>
+          <host>
+            <address>198.18.1.220</address>
+            <vrf>default</vrf>
+            <severity>debugging</severity>
+            <port>30514</port>
+          </host>
+          <source-interface>
+            <Loopback>0</Loopback>
+          </source-interface>
+          <format>
+            <rfc5424/>
+          </format>
+          <console>notifications</console>
+          <hostnameprefix>pce-11</hostnameprefix>
+        </logging>
+        <service xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <timestamps>
+            <debug>
+              <datetime>
+                <msec/>
+              </datetime>
+            </debug>
+            <log>
+              <datetime>
+                <localtime/>
+                <msec/>
+                <show-timezone/>
+                <year/>
+              </datetime>
+            </log>
+          </timestamps>
+        </service>
+        <xnetconf xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <agent>
+            <tty/>
+          </agent>
+        </xnetconf>
+        <netconf-yang xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <agent>
+            <ssh/>
+          </agent>
+        </netconf-yang>
+        <username xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <name>cisco</name>
+          <group>
+            <name>cisco-support</name>
+          </group>
+          <group>
+            <name>root-lr</name>
+          </group>
+          <secret>
+            <encryption>10</encryption>
+            <password>$6$osS5.htLF7jL.L2Y$54ARH5sZGW6NKXlAu3f1nsLdEDoemVyu9abSYOWoMk7HVym3BsaMcGn623mTBLZ3Fs.oyHm17UFtkYU6trgu//</password>
+          </secret>
+        </username>
+        <grpc xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <port>57400</port>
+          <no-tls/>
+          <address-family>ipv4</address-family>
+          <service-layer/>
+        </grpc>
+        <line xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <console>
+            <exec-timeout>
+              <minutes>0</minutes>
+              <seconds>0</seconds>
+            </exec-timeout>
+            <width>0</width>
+            <absolute-timeout>0</absolute-timeout>
+            <session-timeout>
+              <minutes>0</minutes>
+            </session-timeout>
+          </console>
+          <default>
+            <exec-timeout>
+              <minutes>0</minutes>
+              <seconds>0</seconds>
+            </exec-timeout>
+            <absolute-timeout>0</absolute-timeout>
+            <session-timeout>
+              <minutes>0</minutes>
+            </session-timeout>
+          </default>
+        </line>
+        <vty-pool xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <default>
+            <first-vty>0</first-vty>
+            <last-vty>50</last-vty>
+          </default>
+        </vty-pool>
+        <xxml xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <tty-agent>
+            <agent>
+              <tty/>
+            </agent>
+          </tty-agent>
+        </xxml>
+        <snmp-server xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <packetsize>4096</packetsize>
+          <ifindex>persist</ifindex>
+          <host>
+            <address>198.18.1.220</address>
+            <type>traps</type>
+            <community-string>cisco</community-string>
+            <version>2c</version>
+            <udp-port>31062</udp-port>
+          </host>
+          <community>
+            <name>cisco</name>
+            <RO/>
+          </community>
+          <trap-source>
+            <Loopback>0</Loopback>
+          </trap-source>
+          <trap>
+            <link>ietf</link>
+          </trap>
+          <traps>
+            <traps-list>
+              <name>snmp linkdown</name>
+            </traps-list>
+            <traps-list>
+              <name>snmp linkup</name>
+            </traps-list>
+          </traps>
+        </snmp-server>
+        <ssh xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <server>
+            <netconf>
+              <vrf>
+                <name>default</name>
+              </vrf>
+            </netconf>
+            <rate-limit>600</rate-limit>
+            <session-limit>110</session-limit>
+            <v2/>
+            <vrf>
+              <name>default</name>
+            </vrf>
+          </server>
+        </ssh>
+        <interface xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <Loopback>
+            <id>0</id>
+            <ipv4>
+              <address>
+                <ip>198.19.1.11</ip>
+                <mask>255.255.255.255</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2010::11/128</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+          </Loopback>
+          <Loopback>
+            <id>2</id>
+            <ipv4>
+              <address>
+                <ip>198.19.2.11</ip>
+                <mask>255.255.255.255</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2011::11/128</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+          </Loopback>
+          <MgmtEth>
+            <id>0/RP0/CPU0/0</id>
+            <ipv4>
+              <address>
+                <ip>198.18.1.51</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+          </MgmtEth>
+          <GigabitEthernet>
+            <id>0/0/0/8</id>
+            <description>Connection to device node-8 destination interface 11</description>
+            <bandwidth>10000</bandwidth>
+            <ipv4>
+              <address>
+                <ip>10.8.11.11</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>2001::8:11:11/112</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+            <load-interval>30</load-interval>
+          </GigabitEthernet>
+        </interface>
+        <xyzroot xmlns="http://tail-f.com/ned/cisco-ios-xr">0</xyzroot>
+      </config>
+    </device>
+    <device>
+      <name>xr9kv0</name>
+      <address>127.0.0.1</address>
+      <port>10022</port>
+      <ssh>
+        <host-key>
+          <algorithm>ssh-ed25519</algorithm>
+          <key-data>AAAAC3NzaC1lZDI1NTE5AAAAIDAJTypIaYxQLphqZwYfhmBljOOSzwaLlwtjhyV+TFnZ</key-data>
+        </host-key>
+      </ssh>
+      <authgroup>netsim</authgroup>
+      <device-type>
+        <cli>
+          <ned-id xmlns:cisco-iosxr-cli-7.61="http://tail-f.com/ns/ned-id/cisco-iosxr-cli-7.61">cisco-iosxr-cli-7.61:cisco-iosxr-cli-7.61</ned-id>
+        </cli>
+      </device-type>
+      <state>
+        <admin-state>unlocked</admin-state>
+      </state>
+      <config>
+        <interface xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <Loopback>
+            <id>0</id>
+            <description>Router ID for xrv9kv1</description>
+            <ipv4>
+              <address>
+                <ip>1.1.1.1</ip>
+                <mask>255.255.255.255</mask>
+              </address>
+            </ipv4>
+          </Loopback>
+          <GigabitEthernet>
+            <id>0/0/0/0</id>
+            <description>Link to xr9kv1 (xrv9kv2)</description>
+            <ipv4>
+              <address>
+                <ip>10.1.2.1</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+          </GigabitEthernet>
+        </interface>
+        <router xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <ospf>
+            <name>1</name>
+            <router-id>1.1.1.1</router-id>
+            <area>
+              <id>0</id>
+              <passive>
+                <mode>disable</mode>
+              </passive>
+              <interface>
+                <name>0/0/0/0</name>
+                <network>point-to-point</network>
+              </interface>
+              <interface>
+                <name>Loopback0</name>
+              </interface>
+            </area>
+            <address-family>
+              <ipv4>
+                <unicast/>
+              </ipv4>
+            </address-family>
+          </ospf>
+          <bgp>
+            <bgp-no-instance>
+              <id>65000</id>
+              <bgp>
+                <router-id>1.1.1.1</router-id>
+              </bgp>
+              <neighbor>
+                <id>3.3.3.3</id>
+                <remote-as>65000</remote-as>
+                <update-source>
+                  <Loopback>0</Loopback>
+                </update-source>
+              </neighbor>
+            </bgp-no-instance>
+          </bgp>
+        </router>
+        <mpls xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <ldp>
+            <router-id>1.1.1.1</router-id>
+            <interface>
+              <name>0/0/0/0</name>
+            </interface>
+          </ldp>
+        </mpls>
+      </config>
+    </device>
+    <device>
+      <name>xr9kv1</name>
+      <address>127.0.0.1</address>
+      <port>10023</port>
+      <ssh>
+        <host-key>
+          <algorithm>ssh-ed25519</algorithm>
+          <key-data>AAAAC3NzaC1lZDI1NTE5AAAAIDAJTypIaYxQLphqZwYfhmBljOOSzwaLlwtjhyV+TFnZ</key-data>
+        </host-key>
+      </ssh>
+      <authgroup>netsim</authgroup>
+      <device-type>
+        <cli>
+          <ned-id xmlns:cisco-iosxr-cli-7.61="http://tail-f.com/ns/ned-id/cisco-iosxr-cli-7.61">cisco-iosxr-cli-7.61:cisco-iosxr-cli-7.61</ned-id>
+        </cli>
+      </device-type>
+      <state>
+        <admin-state>unlocked</admin-state>
+      </state>
+      <config>
+        <interface xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <Loopback>
+            <id>0</id>
+            <description>Router ID for xrv9kv2</description>
+            <ipv4>
+              <address>
+                <ip>2.2.2.2</ip>
+                <mask>255.255.255.255</mask>
+              </address>
+            </ipv4>
+          </Loopback>
+          <GigabitEthernet>
+            <id>0/0/0/0</id>
+            <description>Link to xr9kv0 (xrv9kv1)</description>
+            <ipv4>
+              <address>
+                <ip>10.1.2.2</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+          </GigabitEthernet>
+          <GigabitEthernet>
+            <id>0/0/0/1</id>
+            <description>Link to xr9kv2 (xrv9kv3)</description>
+            <ipv4>
+              <address>
+                <ip>10.2.3.2</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+          </GigabitEthernet>
+        </interface>
+        <router xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <ospf>
+            <name>1</name>
+            <router-id>2.2.2.2</router-id>
+            <area>
+              <id>0</id>
+              <passive>
+                <mode>disable</mode>
+              </passive>
+              <interface>
+                <name>0/0/0/1</name>
+                <network>point-to-point</network>
+              </interface>
+              <interface>
+                <name>Loopback0</name>
+              </interface>
+            </area>
+            <address-family>
+              <ipv4>
+                <unicast/>
+              </ipv4>
+            </address-family>
+          </ospf>
+        </router>
+        <mpls xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <ldp>
+            <router-id>2.2.2.2</router-id>
+            <interface>
+              <name>0/0/0/1</name>
+            </interface>
+          </ldp>
+        </mpls>
+      </config>
+    </device>
+    <device>
+      <name>xr9kv2</name>
+      <address>127.0.0.1</address>
+      <port>10024</port>
+      <ssh>
+        <host-key>
+          <algorithm>ssh-ed25519</algorithm>
+          <key-data>AAAAC3NzaC1lZDI1NTE5AAAAIDAJTypIaYxQLphqZwYfhmBljOOSzwaLlwtjhyV+TFnZ</key-data>
+        </host-key>
+      </ssh>
+      <authgroup>netsim</authgroup>
+      <device-type>
+        <cli>
+          <ned-id xmlns:cisco-iosxr-cli-7.61="http://tail-f.com/ns/ned-id/cisco-iosxr-cli-7.61">cisco-iosxr-cli-7.61:cisco-iosxr-cli-7.61</ned-id>
+        </cli>
+      </device-type>
+      <state>
+        <admin-state>unlocked</admin-state>
+      </state>
+      <config>
+        <interface xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <Loopback>
+            <id>0</id>
+            <description>Router ID for xrv9kv3</description>
+            <ipv4>
+              <address>
+                <ip>3.3.3.3</ip>
+                <mask>255.255.255.255</mask>
+              </address>
+            </ipv4>
+          </Loopback>
+          <GigabitEthernet>
+            <id>0/0/0/1</id>
+            <description>Link to xr9kv1 (xrv9kv2)</description>
+            <ipv4>
+              <address>
+                <ip>10.2.3.3</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+          </GigabitEthernet>
+        </interface>
+        <router xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <ospf>
+            <name>1</name>
+            <router-id>3.3.3.3</router-id>
+            <area>
+              <id>0</id>
+              <passive>
+                <mode>disable</mode>
+              </passive>
+              <interface>
+                <name>Loopback0</name>
+              </interface>
+            </area>
+            <address-family>
+              <ipv4>
+                <unicast/>
+              </ipv4>
+            </address-family>
+          </ospf>
+          <bgp>
+            <bgp-no-instance>
+              <id>65000</id>
+              <bgp>
+                <router-id>3.3.3.3</router-id>
+              </bgp>
+              <neighbor>
+                <id>1.1.1.1</id>
+                <remote-as>65000</remote-as>
+                <update-source>
+                  <Loopback>0</Loopback>
+                </update-source>
+              </neighbor>
+            </bgp-no-instance>
+          </bgp>
+        </router>
+        <mpls xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <ldp>
+            <router-id>3.3.3.3</router-id>
+          </ldp>
+        </mpls>
+      </config>
+    </device>
+  </devices>
+  <smart-license xmlns="http://tail-f.com/ns/ncs">
+    <smart-agent>
+      <stdout-capture>
+        <file>./logs/ncs-smart-licensing.log</file>
+      </stdout-capture>
+    </smart-agent>
+  </smart-license>
+  <python-vm xmlns="http://tail-f.com/ns/ncs">
+    <logging>
+      <log-file-prefix>./logs/ncs-python-vm</log-file-prefix>
+    </logging>
+  </python-vm>
+  <services xmlns="http://tail-f.com/ns/ncs">
+    <global-settings>
+      <collect-forward-diff>true</collect-forward-diff>
+    </global-settings>
+    <logging>
+      <logger>
+        <name>default</name>
+        <log-entry-level>info</log-entry-level>
+      </logger>
+    </logging>
+  </services>
+  <alarms xmlns="http://tail-f.com/ns/ncs-alarms">
+    <alarm-model>
+      <alarm-type>
+        <type>connection-failure</type>
+        <specific-problem-match>*</specific-problem-match>
+        <event-type>communicationsAlarm</event-type>
+        <has-clear>true</has-clear>
+        <kind-of-alarm>root-cause</kind-of-alarm>
+        <probable-cause>0</probable-cause>
+      </alarm-type>
+      <alarm-type>
+        <type>abort-error</type>
+        <specific-problem-match>*</specific-problem-match>
+        <event-type>processingErrorAlarm</event-type>
+        <has-clear>true</has-clear>
+        <kind-of-alarm>root-cause</kind-of-alarm>
+        <probable-cause>0</probable-cause>
+      </alarm-type>
+      <alarm-type>
+        <type>revision-error</type>
+        <specific-problem-match>*</specific-problem-match>
+        <event-type>operationalViolation</event-type>
+        <has-clear>true</has-clear>
+        <kind-of-alarm>root-cause</kind-of-alarm>
+        <probable-cause>0</probable-cause>
+      </alarm-type>
+      <alarm-type>
+        <type>out-of-sync</type>
+        <specific-problem-match>*</specific-problem-match>
+        <event-type>operationalViolation</event-type>
+        <has-clear>true</has-clear>
+        <kind-of-alarm>root-cause</kind-of-alarm>
+        <probable-cause>0</probable-cause>
+      </alarm-type>
+      <alarm-type>
+        <type>final-commit-error</type>
+        <specific-problem-match>*</specific-problem-match>
+        <event-type>processingErrorAlarm</event-type>
+        <has-clear>true</has-clear>
+        <kind-of-alarm>root-cause</kind-of-alarm>
+        <probable-cause>0</probable-cause>
+      </alarm-type>
+      <alarm-type>
+        <type>ned-live-tree-connection-failure</type>
+        <specific-problem-match>*</specific-problem-match>
+        <event-type>communicationsAlarm</event-type>
+        <has-clear>true</has-clear>
+        <kind-of-alarm>root-cause</kind-of-alarm>
+        <probable-cause>0</probable-cause>
+      </alarm-type>
+      <alarm-type>
+        <type>configuration-error</type>
+        <specific-problem-match>*</specific-problem-match>
+        <event-type>operationalViolation</event-type>
+        <has-clear>true</has-clear>
+        <kind-of-alarm>root-cause</kind-of-alarm>
+        <probable-cause>0</probable-cause>
+      </alarm-type>
+      <alarm-type>
+        <type>commit-through-queue-failed</type>
+        <specific-problem-match>*</specific-problem-match>
+        <event-type>processingErrorAlarm</event-type>
+        <has-clear>false</has-clear>
+        <kind-of-alarm>root-cause</kind-of-alarm>
+        <probable-cause>0</probable-cause>
+      </alarm-type>
+      <alarm-type>
+        <type>commit-through-queue-failed-transiently</type>
+        <specific-problem-match>*</specific-problem-match>
+        <event-type>processingErrorAlarm</event-type>
+        <has-clear>false</has-clear>
+        <kind-of-alarm>root-cause</kind-of-alarm>
+        <probable-cause>0</probable-cause>
+      </alarm-type>
+      <alarm-type>
+        <type>commit-through-queue-blocked</type>
+        <specific-problem-match>*</specific-problem-match>
+        <event-type>communicationsAlarm</event-type>
+        <has-clear>true</has-clear>
+        <kind-of-alarm>symptom</kind-of-alarm>
+        <probable-cause>0</probable-cause>
+      </alarm-type>
+      <alarm-type>
+        <type>commit-through-queue-rollback-failed</type>
+        <specific-problem-match>*</specific-problem-match>
+        <event-type>processingErrorAlarm</event-type>
+        <has-clear>false</has-clear>
+        <kind-of-alarm>root-cause</kind-of-alarm>
+        <probable-cause>0</probable-cause>
+      </alarm-type>
+      <alarm-type>
+        <type>missing-transaction-id</type>
+        <specific-problem-match>*</specific-problem-match>
+        <event-type>operationalViolation</event-type>
+        <has-clear>true</has-clear>
+        <kind-of-alarm>symptom</kind-of-alarm>
+        <probable-cause>0</probable-cause>
+      </alarm-type>
+      <alarm-type>
+        <type>bad-user-input</type>
+        <specific-problem-match>*</specific-problem-match>
+        <event-type>operationalViolation</event-type>
+        <has-clear>true</has-clear>
+        <kind-of-alarm>root-cause</kind-of-alarm>
+        <probable-cause>0</probable-cause>
+      </alarm-type>
+      <alarm-type>
+        <type>service-activation-failure</type>
+        <specific-problem-match>*</specific-problem-match>
+        <event-type>processingErrorAlarm</event-type>
+        <has-clear>true</has-clear>
+        <kind-of-alarm>root-cause</kind-of-alarm>
+        <probable-cause>0</probable-cause>
+      </alarm-type>
+      <alarm-type>
+        <type>package-load-failure</type>
+        <specific-problem-match>*</specific-problem-match>
+        <event-type>operationalViolation</event-type>
+        <has-clear>true</has-clear>
+        <kind-of-alarm>root-cause</kind-of-alarm>
+        <probable-cause>0</probable-cause>
+      </alarm-type>
+      <alarm-type>
+        <type>package-operation-failure</type>
+        <specific-problem-match>*</specific-problem-match>
+        <event-type>operationalViolation</event-type>
+        <has-clear>false</has-clear>
+        <kind-of-alarm>root-cause</kind-of-alarm>
+        <probable-cause>0</probable-cause>
+      </alarm-type>
+      <alarm-type>
+        <type>receiver-configuration-error</type>
+        <specific-problem-match>*</specific-problem-match>
+        <event-type>operationalViolation</event-type>
+        <has-clear>true</has-clear>
+        <kind-of-alarm>root-cause</kind-of-alarm>
+        <probable-cause>0</probable-cause>
+      </alarm-type>
+      <alarm-type>
+        <type>cluster-subscriber-failure</type>
+        <specific-problem-match>*</specific-problem-match>
+        <event-type>communicationsAlarm</event-type>
+        <has-clear>true</has-clear>
+        <kind-of-alarm>root-cause</kind-of-alarm>
+        <probable-cause>0</probable-cause>
+      </alarm-type>
+      <alarm-type>
+        <type>ha-master-down</type>
+        <specific-problem-match>*</specific-problem-match>
+        <event-type>communicationsAlarm</event-type>
+        <has-clear>true</has-clear>
+        <kind-of-alarm>symptom</kind-of-alarm>
+        <probable-cause>0</probable-cause>
+      </alarm-type>
+      <alarm-type>
+        <type>ha-primary-down</type>
+        <specific-problem-match>*</specific-problem-match>
+        <event-type>communicationsAlarm</event-type>
+        <has-clear>true</has-clear>
+        <kind-of-alarm>symptom</kind-of-alarm>
+        <probable-cause>0</probable-cause>
+      </alarm-type>
+      <alarm-type>
+        <type>ha-slave-down</type>
+        <specific-problem-match>*</specific-problem-match>
+        <event-type>communicationsAlarm</event-type>
+        <has-clear>true</has-clear>
+        <kind-of-alarm>symptom</kind-of-alarm>
+        <probable-cause>0</probable-cause>
+      </alarm-type>
+      <alarm-type>
+        <type>ha-secondary-down</type>
+        <specific-problem-match>*</specific-problem-match>
+        <event-type>communicationsAlarm</event-type>
+        <has-clear>true</has-clear>
+        <kind-of-alarm>symptom</kind-of-alarm>
+        <probable-cause>0</probable-cause>
+      </alarm-type>
+      <alarm-type>
+        <type>transaction-lock-time-violation</type>
+        <specific-problem-match>*</specific-problem-match>
+        <event-type>qualityOfServiceAlarm</event-type>
+        <has-clear>true</has-clear>
+        <kind-of-alarm>symptom</kind-of-alarm>
+        <probable-cause>0</probable-cause>
+      </alarm-type>
+    </alarm-model>
+  </alarms>
+  <snmp xmlns="http://tailf.com/ns/snmp">
+    <agent>
+      <enabled>true</enabled>
+      <ip>0.0.0.0</ip>
+      <udp-port>4000</udp-port>
+      <version>
+        <v1/>
+        <v2c/>
+        <v3/>
+      </version>
+      <engine-id>
+        <enterprise-number>32473</enterprise-number>
+        <from-text>testing</from-text>
+      </engine-id>
+      <max-message-size>50000</max-message-size>
+    </agent>
+    <system>
+      <contact></contact>
+      <name></name>
+      <location></location>
+    </system>
+    <usm>
+      <local>
+        <user>
+          <name>initial</name>
+          <auth>
+            <sha>
+              <password>GoTellMom</password>
+            </sha>
+          </auth>
+          <priv>
+            <aes>
+              <password>GoTellMom</password>
+            </aes>
+          </priv>
+        </user>
+      </local>
+    </usm>
+    <target>
+      <name>monitor</name>
+      <ip>127.0.0.1</ip>
+      <udp-port>162</udp-port>
+      <tag>monitor</tag>
+      <timeout>1500</timeout>
+      <retries>3</retries>
+      <v2c>
+        <sec-name>public</sec-name>
+      </v2c>
+    </target>
+    <community>
+      <index>public</index>
+      <sec-name>public</sec-name>
+    </community>
+    <notify>
+      <name>foo</name>
+      <tag>monitor</tag>
+      <type>trap</type>
+    </notify>
+    <vacm>
+      <group>
+        <name>initial</name>
+        <member>
+          <sec-name>initial</sec-name>
+          <sec-model>usm</sec-model>
+        </member>
+        <access>
+          <sec-model>usm</sec-model>
+          <sec-level>no-auth-no-priv</sec-level>
+          <read-view>internet</read-view>
+          <notify-view>internet</notify-view>
+        </access>
+        <access>
+          <sec-model>usm</sec-model>
+          <sec-level>auth-no-priv</sec-level>
+          <read-view>internet</read-view>
+          <notify-view>internet</notify-view>
+        </access>
+        <access>
+          <sec-model>usm</sec-model>
+          <sec-level>auth-priv</sec-level>
+          <read-view>internet</read-view>
+          <notify-view>internet</notify-view>
+        </access>
+      </group>
+      <group>
+        <name>public</name>
+        <member>
+          <sec-name>public</sec-name>
+          <sec-model>v1</sec-model>
+          <sec-model>v2c</sec-model>
+        </member>
+        <access>
+          <sec-model>any</sec-model>
+          <sec-level>no-auth-no-priv</sec-level>
+          <read-view>internet</read-view>
+          <notify-view>internet</notify-view>
+        </access>
+      </group>
+      <view>
+        <name>internet</name>
+        <subtree>
+          <oids>1.3.6.1</oids>
+          <included/>
+        </subtree>
+      </view>
+      <view>
+        <name>restricted</name>
+        <subtree>
+          <oids>1.3.6.1.6.3.11.2.1</oids>
+          <included/>
+        </subtree>
+        <subtree>
+          <oids>1.3.6.1.6.3.15.1.1</oids>
+          <included/>
+        </subtree>
+      </view>
+    </vacm>
+  </snmp>
+  <nacm xmlns="urn:ietf:params:xml:ns:yang:ietf-netconf-acm">
+    <write-default>permit</write-default>
+    <groups>
+      <group>
+        <name>admin</name>
+        <user-name>admin</user-name>
+        <user-name>private</user-name>
+      </group>
+      <group>
+        <name>oper</name>
+        <user-name>oper</user-name>
+        <user-name>public</user-name>
+      </group>
+    </groups>
+    <rule-list>
+      <name>admin</name>
+      <group>admin</group>
+      <rule>
+        <name>any-access</name>
+        <action>permit</action>
+      </rule>
+      <cmdrule xmlns="http://tail-f.com/yang/acm">
+        <name>any-command</name>
+        <action>permit</action>
+      </cmdrule>
+    </rule-list>
+    <rule-list>
+      <name>any-group</name>
+      <group>*</group>
+      <rule>
+        <name>tailf-aaa-password-change</name>
+        <module-name>tailf-aaa</module-name>
+        <path>/aaa/authentication/users/user[name='$USER']/change-password</path>
+        <access-operations>read exec</access-operations>
+        <action>permit</action>
+      </rule>
+      <rule>
+        <name>tailf-aaa-user</name>
+        <module-name>tailf-aaa</module-name>
+        <path>/user[name='$USER']</path>
+        <access-operations>create read update delete</access-operations>
+        <action>permit</action>
+      </rule>
+      <rule>
+        <name>tailf-webui-user</name>
+        <module-name>tailf-webui</module-name>
+        <path>/webui/data-stores/user-profile[username='$USER']</path>
+        <access-operations>create read update delete</access-operations>
+        <action>permit</action>
+      </rule>
+      <cmdrule xmlns="http://tail-f.com/yang/acm">
+        <name>c-logout</name>
+        <command>logout</command>
+        <action>deny</action>
+      </cmdrule>
+      <cmdrule xmlns="http://tail-f.com/yang/acm">
+        <name>j-logout</name>
+        <command>request system logout</command>
+        <action>deny</action>
+      </cmdrule>
+    </rule-list>
+  </nacm>
+</config>

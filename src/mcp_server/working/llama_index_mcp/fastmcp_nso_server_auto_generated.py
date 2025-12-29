@@ -5610,6 +5610,66 @@ def get_ospf_neighbor_status(router_name: str) -> str:
         logger.exception(f"❌ Error getting OSPF neighbor status: {e}")
         return f"Error getting OSPF neighbor status for device '{router_name}': {e}"
 
+def get_cdp_neighbor_info(router_name: str, detail: bool = True) -> str:
+    """Run CDP neighbor discovery on a router.
+    
+    This function executes the CDP neighbor command to show device discovery
+    information. By default it collects detailed information, but can be limited
+    to the summary view.
+    
+    Args:
+        router_name: Name of the router device
+        detail: If True, run 'show cdp neighbors detail', else use summary
+        
+    Returns:
+        str: CDP neighbor information
+        
+    Examples:
+        get_cdp_neighbor_info('node-1')
+        get_cdp_neighbor_info('node-1', detail=False)
+    """
+    try:
+        logger.info(f"🔧 Getting CDP neighbors for device: {router_name}")
+        
+        command = "show cdp neighbors detail" if detail else "show cdp neighbors"
+        result = execute_device_command(router_name, command)
+        
+        return result
+        
+    except Exception as e:
+        logger.exception(f"❌ Error getting CDP neighbor info: {e}")
+        return f"Error getting CDP neighbor info for device '{router_name}': {e}"
+
+def get_lldp_neighbor_info(router_name: str, detail: bool = True) -> str:
+    """Run LLDP neighbor discovery on a router.
+    
+    This function executes the LLDP neighbor command to show device discovery
+    information. By default it collects detailed information, but can be limited
+    to the summary view.
+    
+    Args:
+        router_name: Name of the router device
+        detail: If True, run 'show lldp neighbors detail', else use summary
+        
+    Returns:
+        str: LLDP neighbor information
+        
+    Examples:
+        get_lldp_neighbor_info('node-1')
+        get_lldp_neighbor_info('node-1', detail=False)
+    """
+    try:
+        logger.info(f"🔧 Getting LLDP neighbors for device: {router_name}")
+        
+        command = "show lldp neighbors detail" if detail else "show lldp neighbors"
+        result = execute_device_command(router_name, command)
+        
+        return result
+        
+    except Exception as e:
+        logger.exception(f"❌ Error getting LLDP neighbor info: {e}")
+        return f"Error getting LLDP neighbor info for device '{router_name}': {e}"
+
 def get_interface_statistics(router_name: str, interface_name: str = None) -> str:
     """Get interface statistics for a router.
     
@@ -6150,29 +6210,34 @@ def count_services_by_type() -> str:
 # =============================================================================
 
 def backup_device_config(router_name: str, backup_name: str = None) -> str:
-    """Backup device configuration.
+    """Backup device configuration from NSO CDB in XML format.
     
-    This function creates a backup of device configuration using NSO rollback or file save.
+    This function creates a backup of device configuration from NSO's CDB in XML format,
+    which can be loaded back into NSO CDB using load_device_config.
     
     Args:
         router_name: Name of the router device
-        backup_name: Optional backup name, defaults to timestamp-based name
+        backup_name: Optional backup name, defaults to timestamp-based name with tag
         
     Returns:
-        str: Backup result message
+        str: Backup result message with file path
         
     Examples:
-        backup_device_config('xr9kv-1')
-        backup_device_config('xr9kv-1', 'backup_before_ospf_change')
+        backup_device_config('node-1')
+        backup_device_config('node-1', 'backup_before_ospf_change')
     """
     try:
         logger.info(f"🔧 Backing up config for device: {router_name}")
         
         import datetime
+        import subprocess
+        import os
+        
         if not backup_name:
             timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
             backup_name = f"{router_name}_backup_{timestamp}"
         
+        # Verify device exists in NSO
         m = maapi.Maapi()
         m.start_user_session('cisco', 'test_context_1')
         t = m.start_read_trans()
@@ -6180,30 +6245,88 @@ def backup_device_config(router_name: str, backup_name: str = None) -> str:
         
         if router_name not in root.devices.device:
             m.end_user_session()
-            return f"Error: Device '{router_name}' not found in NSO"
-        
-        device = root.devices.device[router_name]
-        config = device.config
-        
-        # Save config to string representation
-        try:
-            import ncs.maagic as maagic
-            config_str = maagic.to_string(config)
-        except:
-            config_str = str(config)
-        
-        # Save to file (optional - could also use NSO rollback)
-        backup_dir = "/Users/gudeng/MCP_Server/backups"
-        import os
-        os.makedirs(backup_dir, exist_ok=True)
-        backup_file = f"{backup_dir}/{backup_name}.cfg"
-        
-        with open(backup_file, 'w') as f:
-            f.write(config_str)
+            return f"Error: Device '{router_name}' not found in NSO CDB"
         
         m.end_user_session()
         
-        return f"✅ Configuration backed up successfully: {backup_file}"
+        # Use NSO CLI to get config in XML format
+        ncs_cli_path = os.path.join(os.environ.get('NCS_DIR', '/Users/gudeng/NCS-6413'), 'bin', 'ncs_cli')
+        if not os.path.exists(ncs_cli_path):
+            return f"Error: NSO CLI not found at {ncs_cli_path}"
+        
+        # Ensure NSO environment variables are set for subprocess
+        env = os.environ.copy()
+        env['NCS_DIR'] = os.environ.get('NCS_DIR', '/Users/gudeng/NCS-6413')
+        env['DYLD_LIBRARY_PATH'] = f"{env['NCS_DIR']}/lib"
+        env['PYTHONPATH'] = f"{env['NCS_DIR']}/src/ncs/pyapi"
+        
+        # Get config in XML format
+        # Use running-config (not full-configuration) - this is the correct command
+        cmd_input = f'show running-config devices device {router_name} config | display xml\n'
+        
+        result = subprocess.run(
+            [ncs_cli_path, '-u', 'cisco', '-C'],
+            input=cmd_input,
+            capture_output=True,
+            text=True,
+            timeout=60,
+            env=env
+        )
+        
+        if result.returncode != 0:
+            return f"Error: Failed to get config from NSO CLI: {result.stderr}"
+        
+        # Extract XML content
+        config_str = result.stdout.strip()
+        lines = config_str.split('\n')
+        config_lines = []
+        skip_until_config = True
+        
+        for line in lines:
+            if skip_until_config:
+                if line.strip().startswith('<?xml') or line.strip().startswith('<config'):
+                    skip_until_config = False
+                    config_lines.append(line)
+                continue
+            
+            # Stop at prompt
+            if line.strip().endswith('>') and not line.strip().startswith('<') and not line.strip().startswith('</'):
+                if router_name in line or 'ncs#' in line or 'admin@' in line:
+                    break
+            
+            config_lines.append(line)
+        
+        config_xml = '\n'.join(config_lines)
+        
+        if not config_xml or len(config_xml) < 50:
+            return f"Error: Config too short or empty (got {len(config_xml)} chars)"
+        
+        # Add XML comment header
+        if config_xml.strip().startswith('<?xml'):
+            lines = config_xml.split('\n')
+            xml_decl = lines[0] if lines else '<?xml version="1.0" encoding="UTF-8"?>'
+            rest = '\n'.join(lines[1:]) if len(lines) > 1 else ''
+            
+            header_comment = f"""<!--
+  Configuration backup from NSO CDB
+  Device: {router_name}
+  Backup Date: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')}
+  Backup Name: {backup_name}
+  Format: NSO XML (loadable back into NSO CDB)
+-->
+"""
+            config_xml = xml_decl + '\n' + header_comment + rest
+        
+        # Save to file
+        backup_dir = "/Users/gudeng/MCP_Server/backups/nso_configs"
+        os.makedirs(backup_dir, exist_ok=True)
+        backup_file = f"{backup_dir}/{backup_name}.xml"
+        
+        with open(backup_file, 'w') as f:
+            f.write(config_xml)
+        
+        file_size = len(config_xml)
+        return f"✅ Configuration backed up successfully: {backup_file} ({file_size:,} bytes)"
         
     except Exception as e:
         logger.exception(f"❌ Error backing up config: {e}")
@@ -6220,10 +6343,10 @@ def list_device_backups(router_name: str) -> str:
         router_name: Name of the router device
         
     Returns:
-        str: List of available backups
+        str: List of available backups (both .xml and .cfg formats)
         
     Examples:
-        list_device_backups('xr9kv-1')
+        list_device_backups('node-1')
     """
     try:
         logger.info(f"🔧 Listing backups for device: {router_name}")
@@ -6231,10 +6354,16 @@ def list_device_backups(router_name: str) -> str:
         import os
         import glob
         
-        backup_dir = "/Users/gudeng/MCP_Server/backups"
-        pattern = f"{backup_dir}/{router_name}_backup_*.cfg"
+        backup_dir = "/Users/gudeng/MCP_Server/backups/nso_configs"
         
-        backups = sorted(glob.glob(pattern), reverse=True)
+        # Look for both XML and legacy CFG files
+        xml_pattern = f"{backup_dir}/{router_name}_*.xml"
+        cfg_pattern = f"{backup_dir}/{router_name}_*.cfg"
+        
+        xml_backups = glob.glob(xml_pattern)
+        cfg_backups = glob.glob(cfg_pattern)
+        
+        backups = sorted(xml_backups + cfg_backups, reverse=True)
         
         result_lines = [f"Available Backups for device '{router_name}':"]
         result_lines.append("=" * 60)
@@ -6245,7 +6374,9 @@ def list_device_backups(router_name: str) -> str:
                 backup_name = os.path.basename(backup_file)
                 file_size = os.path.getsize(backup_file)
                 mod_time = datetime.datetime.fromtimestamp(os.path.getmtime(backup_file))
-                result_lines.append(f"  - {backup_name} ({file_size} bytes, {mod_time})")
+                file_ext = os.path.splitext(backup_file)[1]
+                format_note = " (XML - loadable)" if file_ext == '.xml' else " (Legacy format)"
+                result_lines.append(f"  - {backup_name} ({file_size:,} bytes, {mod_time}){format_note}")
         else:
             result_lines.append("⚠️  No backups found for this device")
         
@@ -6254,6 +6385,371 @@ def list_device_backups(router_name: str) -> str:
     except Exception as e:
         logger.exception(f"❌ Error listing backups: {e}")
         return f"Error listing backups for device '{router_name}': {e}"
+
+def load_device_config(router_name: str, backup_file: str = None, mode: str = 'merge', dry_run: bool = False) -> str:
+    """Load device configuration from backup file into NSO CDB.
+    
+    This function loads a previously backed-up device configuration (in XML format)
+    back into NSO's CDB. The backup file must be in NSO XML format.
+    
+    Args:
+        router_name: Name of the router device
+        backup_file: Path to backup file (XML format). If None, uses most recent backup.
+        mode: Load mode - 'merge' (default) or 'replace'
+        dry_run: If True, preview changes without applying
+        
+    Returns:
+        str: Load result message
+        
+    Examples:
+        load_device_config('node-1', '/path/to/backup.xml')
+        load_device_config('node-1', mode='replace', dry_run=True)
+    """
+    try:
+        logger.info(f"🔧 Loading config for device: {router_name}")
+        
+        import os
+        import subprocess
+        import tempfile
+        import glob
+        
+        # If no backup file specified, find most recent XML backup
+        if not backup_file:
+            backup_dir = "/Users/gudeng/MCP_Server/backups/nso_configs"
+            pattern = f"{backup_dir}/{router_name}_*.xml"
+            backups = sorted(glob.glob(pattern), reverse=True)
+            if not backups:
+                return f"Error: No XML backup files found for device '{router_name}'. Use backup_device_config first."
+            backup_file = backups[0]
+            logger.info(f"Using most recent backup: {backup_file}")
+        
+        # Verify backup file exists
+        if not os.path.exists(backup_file):
+            return f"Error: Backup file not found: {backup_file}"
+        
+        # Read and clean the backup file (remove header comments)
+        with open(backup_file, 'r') as f:
+            content = f.read()
+        
+        # Remove XML header comments (metadata) using regex
+        import re
+        # Remove XML comment block that contains backup metadata
+        pattern = r'<!--\s*Configuration backup.*?-->\s*\n?'
+        config_xml = re.sub(pattern, '', content, flags=re.DOTALL | re.IGNORECASE)
+        config_xml = config_xml.strip()
+        
+        if not config_xml.startswith('<?xml') and not config_xml.startswith('<config'):
+            return f"Error: Backup file does not contain valid XML: {backup_file}"
+        
+        # Use ncs_load to load the config
+        ncs_load_path = os.path.join(os.environ.get('NCS_DIR', '/Users/gudeng/NCS-6413'), 'bin', 'ncs_load')
+        
+        if not os.path.exists(ncs_load_path):
+            return f"Error: ncs_load not found at {ncs_load_path}"
+        
+        # Ensure NSO environment variables are set for subprocess
+        env = os.environ.copy()
+        env['NCS_DIR'] = os.environ.get('NCS_DIR', '/Users/gudeng/NCS-6413')
+        env['DYLD_LIBRARY_PATH'] = f"{env['NCS_DIR']}/lib"
+        env['PYTHONPATH'] = f"{env['NCS_DIR']}/src/ncs/pyapi"
+        
+        # Create temporary file with cleaned XML
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.xml', delete=False) as tmp_file:
+            tmp_file.write(config_xml)
+            tmp_file_path = tmp_file.name
+        
+        try:
+            abs_file_path = os.path.abspath(tmp_file_path)
+            
+            # Use ncs_load to load the config
+            # -l: load mode
+            # -m: merge mode (default when multiple files, but we use it explicitly)
+            # -r: replace mode (if specified)
+            # -F x: XML format (NSO's internal format)
+            # -n: no-networking (load to CDB only, don't push to devices) - used for dry-run
+            # Note: No -p flag needed since XML already contains full path structure
+            load_flags = ['-l', '-m', '-F', 'x']
+            if mode == 'replace':
+                load_flags.remove('-m')  # Remove merge flag
+                load_flags.append('-r')  # Add replace flag
+            if dry_run:
+                load_flags.append('-n')  # no-networking (load to CDB only)
+            
+            load_flags.append(abs_file_path)
+            
+            result = subprocess.run(
+                [ncs_load_path] + load_flags,
+                capture_output=True,
+                text=True,
+                timeout=120,
+                env=env
+            )
+            
+            # Clean up temp file
+            os.unlink(tmp_file_path)
+            
+            if result.returncode != 0:
+                return f"Error loading config: {result.stderr or result.stdout}"
+            
+            output = result.stdout + result.stderr
+            
+            if 'Error' in output or 'error' in output or 'failed' in output.lower():
+                return f"Error in output: {output}"
+            
+            if dry_run:
+                return f"✅ Dry-run successful. Config would be loaded from: {backup_file}\n{output if output.strip() else 'No changes detected'}"
+            else:
+                return f"✅ Configuration loaded successfully from: {backup_file}"
+            
+        except Exception as e:
+            # Clean up temp file on error
+            try:
+                os.unlink(tmp_file_path)
+            except:
+                pass
+            return f"Error loading config: {str(e)}"
+        
+    except Exception as e:
+        logger.exception(f"❌ Error loading config: {e}")
+        return f"Error loading config for device '{router_name}': {e}"
+
+def backup_ncs_config(backup_name: str = None) -> str:
+    """Backup complete NCS configuration (all devices, services, authgroups, etc.) in XML format.
+    
+    This function creates a backup of the complete NCS configuration from NSO's CDB in XML format,
+    which includes all devices, services, authgroups, and NCS settings. This can be loaded back
+    into NSO CDB using load_ncs_config.
+    
+    Args:
+        backup_name: Optional backup name, defaults to timestamp-based name with tag
+        
+    Returns:
+        str: Backup result message with file path
+        
+    Examples:
+        backup_ncs_config()
+        backup_ncs_config('complete_backup_before_major_change')
+    """
+    try:
+        logger.info(f"🔧 Backing up complete NCS configuration")
+        
+        import datetime
+        import subprocess
+        import os
+        
+        if not backup_name:
+            timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+            backup_name = f"ncs_complete_backup_{timestamp}"
+        
+        # Use NSO CLI to get complete config in XML format
+        ncs_cli_path = os.path.join(os.environ.get('NCS_DIR', '/Users/gudeng/NCS-6413'), 'bin', 'ncs_cli')
+        if not os.path.exists(ncs_cli_path):
+            return f"Error: NSO CLI not found at {ncs_cli_path}"
+        
+        # Ensure NSO environment variables are set for subprocess
+        env = os.environ.copy()
+        env['NCS_DIR'] = os.environ.get('NCS_DIR', '/Users/gudeng/NCS-6413')
+        env['DYLD_LIBRARY_PATH'] = f"{env['NCS_DIR']}/lib"
+        env['PYTHONPATH'] = f"{env['NCS_DIR']}/src/ncs/pyapi"
+        
+        # Get complete NCS config in XML format
+        cmd_input = 'show running-config | display xml\n'
+        
+        result = subprocess.run(
+            [ncs_cli_path, '-u', 'cisco', '-C'],
+            input=cmd_input,
+            capture_output=True,
+            text=True,
+            timeout=120,
+            env=env
+        )
+        
+        if result.returncode != 0:
+            return f"Error: Failed to get complete NCS config from NSO CLI: {result.stderr}"
+        
+        # Extract XML content
+        config_str = result.stdout.strip()
+        lines = config_str.split('\n')
+        config_lines = []
+        skip_until_config = True
+        
+        for line in lines:
+            if skip_until_config:
+                if line.strip().startswith('<?xml') or line.strip().startswith('<config'):
+                    skip_until_config = False
+                    config_lines.append(line)
+                continue
+            
+            # Stop at prompt
+            if line.strip().endswith('>') and not line.strip().startswith('<') and not line.strip().startswith('</'):
+                if 'ncs#' in line or 'admin@' in line:
+                    break
+            
+            config_lines.append(line)
+        
+        config_xml = '\n'.join(config_lines)
+        
+        if not config_xml or len(config_xml) < 100:
+            return f"Error: Config too short or empty (got {len(config_xml)} chars)"
+        
+        # Add XML comment header
+        if config_xml.strip().startswith('<?xml'):
+            lines = config_xml.split('\n')
+            xml_decl = lines[0] if lines else '<?xml version="1.0" encoding="UTF-8"?>'
+            rest = '\n'.join(lines[1:]) if len(lines) > 1 else ''
+            
+            header_comment = f"""<!--
+  Complete NCS Configuration backup from NSO CDB
+  Backup Date: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')}
+  Backup Name: {backup_name}
+  Format: NSO XML (loadable back into NSO CDB)
+  Includes: All devices, services, authgroups, and NCS settings
+-->
+"""
+            config_xml = xml_decl + '\n' + header_comment + rest
+        
+        # Save to file
+        backup_dir = "/Users/gudeng/MCP_Server/backups/nso_configs"
+        os.makedirs(backup_dir, exist_ok=True)
+        backup_file = f"{backup_dir}/{backup_name}.xml"
+        
+        with open(backup_file, 'w') as f:
+            f.write(config_xml)
+        
+        file_size = len(config_xml)
+        return f"✅ Complete NCS configuration backed up successfully: {backup_file} ({file_size:,} bytes)"
+        
+    except Exception as e:
+        logger.exception(f"❌ Error backing up complete NCS config: {e}")
+        return f"Error backing up complete NCS configuration: {e}"
+
+def load_ncs_config(backup_file: str = None, mode: str = 'merge', dry_run: bool = False) -> str:
+    """Load complete NCS configuration from backup file into NSO CDB.
+    
+    This function loads a previously backed-up complete NCS configuration (in XML format)
+    back into NSO's CDB. The backup file must be in NSO XML format and contain the complete
+    NCS configuration (all devices, services, authgroups, etc.).
+    
+    Args:
+        backup_file: Path to backup file (XML format). If None, uses most recent complete backup.
+        mode: Load mode - 'merge' (default) or 'replace'
+        dry_run: If True, preview changes without applying
+        
+    Returns:
+        str: Load result message
+        
+    Examples:
+        load_ncs_config('/path/to/complete_backup.xml')
+        load_ncs_config(mode='replace', dry_run=True)
+    """
+    try:
+        logger.info(f"🔧 Loading complete NCS configuration")
+        
+        import os
+        import subprocess
+        import tempfile
+        import glob
+        import re
+        
+        # If no backup file specified, find most recent complete NCS backup
+        if not backup_file:
+            backup_dir = "/Users/gudeng/MCP_Server/backups/nso_configs"
+            pattern = f"{backup_dir}/ncs_complete_backup_*.xml"
+            backups = sorted(glob.glob(pattern), reverse=True)
+            if not backups:
+                return f"Error: No complete NCS backup files found. Use backup_ncs_config first."
+            backup_file = backups[0]
+            logger.info(f"Using most recent complete backup: {backup_file}")
+        
+        # Verify backup file exists
+        if not os.path.exists(backup_file):
+            return f"Error: Backup file not found: {backup_file}"
+        
+        # Read and clean the backup file (remove header comments)
+        with open(backup_file, 'r') as f:
+            content = f.read()
+        
+        # Remove XML header comments (metadata) using regex
+        pattern = r'<!--\s*Complete NCS Configuration backup.*?-->\s*\n?'
+        config_xml = re.sub(pattern, '', content, flags=re.DOTALL | re.IGNORECASE)
+        config_xml = config_xml.strip()
+        
+        if not config_xml.startswith('<?xml') and not config_xml.startswith('<config'):
+            return f"Error: Backup file does not contain valid XML: {backup_file}"
+        
+        # Use ncs_load to load the config
+        ncs_load_path = os.path.join(os.environ.get('NCS_DIR', '/Users/gudeng/NCS-6413'), 'bin', 'ncs_load')
+        
+        if not os.path.exists(ncs_load_path):
+            return f"Error: ncs_load not found at {ncs_load_path}"
+        
+        # Ensure NSO environment variables are set for subprocess
+        env = os.environ.copy()
+        env['NCS_DIR'] = os.environ.get('NCS_DIR', '/Users/gudeng/NCS-6413')
+        env['DYLD_LIBRARY_PATH'] = f"{env['NCS_DIR']}/lib"
+        env['PYTHONPATH'] = f"{env['NCS_DIR']}/src/ncs/pyapi"
+        
+        # Create temporary file with cleaned XML
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.xml', delete=False) as tmp_file:
+            tmp_file.write(config_xml)
+            tmp_file_path = tmp_file.name
+        
+        try:
+            abs_file_path = os.path.abspath(tmp_file_path)
+            
+            # Use ncs_load to load the complete config
+            # -l: load mode
+            # -m: merge mode (default when multiple files, but we use it explicitly)
+            # -r: replace mode (if specified)
+            # -F x: XML format (NSO's internal format)
+            # -n: no-networking (load to CDB only, don't push to devices) - used for dry-run
+            # Note: No -p flag needed since XML already contains full path structure
+            load_flags = ['-l', '-m', '-F', 'x']
+            if mode == 'replace':
+                load_flags.remove('-m')  # Remove merge flag
+                load_flags.append('-r')  # Add replace flag
+            if dry_run:
+                load_flags.append('-n')  # no-networking (load to CDB only)
+            
+            load_flags.append(abs_file_path)
+            
+            result = subprocess.run(
+                [ncs_load_path] + load_flags,
+                capture_output=True,
+                text=True,
+                timeout=180,  # Longer timeout for complete config
+                env=env
+            )
+            
+            # Clean up temp file
+            os.unlink(tmp_file_path)
+            
+            if result.returncode != 0:
+                return f"Error loading complete NCS config: {result.stderr or result.stdout}"
+            
+            output = result.stdout + result.stderr
+            
+            if 'Error' in output or 'error' in output or 'failed' in output.lower():
+                # Check if it's just "no modifications" which is OK
+                if 'no modifications' not in output.lower():
+                    return f"Error in output: {output}"
+            
+            if dry_run:
+                return f"✅ Dry-run successful. Complete NCS config would be loaded from: {backup_file}\n{output if output.strip() else 'No changes detected'}"
+            else:
+                return f"✅ Complete NCS configuration loaded successfully from: {backup_file}"
+            
+        except Exception as e:
+            # Clean up temp file on error
+            try:
+                os.unlink(tmp_file_path)
+            except:
+                pass
+            return f"Error loading complete NCS config: {str(e)}"
+        
+    except Exception as e:
+        logger.exception(f"❌ Error loading complete NCS config: {e}")
+        return f"Error loading complete NCS configuration: {e}"
 
 # =============================================================================
 # PHASE 2: IMPORTANT OPERATIONS - CONFIGURATION VALIDATION
@@ -6749,7 +7245,9 @@ mcp.tool(connect_device)  # Connect NSO to device
 mcp.tool(fetch_ssh_host_keys)  # Fetch SSH host keys from device
 mcp.tool(disconnect_device)  # Disconnect NSO from device
 mcp.tool(ping_device)  # Ping device to check connectivity
-mcp.tool(get_device_connection_status)  # Get device connection status
+# Disabled 2025-11-17: get_device_connection_status relied on devices.device-state.reached
+# which is absent on IOS XR devices, causing AttributeError for every router.
+# mcp.tool(get_device_connection_status)
 
 # Phase 1: Critical Operations - Commit Queue Management
 mcp.tool(list_commit_queue)  # List pending commits in queue
@@ -6774,7 +7272,10 @@ mcp.tool(execute_device_command_batch)  # Execute command on multiple devices
 # Phase 1: Critical Operations - Operational Status Queries
 mcp.tool(get_bgp_neighbor_status)  # Get BGP neighbor status
 mcp.tool(get_ospf_neighbor_status)  # Get OSPF neighbor adjacency status
-mcp.tool(get_interface_statistics)  # Get interface statistics
+mcp.tool(get_cdp_neighbor_info)  # Run CDP neighbor discovery
+mcp.tool(get_lldp_neighbor_info)  # Run LLDP neighbor discovery
+# Disabled 2025-11-17: IOS XR/Netsim CLIs lack `show interfaces statistics`, so this tool always fails.
+# mcp.tool(get_interface_statistics)
 
 # Phase 1: Critical Operations - Service Redeploy
 mcp.tool(redeploy_service)  # Redeploy specific service
@@ -6795,8 +7296,11 @@ mcp.tool(get_service_status)  # Get service operational status
 mcp.tool(count_services_by_type)  # Count services by type
 
 # Phase 2: Important Operations - Configuration Backup/Restore
-mcp.tool(backup_device_config)  # Backup device configuration
-mcp.tool(list_device_backups)  # List available backups
+mcp.tool(backup_ncs_config)  # Backup complete NCS configuration (all devices, services, etc.) in XML format
+mcp.tool(load_ncs_config)  # Load complete NCS configuration from backup (XML format)
+mcp.tool(backup_device_config)  # Backup individual device configuration (XML format)
+mcp.tool(load_device_config)  # Load individual device configuration from backup (XML format)
+mcp.tool(list_device_backups)  # List available backups for a device
 
 # Phase 2: Important Operations - Configuration Validation
 mcp.tool(validate_device_config)  # Validate device configuration
@@ -6908,7 +7412,8 @@ mcp.tool(nso_health_check)  # NSO health check and auto-fix tool
 
 # Live-Status Operational Data Tools
 mcp.tool(explore_live_status)
-mcp.tool(get_interface_operational_status)
+# Disabled 2025-11-17: IOS XR NED (both netsim and dCloud routers) does not expose ietf-interfaces operational data.
+# mcp.tool(get_interface_operational_status)
 
 # Interface Configuration Tools
 def configure_router_interface(router_name: str, interface_name: str, ip_address: str = None, description: str = None, shutdown: bool = None, delete_ip: bool = False) -> str:

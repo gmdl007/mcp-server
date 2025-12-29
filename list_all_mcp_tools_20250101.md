@@ -1,6 +1,6 @@
 # Available MCP NSO Automation Tools
 
-**Total Tools: ~85 tools** (Updated: 2025-01-01)
+**Total Tools: ~86 tools** (Updated: 2025-01-01)
 
 ## Device Management
 - `show_all_devices` - List all router devices
@@ -8,6 +8,7 @@
 - `configure_router_interface` - Configure interfaces (IP, description, shutdown)
 - `get_interface_operational_status` - Get interface operational status
 - `connect_device` - Connect NSO to device
+- `fetch_ssh_host_keys` - Fetch SSH host keys from device (required before sync)
 - `disconnect_device` - Disconnect NSO from device
 - `ping_device` - Ping device to check connectivity
 - `get_device_connection_status` - Get device connection status
@@ -139,4 +140,4 @@
 - **Package Management**: 2 tools
 - **Utility**: 3 tools
 
-**Total: ~85 tools**
+**Total: ~86 tools**

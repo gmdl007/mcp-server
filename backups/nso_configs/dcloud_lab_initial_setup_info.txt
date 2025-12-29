@@ -1,0 +1,61 @@
+NSO Configuration Backup Information
+====================================
+
+Backup Name: dcloud_lab_initial_setup
+Created: 2025-01-01 (dcloud lab initial setup)
+Description: All 9 dcloud real routers added and synced successfully
+
+Devices:
+- node-1 (198.18.1.41)
+- node-2 (198.18.1.42)
+- node-3 (198.18.1.43)
+- node-4 (198.18.1.44)
+- node-5 (198.18.1.45)
+- node-6 (198.18.1.46)
+- node-7 (198.18.1.47)
+- node-8 (198.18.1.48)
+- pce-11 (198.18.1.51)
+
+Configuration:
+- Authgroup: cisco
+- NED: cisco-iosxr-cli-7.61
+- Port: 22 (SSH)
+- NED Setting: read/admin-show-running-config = false
+
+Restore Instructions:
+====================
+
+Method 1: Using Rollback (Recommended)
+--------------------------------------
+1. Find the rollback point:
+   ncs_cli -u admin -C
+   show rollback
+   
+2. Look for the commit with description: "dcloud_lab_initial_setup - All 9 routers added and synced successfully"
+
+3. Restore using rollback ID:
+   rollback <rollback_id>
+   
+   Or use MCP tool:
+   rollback_router_configuration(rollback_id, description="Restore dcloud lab initial setup")
+
+Method 2: Using Exported XML File
+----------------------------------
+1. The configuration is saved in: backups/nso_configs/dcloud_lab_initial_setup.xml
+
+2. To restore devices, you can use the add_devices_cisco_auth script:
+   python3 scripts/setup/add_devices_cisco_auth_20250101.py
+
+3. Then apply the NED settings:
+   python3 scripts/setup/fix_admin_mode_sync_20250101.py
+
+4. Finally sync from devices:
+   ncs_cli -u cisco -C
+   devices device * sync-from
+
+Notes:
+------
+- All devices were successfully synced from dcloud real routers
+- The configuration includes the fix for admin mode sync error
+- Use 'cisco' user (not 'admin') for operations requiring authgroup access
+

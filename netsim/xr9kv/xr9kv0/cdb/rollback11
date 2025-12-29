@@ -1,16 +1,14 @@
 # Created by: admin
-# Date: 2025-10-30 15:36:31
+# Date: 2025-11-11 16:55:50
 # Via: cli
 # Type: delta
 # Label: 
 # Comment: 
-# No: 10105
-# TransactionId: 1784
-# Hostname: GUDENG-M-H9KG
+# No: 10000
+# TransactionId: 17
+# Hostname: GUDENG-M-3PDW
 
 interface {
-    Loopback 101 {
-        delete:
-        shutdown;
-    }
- }
+    delete:
+    GigabitEthernet 0/0/0/0;
+}

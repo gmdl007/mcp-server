@@ -10,4 +10,5 @@ export CONFD="${NCS_DIR}/netsim/confd/bin/confd"
 export CONFDC="${NCS_DIR}/netsim/confd/bin/confdc"
 export CONFD_DIR="${NCS_DIR}/netsim/confd"
 export PATH="${NCS_DIR}/netsim/confd/bin:${PATH}"
-export PACKAGE_NETSIM_DIR="../../../../NCS-614/packages/neds/cisco-iosxr-cli-7.52/netsim"
+unset NCS_IPC_PATH
+export PACKAGE_NETSIM_DIR="../../../../ncs-run/packages/cisco-iosxr-cli-7.52/netsim"
