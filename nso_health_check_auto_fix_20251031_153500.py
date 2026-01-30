@@ -21,7 +21,7 @@ import traceback
 from datetime import datetime
 
 # Set NSO environment variables
-NSO_DIR = "/Users/gudeng/NCS-614"
+NSO_DIR = "/Users/gudeng/NCS-6413"
 os.environ['NCS_DIR'] = NSO_DIR
 os.environ['DYLD_LIBRARY_PATH'] = f'{NSO_DIR}/lib'
 os.environ['PYTHONPATH'] = f'{NSO_DIR}/src/ncs/pyapi'
@@ -313,7 +313,7 @@ class NSOHealthChecker:
         self.log("Restarting NSO...", "ACTION")
         try:
             # Change to ncs-run directory
-            ncs_run = '/Users/gudeng/ncs-run'
+            ncs_run = '/Users/gudeng/ncs-run-6413'
             result = subprocess.run(
                 [self.ncs_bin],
                 cwd=ncs_run,

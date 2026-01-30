@@ -15,7 +15,7 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 source mcp_venv/bin/activate
 
 # Set NSO environment variables
-export NCS_DIR="/Users/gudeng/NCS-614"
+export NCS_DIR="/Users/gudeng/NCS-6413"
 export DYLD_LIBRARY_PATH="$NCS_DIR/lib"
 export PYTHONPATH="$NCS_DIR/src/ncs/pyapi"
 
