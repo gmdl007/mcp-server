@@ -1,14 +1,0 @@
-timestamp: 24-08-30 11:24:05
-result of show command "show memory summary" for router name cord-deham-91-0002.mgmt.lab: 
-Fri Aug 30 11:24:04.714 CEST
-
-node:      node0_RP0_CPU0
-------------------------------------------------------------------
-
- Physical Memory: 19145M total (8350M available)
- Application Memory : 19145M (8350M available)
- Image: 4M (bootram: 0M)
- Reserved: 0M, IOMem: 0M, flashfsys: 0M
- Total shared window: 881M
-
-RP/0/RP0/CPU0:cord-deham-91-0002#

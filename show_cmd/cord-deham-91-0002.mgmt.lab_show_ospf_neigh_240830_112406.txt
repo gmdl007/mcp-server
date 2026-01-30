@@ -1,4 +1,0 @@
-timestamp: 24-08-30 11:24:06
-result of show command "show ospf neigh" for router name cord-deham-91-0002.mgmt.lab: 
-Fri Aug 30 11:24:06.484 CEST
-RP/0/RP0/CPU0:cord-deham-91-0002#
