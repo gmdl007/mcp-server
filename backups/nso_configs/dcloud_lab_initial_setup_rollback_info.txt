@@ -1,7 +1,0 @@
-Backup Name: dcloud_lab_initial_setup
-Created: 2025-11-11 11:57:20
-
-To restore this configuration:
-1. Find the rollback ID using: show rollback
-2. Restore using: rollback_router_configuration(rollback_id)
-   Or in NSO CLI: rollback <rollback_id>

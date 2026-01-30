@@ -1,4 +1,0 @@
----
-alwaysApply: true
----
-use MCP tools instead of customized python api, unless explicitily asked by user
